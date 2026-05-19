@@ -63,7 +63,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opa
 </head>
 <body>
 <div class="container">
-  <a href="../" class="back-link">← 工具站</a>
+  <a href="../index.html" class="back-link">← 工具站</a>
   <div class="title">摇骰子</div>
   <div class="subtitle">运气检测 · 特殊组合 · 趣味评论</div>
 
@@ -144,7 +144,34 @@ function detectSpecial(sorted,original){
 
 // ====== 评论 ======
 function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
-var GENERIC_COMMENTS=['我知道，这个结果你其实不满意。但这就是命运。','你心里早就有答案了，只是让我来帮你背锅对吧？','不满意就点重摇，我习惯了。','屏幕前的你，别再纠结了。就是它了。','别想了，想太多会掉头发。','帮你摇了，不用谢。','选了又不信，你跟渣男有什么区别？'];
+var COMMENTS={
+  'one':['就一个还摇？','唯一选项，天选之子'],
+  'two':['就俩选项还纠结？','是A还是B，你心里有数','选不出来我帮你选了'],
+  'three':['三个选项，完美的数量','不多不少，刚好选得出来'],
+  'many':['N个选项……选择困难晚期','你这是菜单不是选项'],
+  'reroll':['还不满意？我继续摇','行，这个也不满意？','你是来测试我耐心的吧','第N次了希望你喜欢'],
+  '豹子':['豹子！运气炸了','全相同，今天买彩票'],
+  '天胡':['天胡！全是6！','六到飞起'],
+  '天崩':['全是1……这也是一种运气','天崩开局，后面都是上坡'],
+  '幸运七':['幸运七！今天运气不错','七是幸运数字'],
+  '正顺子':['一条龙！顺到离谱','123456，这个概率有多低你知道吗'],
+  '六六大顺':['六个六！天选之人','谁有我6？谁敢有我6？'],
+  '我爱你521':['满心欢喜，因你而起','爱你这事，藏不住一点','爱自己，才是终身浪漫'],
+  '一生一世':['一生一世，唯你而已','别画大饼了谢谢'],
+  generic:['我知道这个结果你其实不满意。但这就是命运。','你心里早就有答案了，只是让我来帮你背锅对吧？','不满意就点重摇，我习惯了。','选了又不信，你跟渣男有什么区别？','屏幕前的你，别再纠结了。就是它了。','别想了，想太多会掉头发。','帮你摇了，不用谢。']
+};
+
+function pickComment(sp){
+  var n=diceCount;
+  if(n===1)return pick(COMMENTS.one);
+  if(n===2)return pick(COMMENTS.two);
+  if(n===3&&Math.random()>.5)return pick(COMMENTS.three);
+  if(n>5)return pick(COMMENTS.many).replace('N',String(n));
+  if(sp){var nm=sp.name;if(COMMENTS[nm])return pick(COMMENTS[nm]);
+    if(nm.indexOf('521')!==-1||nm.indexOf('我爱你')!==-1)return pick(COMMENTS['我爱你521']);
+    if(nm.indexOf('1314')!==-1||nm.indexOf('一世')!==-1)return pick(COMMENTS['一生一世']);}
+  return pick(COMMENTS.generic);
+}
 
 // ====== 骰子面模板 ======
 var DOT_COLORS=['#e17055','#0984e3','#00b894','#6c5ce7','#fdcb6e','#fd79a8'];
@@ -153,11 +180,13 @@ var FACE_PATTERNS={
   4:[1,0,1,0,0,0,1,0,1],5:[1,0,1,0,1,0,1,0,1],6:[1,0,1,1,0,1,1,0,1]
 };
 
-// ====== 音效 ======
-var audioCtx=null;
-function ensureAudio(){if(!audioCtx)try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}if(audioCtx&&audioCtx.state==='suspended')try{audioCtx.resume()}catch(e){}}
-function playRollSound(){ensureAudio();if(!audioCtx)return;var n=audioCtx.currentTime;for(var i=0;i<5;i++){var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='triangle';o.frequency.value=200+Math.random()*800;g.gain.setValueAtTime(.03,n+i*.04);g.gain.exponentialRampToValueAtTime(.001,n+i*.04+.06);o.connect(g);g.connect(audioCtx.destination);o.start(n+i*.04);o.stop(n+i*.04+.06)}}
-function playDingSound(){ensureAudio();if(!audioCtx)return;var n=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(880,n);o.frequency.exponentialRampToValueAtTime(1760,n+.08);g.gain.setValueAtTime(.08,n);g.gain.exponentialRampToValueAtTime(.001,n+.25);o.connect(g);g.connect(audioCtx.destination);o.start(n);o.stop(n+.3)}
+// ====== 音效（MP3 文件） ======
+var rollAudio=new Audio('assets/roll2.mp3');
+rollAudio.preload='auto';
+function playRollSound(){
+  rollAudio.currentTime=0;
+  rollAudio.play().catch(function(){});
+}
 
 // ====== 页面状态 ======
 var diceCount=2,results=[],showComment=true;
@@ -168,7 +197,7 @@ function renderDice(values,rolling,stopping){
   var count=values.length||diceCount;
   for(var i=0;i<count;i++){
     var faceIdx=values[i]||1;
-    var pattern=FACE_PATTERNS[faceIdx];
+    var pattern=Array.isArray(values[i])?values[i]:FACE_PATTERNS[faceIdx];
     var cls='die'+(rolling?' rolling':'')+(stopping?' stopping':'');
     html+='<div class="'+cls+'">';
     for(var j=0;j<9;j++)html+='<div class="dot'+(pattern[j]?'':' off')+'" style="background:'+(pattern[j]?DOT_COLORS[i]:'')+'"></div>';
@@ -178,17 +207,21 @@ function renderDice(values,rolling,stopping){
   document.getElementById('emptyState').style.display=values.length?'none':'block';
 }
 
-function renderIdle(){renderDice([],false,false)}
+function renderIdle(){
+  var blankFaces=[];for(var b=0;b<diceCount;b++)blankFaces.push([0,0,0,0,0,0,0,0,0]);
+  renderDice(blankFaces,false,false);
+}
 function doRoll(){
   if(!diceCount)return;
   var btn=document.getElementById('btnRoll');
   btn.disabled=true;results=[];document.getElementById('resultSection').style.display='none';document.getElementById('particleContainer').innerHTML='';
-  renderDice(Array(diceCount).fill(1),true,false);
+  var blankFaces=[];for(var b=0;b<diceCount;b++)blankFaces.push([0,0,0,0,0,0,0,0,0]);
+  renderDice(blankFaces,true,false);
   playRollSound();
   setTimeout(function(){
     var r=rollDice(diceCount);results=r.values;
     renderDice(r.values,false,true);
-    playDingSound();spawnParticles();
+    spawnParticles();
     setTimeout(function(){
       renderDice(r.values,false,false);
       document.getElementById('resultSection').style.display='block';
@@ -197,7 +230,7 @@ function doRoll(){
       var sp=r.special;
       document.getElementById('specialName').textContent=sp?sp.name:'';
       document.getElementById('specialName').style.color=r.special?DOT_COLORS[0]:'';
-      document.getElementById('commentText').textContent=showComment?pick(GENERIC_COMMENTS):'';
+      document.getElementById('commentText').textContent=showComment?pickComment(r.special):'';
       document.getElementById('commentText').style.display=showComment?'block':'none';
       btn.disabled=false;
     },350);
