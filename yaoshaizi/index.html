@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>摇骰子</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:linear-gradient(170deg,#3d2317,#4a2c1a);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.06;background:repeating-linear-gradient(2deg,transparent,transparent 3px,rgba(255,220,180,.5) 3px,rgba(255,220,180,.5) 5px)}
+.back-link{position:absolute;top:20px;left:16px;color:rgba(255,255,255,.25);font-size:12px;text-decoration:none;z-index:2}
+.back-link:active{color:#e17055}
+.container{max-width:480px;margin:0 auto;padding:50px 20px 30px;position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+.title{text-align:center;font-size:22px;font-weight:700;color:rgba(255,255,255,.88);letter-spacing:4px;margin-bottom:4px}
+.subtitle{text-align:center;font-size:11px;color:rgba(255,255,255,.3);margin-bottom:8px}
+
+.dice-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.dice-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.die{width:80px;height:80px;background:#faf3e6;border-radius:14px;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);padding:13px;gap:2px;box-shadow:3px 4px 0 #c4a076,0 8px 20px rgba(0,0,0,.2);position:relative;transition:all .1s}
+.die.rolling{animation:dice-shake .12s infinite ease-in-out}
+.die.stopping{animation:dice-bounce .3s ease-out}
+.dot{width:11px;height:11px;border-radius:50%;place-self:center}
+.dot.off{background:transparent}
+@keyframes dice-shake{0%,100%{transform:scale(1) rotate(0deg)}25%{transform:scale(.85) rotate(-10deg)}75%{transform:scale(1.1) rotate(10deg)}}
+@keyframes dice-bounce{0%{transform:scale(.7) rotate(15deg);opacity:.5}60%{transform:scale(1.08) rotate(-3deg)}100%{transform:scale(1) rotate(0deg);opacity:1}}
+
+.dice-result{text-align:center;margin-top:20px}
+.result-sum{font-size:36px;font-weight:700;color:#e17055}
+.result-detail{display:block;font-size:13px;color:rgba(255,255,255,.35);margin-top:4px}
+.special-name{display:block;font-size:20px;font-weight:700;margin-top:6px;animation:special-pop .5s ease-out}
+@keyframes special-pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.empty-state{text-align:center;opacity:.35}
+.empty-text{font-size:13px;color:rgba(255,255,255,.3);margin-top:8px}
+
+.comment-text{font-size:13px;color:#fdcb6e;margin-top:8px;line-height:1.5}
+.comment-toggle{display:inline-block;font-size:14px;opacity:.4;cursor:pointer;padding:2px 6px;margin-top:4px}
+.comment-toggle.on{opacity:1}
+
+.particle-container{position:absolute;top:50%;left:50%;pointer-events:none;z-index:2}
+.particle{position:absolute;border-radius:50%;animation:particle-burst .7s ease-out both}
+@keyframes particle-burst{0%{transform:translate(0,0) scale(1.5);opacity:1}100%{transform:translate(var(--px),var(--py)) scale(0);opacity:0}}
+
+.counter{display:flex;align-items:center;justify-content:center;gap:10px;padding:12px 0}
+.counter-label{font-size:12px;color:rgba(255,255,255,.35)}
+.counter-btns{display:flex;gap:6px}
+.counter-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(255,255,255,.15);color:rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:none;cursor:pointer}
+.counter-btn.active{background:#e17055;color:#fff;border-color:#e17055;box-shadow:0 0 12px rgba(225,112,85,.4)}
+
+.btn-wrap{display:flex;flex-direction:column;align-items:center;padding:8px 0 16px}
+.roll-btn{background:#e17055;color:#fff;padding:13px 56px;border-radius:32px;font-size:16px;font-weight:700;border:none;cursor:pointer;box-shadow:0 4px 22px rgba(225,112,85,.35);letter-spacing:2px}
+.roll-btn:active{transform:scale(.96)}
+.roll-btn:disabled{opacity:.4;pointer-events:none}
+.shake-hint{font-size:11px;color:rgba(255,255,255,.15);margin-top:6px}
+
+.actions{display:flex;gap:16px;justify-content:center;margin-top:4px}
+.action-link{font-size:11px;color:rgba(255,255,255,.3);cursor:pointer}
+.action-link:active{color:#e17055}
+
+.toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:8px 20px;border-radius:20px;font-size:12px;z-index:99;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="../" class="back-link">← 工具站</a>
+  <div class="title">摇骰子</div>
+  <div class="subtitle">运气检测 · 特殊组合 · 趣味评论</div>
+
+  <div class="dice-area">
+    <div class="particle-container" id="particleContainer"></div>
+    <div class="dice-row" id="diceRow"></div>
+    <div class="empty-state" id="emptyState">
+      <div style="font-size:48px;">🎲</div>
+      <div class="empty-text">选好数量，点摇一摇</div>
+    </div>
+    <div class="dice-result" id="resultSection" style="display:none">
+      <div class="result-sum" id="resultSum"></div>
+      <div class="result-detail" id="resultDetail"></div>
+      <div class="special-name" id="specialName"></div>
+      <div class="comment-text" id="commentText"></div>
+      <span class="comment-toggle on" id="commentToggle">👁</span>
+    </div>
+  </div>
+
+  <div class="counter">
+    <span class="counter-label">数量</span>
+    <div class="counter-btns" id="counterBtns">
+      <button class="counter-btn" data-count="1">1</button>
+      <button class="counter-btn active" data-count="2">2</button>
+      <button class="counter-btn" data-count="3">3</button>
+      <button class="counter-btn" data-count="4">4</button>
+      <button class="counter-btn" data-count="5">5</button>
+      <button class="counter-btn" data-count="6">6</button>
+    </div>
+  </div>
+
+  <div class="btn-wrap">
+    <button class="roll-btn" id="btnRoll">摇一摇</button>
+    <div class="shake-hint">点一下就出结果</div>
+  </div>
+  <div class="actions">
+    <span class="action-link" id="linkCopy">复制结果</span>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+// ====== 骰子逻辑 ======
+function rollOne(){return Math.floor(Math.random()*6)+1}
+function rollDice(count){
+  var vals=[];
+  for(var i=0;i<count;i++)vals.push(rollOne());
+  var sum=vals.reduce(function(a,b){return a+b},0);
+  var sorted=vals.slice().sort(function(a,b){return a-b});
+  var special=detectSpecial(sorted,vals);
+  return{values:vals,sum:sum,count:count,special:special,display:vals.join('+')+' = '+sum};
+}
+
+// ====== 特殊检测 ======
+var SEQ_3=[[[2,1,4],'💕情人节',['#fd79a8','#e17055']],[[3,2,1],'💗深爱你',['#fd79a8','#e17055']],[[5,2,1],'💝我爱你',['#fd79a8','#e17055','#d63031']],[[5,3,1],'💌我想你',['#6c5ce7','#a855f7']],[[6,6,6],'🔥666',['#e17055','#fdcb6e']],[[2,3,3],'😂233',['#fdcb6e','#0984e3']]];
+var SEQ_4=[[[1,3,1,3],'💞一生一生',['#fd79a8','#e17055']],[[1,3,1,4],'💖一生一世',['#fd79a8','#e17055']],[[1,2,1,3],'💗要爱一生',['#fd79a8','#fdcb6e']],[[1,2,1,4],'💘要爱一世',['#e17055','#fdcb6e']],[[2,1,2,1],'💓爱你爱你',['#fd79a8','#e17055']],[[3,3,4,4],'💟生生世世',['#6c5ce7','#a855f7']]];
+var SEQ_6=[[[1,2,3,4,5,6],'🐉正顺子',['#e17055','#fdcb6e','#00b894','#0984e3','#6c5ce7','#fd79a8']],[[6,5,4,3,2,1],'🐲倒顺子',['#fd79a8','#6c5ce7','#0984e3','#00b894','#fdcb6e','#e17055']],[[6,6,6,6,6,6],'🌟六六大顺',['#fdcb6e','#f0b840']],[[5,5,5,5,5,5],'🎋端午连号',['#00b894','#55efc4']]];
+
+function matchSeq(sorted,table){
+  for(var i=0;i<table.length;i++){
+    var s=table[i][0];if(sorted.length!==s.length)continue;
+    var ok=true;for(var j=0;j<s.length;j++)if(sorted[j]!==s[j]){ok=false;break}
+    if(ok)return{type:'sequence',name:table[i][1],level:sorted.length>=6?3:2};
+  }
+  return null;
+}
+function checkUniversal(sorted){
+  if(sorted.length>=2){var allSame=true;for(var i=1;i<sorted.length;i++)if(sorted[i]!==sorted[0]){allSame=false;break}
+    if(allSame){if(sorted[0]===6)return{type:'universal',name:'🌟天胡',level:3};if(sorted[0]===1)return{type:'universal',name:'💀天崩',level:2};return{type:'universal',name:'🐆豹子',level:2}}}
+  if(sorted.reduce(function(a,b){return a+b},0)===7)return{type:'universal',name:'🍀幸运七',level:1};
+  return null;
+}
+function detectSpecial(sorted,original){
+  if(original.length===6){var m=matchSeq(original,SEQ_6);if(m)return m}
+  if(original.length===4){var m=matchSeq(original,SEQ_4);if(m)return m}
+  if(original.length===3){var m=matchSeq(original,SEQ_3);if(m)return m}
+  return checkUniversal(sorted);
+}
+
+// ====== 评论 ======
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+var GENERIC_COMMENTS=['我知道，这个结果你其实不满意。但这就是命运。','你心里早就有答案了，只是让我来帮你背锅对吧？','不满意就点重摇，我习惯了。','屏幕前的你，别再纠结了。就是它了。','别想了，想太多会掉头发。','帮你摇了，不用谢。','选了又不信，你跟渣男有什么区别？'];
+
+// ====== 骰子面模板 ======
+var DOT_COLORS=['#e17055','#0984e3','#00b894','#6c5ce7','#fdcb6e','#fd79a8'];
+var FACE_PATTERNS={
+  1:[0,0,0,0,1,0,0,0,0],2:[0,0,1,0,0,0,1,0,0],3:[0,0,1,0,1,0,1,0,0],
+  4:[1,0,1,0,0,0,1,0,1],5:[1,0,1,0,1,0,1,0,1],6:[1,0,1,1,0,1,1,0,1]
+};
+
+// ====== 音效 ======
+var audioCtx=null;
+function ensureAudio(){if(!audioCtx)try{audioCtx=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}if(audioCtx&&audioCtx.state==='suspended')try{audioCtx.resume()}catch(e){}}
+function playRollSound(){ensureAudio();if(!audioCtx)return;var n=audioCtx.currentTime;for(var i=0;i<5;i++){var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='triangle';o.frequency.value=200+Math.random()*800;g.gain.setValueAtTime(.03,n+i*.04);g.gain.exponentialRampToValueAtTime(.001,n+i*.04+.06);o.connect(g);g.connect(audioCtx.destination);o.start(n+i*.04);o.stop(n+i*.04+.06)}}
+function playDingSound(){ensureAudio();if(!audioCtx)return;var n=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.setValueAtTime(880,n);o.frequency.exponentialRampToValueAtTime(1760,n+.08);g.gain.setValueAtTime(.08,n);g.gain.exponentialRampToValueAtTime(.001,n+.25);o.connect(g);g.connect(audioCtx.destination);o.start(n);o.stop(n+.3)}
+
+// ====== 页面状态 ======
+var diceCount=2,results=[],showComment=true;
+
+function renderDice(values,rolling,stopping){
+  var row=document.getElementById('diceRow');
+  var html='';
+  var count=values.length||diceCount;
+  for(var i=0;i<count;i++){
+    var faceIdx=values[i]||1;
+    var pattern=FACE_PATTERNS[faceIdx];
+    var cls='die'+(rolling?' rolling':'')+(stopping?' stopping':'');
+    html+='<div class="'+cls+'">';
+    for(var j=0;j<9;j++)html+='<div class="dot'+(pattern[j]?'':' off')+'" style="background:'+(pattern[j]?DOT_COLORS[i]:'')+'"></div>';
+    html+='</div>';
+  }
+  row.innerHTML=html;
+  document.getElementById('emptyState').style.display=values.length?'none':'block';
+}
+
+function renderIdle(){renderDice([],false,false)}
+function doRoll(){
+  if(!diceCount)return;
+  var btn=document.getElementById('btnRoll');
+  btn.disabled=true;results=[];document.getElementById('resultSection').style.display='none';document.getElementById('particleContainer').innerHTML='';
+  renderDice(Array(diceCount).fill(1),true,false);
+  playRollSound();
+  setTimeout(function(){
+    var r=rollDice(diceCount);results=r.values;
+    renderDice(r.values,false,true);
+    playDingSound();spawnParticles();
+    setTimeout(function(){
+      renderDice(r.values,false,false);
+      document.getElementById('resultSection').style.display='block';
+      document.getElementById('resultSum').textContent=r.sum;
+      document.getElementById('resultDetail').textContent=r.display;
+      var sp=r.special;
+      document.getElementById('specialName').textContent=sp?sp.name:'';
+      document.getElementById('specialName').style.color=r.special?DOT_COLORS[0]:'';
+      document.getElementById('commentText').textContent=showComment?pick(GENERIC_COMMENTS):'';
+      document.getElementById('commentText').style.display=showComment?'block':'none';
+      btn.disabled=false;
+    },350);
+  },800);
+}
+
+function spawnParticles(){
+  var c=document.getElementById('particleContainer');
+  var colors=['#e17055','#fdcb6e','#fd79a8','#00b894','#0984e3'];
+  var h='';for(var i=0;i<16;i++){var a=Math.PI*2*i/16,d=50+Math.random()*70,px=Math.cos(a)*d,py=Math.sin(a)*d,co=colors[Math.floor(Math.random()*colors.length)],sz=6+Math.random()*8;h+='<div class="particle" style="--px:'+px+'px;--py:'+py+'px;background:'+co+';width:'+sz+'px;height:'+sz+'px;animation-delay:'+Math.random()*.2+'s"></div>'}c.innerHTML=h;setTimeout(function(){c.innerHTML=''},800)
+}
+
+function copyResult(){var e=document.getElementById('resultSum').textContent,d=document.getElementById('resultDetail').textContent;if(!e){showToast('先摇一个结果');return}var s=document.getElementById('specialName').textContent,t='🎲 摇骰子结果：'+e+'\n'+d+(s?'\n'+s:'');copyText(t)}
+function copyText(t){if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){showToast('已复制')})}else{var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);showToast('已复制')}}
+var toastTimer;function showToast(m){var t=document.getElementById('toast');clearTimeout(toastTimer);t.classList.remove('show');t.textContent=m;void t.offsetWidth;t.classList.add('show');toastTimer=setTimeout(function(){t.classList.remove('show')},1500)}
+
+document.querySelectorAll('.counter-btn').forEach(function(b){b.addEventListener('click',function(){diceCount=parseInt(this.dataset.count);document.querySelectorAll('.counter-btn').forEach(function(x){x.classList.remove('active')});this.classList.add('active');renderIdle();document.getElementById('resultSection').style.display='none'})});
+document.getElementById('btnRoll').addEventListener('click',doRoll);
+document.getElementById('linkCopy').addEventListener('click',copyResult);
+document.getElementById('commentToggle').addEventListener('click',function(){showComment=!showComment;this.textContent=showComment?'👁':'👁‍🗨';this.classList.toggle('on',showComment);document.getElementById('commentText').style.display=showComment?'block':'none'});
+renderIdle();
+</script>
+</body>
+</html>

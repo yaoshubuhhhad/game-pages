@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>选啥</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  min-height: 100vh;
+  background: linear-gradient(170deg, #3d2317, #4a2c1a);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  opacity: 0.06;
+  background: repeating-linear-gradient(2deg, transparent, transparent 3px, rgba(255,220,180,0.5) 3px, rgba(255,220,180,0.5) 5px);
+}
+
+.container { max-width: 480px; margin: 0 auto; padding: 40px 20px 30px; position: relative; z-index: 1; }
+.title { text-align: center; font-size: 24px; font-weight: 700; color: rgba(255,255,255,0.88); letter-spacing: 6px; margin-bottom: 6px; }
+.subtitle { text-align: center; font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
+
+.template-section { margin-bottom: 16px; }
+.template-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+.clear-tpl { color: rgba(255,255,255,0.25); cursor: pointer; margin-left: 8px; }
+.clear-tpl:active { color: #e17055; }
+.template-chips { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+.template-chips::-webkit-scrollbar { display: none; }
+.chip {
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6);
+  padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer;
+  border: 1px solid transparent; transition: all 0.2s;
+}
+.chip:active, .chip.active { background: rgba(225,112,85,0.22); color: #e17055; border-color: rgba(225,112,85,0.4); }
+.chip.pressing { transform: scale(0.94); transition: transform 0.5s ease-in; }
+.chip.modified::after { content: ' ·'; color: #fdcb6e; }
+
+.input-section { margin-bottom: 20px; }
+.input-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+textarea {
+  width: 100%; min-height: 100px; max-height: 400px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px; padding: 12px; color: rgba(255,255,255,0.75);
+  font-size: 13px; line-height: 1.8; resize: vertical;
+  font-family: inherit;
+}
+textarea:focus { outline: none; border-color: rgba(225,112,85,0.4); }
+textarea::placeholder { color: rgba(255,255,255,0.25); }
+
+.card-area { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 24px 0; min-height: 120px; position: relative; }
+.card {
+  width: 85px; height: 105px;
+  background: rgba(255,255,255,0.1); border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; color: rgba(255,255,255,0.45); text-align: center; padding: 6px;
+  transition: all 0.1s; overflow-wrap: break-word; overflow: hidden;
+  line-height: 1.3;
+}
+.card.active {
+  background: #faf3e6; color: #3d2317; font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  transform: scale(1.08);
+}
+.card-area.single .card:not(.hidden) {
+  width: 160px; height: 120px; font-size: 20px; margin: 0 auto;
+}
+.card.reveal {
+  background: #faf3e6; color: #3d2317; font-weight: 700; font-size: 16px;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+  transform: scale(1.05); animation: card-reveal 0.3s ease-out;
+}
+@keyframes card-reveal {
+  0% { transform: scale(0.6); opacity: 0.3; }
+  100% { transform: scale(1.05); opacity: 1; }
+}
+.card.hidden { display: none; }
+
+/* 粒子特效 */
+.result-particles { position: absolute; top: 50%; left: 50%; pointer-events: none; z-index: 2; }
+.result-particle {
+  position: absolute; border-radius: 50%;
+  animation-name: particle-burst;
+  animation-duration: 0.7s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+@keyframes particle-burst {
+  0% { transform: translate(0, 0) scale(1.5); opacity: 1; }
+  100% { transform: translate(var(--px), var(--py)) scale(0); opacity: 0; }
+}
+
+/* 添加选项按钮 */
+.add-option-row { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 6px; margin-bottom: -4px; }
+.add-option-btn {
+  background: none; border: 1px dashed rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.25); padding: 3px 14px; border-radius: 14px;
+  font-size: 11px; cursor: pointer; font-family: inherit;
+}
+.add-option-btn:active { border-color: rgba(225,112,85,0.3); color: #e17055; }
+.save-indicator { font-size: 11px; color: #e17055; animation: fade-in 0.3s; }
+@keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+.result-section { text-align: center; margin: 20px 0; display: none; }
+.result-section.show { display: block; }
+.result-icon { font-size: 48px; margin-bottom: 8px; }
+.result-text { font-size: 18px; color: rgba(255,255,255,0.85); font-weight: 600; }
+.comment-text { font-size: 13px; color: #fdcb6e; margin-top: 10px; line-height: 1.5; }
+
+.btn-row { display: flex; gap: 10px; justify-content: center; margin: 16px 0; }
+.btn {
+  padding: 12px 32px; border-radius: 32px; font-size: 15px; font-weight: 600;
+  border: none; cursor: pointer; transition: all 0.2s; font-family: inherit;
+}
+.btn-primary { background: #e17055; color: white; box-shadow: 0 4px 22px rgba(225,112,85,0.35); }
+.btn-primary:active { transform: scale(0.96); }
+.btn-primary:disabled { opacity: 0.4; pointer-events: none; }
+.btn-secondary { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); }
+
+.actions { display: flex; gap: 16px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+.action-link { font-size: 11px; color: rgba(255,255,255,0.4); cursor: pointer; }
+.action-link:active { color: #e17055; }
+
+.add-option-btn { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.45); }
+
+.toast { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 8px 20px; border-radius: 20px; font-size: 12px; z-index: 99; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; }
+.back-link { position:absolute; top:-30px; left:0; color:rgba(255,255,255,.25); font-size:12px; text-decoration:none; z-index:2; }
+.back-link:active { color:#e17055; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="../" class="back-link">← 工具站</a>
+  <div class="title">选啥</div>
+  <div class="subtitle">替你做决定的小工具 · 点一下出答案</div>
+
+  <div class="template-section">
+    <div class="template-label">快捷场景 <span class="clear-tpl" id="clearTemplate" style="display:none;">✕ 清除</span></div>
+    <div class="template-chips" id="templateChips"></div>
+  </div>
+
+  <div class="input-section">
+    <div class="input-label">你的选项（一行一个）</div>
+    <textarea id="optionInput" placeholder="一行一个选项...&#10;例如：&#10;川菜&#10;日料&#10;火锅"></textarea>
+    <div class="add-option-row">
+      <span class="save-indicator" id="saveIndicator" style="display:none;">已修改</span>
+      <button class="add-option-btn" id="btnSaveTemplate" style="display:none;">💾 保存修改</button>
+      <button class="add-option-btn" id="btnAddOption">+ 添加选项</button>
+    </div>
+  </div>
+
+  <div style="position:relative;">
+    <div class="result-particles" id="resultParticles"></div>
+    <div class="card-area" id="cardArea">
+      <div class="card active">?</div>
+      <div class="card">?</div>
+      <div class="card">?</div>
+    </div>
+  </div>
+
+  <div class="result-section" id="resultSection">
+    <div class="result-icon" id="resultIcon"></div>
+    <div class="result-text" id="resultText"></div>
+    <div class="comment-text" id="commentText"></div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-secondary" id="btnReroll">重新选</button>
+    <button class="btn btn-primary" id="btnRoll">▶ 选啥</button>
+  </div>
+
+  <div class="actions">
+    <span class="action-link" id="linkCopyResult">复制结果</span>
+    <span class="action-link" id="linkCopyShare">复制链接</span>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+// ====== 模板系统 ======
+var PRESET_TEMPLATES = {
+  '🍜 午饭吃啥': ['黄焖鸡','麻辣烫','沙县小吃','兰州拉面','食堂自选','麻辣香锅','盖浇饭','酸菜鱼','煲仔饭','螺蛳粉'],
+  '🍻 今晚干嘛': ['看剧','打游戏','刷手机','出门散步','早点睡觉','找人聊天','收拾房间'],
+  '🎯 真心话大冒险': ['真心话：你最尴尬的一件事？','真心话：你暗恋过谁？','大冒险：学猫叫三声','大冒险：发一条朋友圈"我好帅"','真心话：上一次哭是什么时候？','大冒险：给前任发"在干嘛"','真心话：说一个你撒过的最大谎','大冒险：翻一张你相册里最丑的自拍'],
+  '☕ 下午茶': ['奶茶','咖啡','果茶','白开水','可乐'],
+  '🎮 玩什么游戏': ['王者荣耀','原神','吃鸡','斗地主','羊了个羊','不玩了'],
+};
+
+function loadTemplates() {
+  try {
+    var raw = localStorage.getItem('custom_templates');
+    var custom = raw ? JSON.parse(raw) : {};
+    var merged = {};
+    var keys = Object.keys(PRESET_TEMPLATES).concat(Object.keys(custom));
+    keys.forEach(function(k) { merged[k] = custom[k] || PRESET_TEMPLATES[k]; });
+    return merged;
+  } catch(e) { return PRESET_TEMPLATES; }
+}
+
+function saveCustomTemplate(name, options) {
+  try {
+    var raw = localStorage.getItem('custom_templates');
+    var custom = raw ? JSON.parse(raw) : {};
+    custom[name] = options;
+    localStorage.setItem('custom_templates', JSON.stringify(custom));
+  } catch(e) {}
+}
+
+function deleteCustomTemplate(name) {
+  try {
+    var raw = localStorage.getItem('custom_templates');
+    if (!raw) return;
+    var custom = JSON.parse(raw);
+    delete custom[name];
+    localStorage.setItem('custom_templates', JSON.stringify(custom));
+  } catch(e) {}
+}
+
+var templates = loadTemplates();
+var currentTemplate = null;
+var originalOptsText = '';
+var options = [];
+
+function updateSaveIndicator() {
+  var ta = document.getElementById('optionInput');
+  var hasTemplate = !!currentTemplate;
+  var modified = hasTemplate && ta.value !== originalOptsText;
+  var isPreset = hasTemplate && PRESET_TEMPLATES.hasOwnProperty(currentTemplate);
+  var overridden = isPreset && hasCustomOverride(currentTemplate);
+
+  document.getElementById('saveIndicator').style.display = modified ? 'inline' : 'none';
+
+  var btn = document.getElementById('btnSaveTemplate');
+  if (overridden && !modified) {
+    btn.style.display = 'inline-block';
+    btn.textContent = '↺ 重置默认';
+  } else if (modified) {
+    btn.style.display = 'inline-block';
+    btn.textContent = '💾 保存修改';
+  } else {
+    btn.style.display = 'none';
+  }
+}
+
+function renderChips() {
+  var container = document.getElementById('templateChips');
+  container.innerHTML = '';
+  var names = Object.keys(templates);
+  for (var i = 0; i < names.length; i++) {
+    var chip = document.createElement('span');
+    var isModified = PRESET_TEMPLATES.hasOwnProperty(names[i]) && hasCustomOverride(names[i]);
+    chip.className = 'chip' + (isModified ? ' modified' : '');
+    chip.dataset.name = names[i];
+    chip.textContent = names[i];
+    chip.addEventListener('click', function() { selectTemplate(this.dataset.name); });
+    container.appendChild(chip);
+  }
+  var customChip = document.createElement('span');
+  customChip.className = 'chip';
+  customChip.dataset.name = '__custom__';
+  customChip.textContent = '+ 自定义';
+  customChip.addEventListener('click', function() { selectTemplate('__custom__'); });
+  container.appendChild(customChip);
+}
+
+function selectTemplate(name) {
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+  var target = document.querySelector('[data-name="' + name + '"]');
+  if (target) {
+    target.classList.add('active');
+    try { target.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); } catch(e) { target.scrollIntoView(); }
+  }
+
+  if (name === '__custom__') {
+    var ta = document.getElementById('optionInput');
+    // 如果已有选项 → 保存模式
+    parseOptions();
+    if (options.length > 0) {
+      var customName = prompt('给这个模板起个名字：');
+      if (customName && customName.trim()) {
+        customName = customName.trim();
+        templates[customName] = options.slice();
+        saveCustomTemplate(customName, options.slice());
+        renderChips();
+        selectTemplate(customName);
+        showToast('模板「' + customName + '」已保存');
+      }
+      return;
+    }
+    // 无选项 → 清空进入编辑模式
+    ta.value = '';
+    ta.focus();
+    currentTemplate = null;
+    parseOptions();
+    showToast('输入选项后再次点这里保存');
+    return;
+  }
+
+  currentTemplate = name;
+  rerollCount = 0;
+  var opts = templates[name] || [];
+  document.getElementById('optionInput').value = opts.join('\n');
+  originalOptsText = opts.join('\n');
+  document.getElementById('clearTemplate').style.display = 'inline';
+  updateSaveIndicator();
+  parseOptions();
+}
+
+function clearCurrentTemplate() {
+  document.querySelectorAll('.chip').forEach(function(c) { c.classList.remove('active'); });
+  document.getElementById('optionInput').value = '';
+  currentTemplate = null;
+  originalOptsText = '';
+  options = [];
+  document.getElementById('clearTemplate').style.display = 'none';
+  updateSaveIndicator();
+  updateCardCount();
+  updateButtonState();
+  document.getElementById('resultSection').classList.remove('show');
+}
+
+function parseOptions() {
+  var raw = document.getElementById('optionInput').value;
+  options = raw.split('\n').map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
+  updateCardCount();
+  updateSaveIndicator();
+}
+
+function updateCardCount() {
+  var area = document.getElementById('cardArea');
+  area.classList.remove('single'); // 清除结果态
+  var count = Math.min(options.length || 3, 5);
+  if (options.length === 0) count = 3;
+  else if (options.length < 3) count = options.length;
+  var cards = [];
+  for (var i = 0; i < count; i++) {
+    cards.push('<div class="card" data-index="' + i + '">' + (count < 3 ? options[i] || '?' : '?') + '</div>');
+  }
+  area.innerHTML = cards.join('');
+}
+
+renderChips();
+document.getElementById('optionInput').addEventListener('input', parseOptions);
+document.getElementById('clearTemplate').addEventListener('click', clearCurrentTemplate);
+
+// 保存/重置按钮
+document.getElementById('btnSaveTemplate').addEventListener('click', function() {
+  if (!currentTemplate) return;
+  var isPreset = PRESET_TEMPLATES.hasOwnProperty(currentTemplate);
+  var overridden = isPreset && hasCustomOverride(currentTemplate);
+  var modified = document.getElementById('optionInput').value !== originalOptsText;
+
+  // 被覆盖的预设 + 未修改 → 重置
+  if (overridden && !modified) {
+    if (confirm('重置「' + currentTemplate + '」为默认选项？')) {
+      delete templates[currentTemplate];
+      deleteCustomTemplate(currentTemplate);
+      renderChips();
+      selectTemplate(currentTemplate);
+      showToast('已重置为默认');
+    }
+    return;
+  }
+
+  // 保存修改
+  parseOptions();
+  if (options.length === 0) { showToast('至少保留一个选项'); return; }
+  templates[currentTemplate] = options.slice();
+  saveCustomTemplate(currentTemplate, options.slice());
+  originalOptsText = document.getElementById('optionInput').value;
+  updateSaveIndicator();
+  showToast('已保存到「' + currentTemplate + '」');
+});
+
+// 添加选项按钮
+document.getElementById('btnAddOption').addEventListener('click', function() {
+  var ta = document.getElementById('optionInput');
+  try { ta.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(e) { ta.scrollIntoView(); }
+  setTimeout(function() {
+    ta.focus();
+    var val = ta.value;
+    if (val.length > 0 && val[val.length - 1] !== '\n') ta.value = val + '\n';
+    ta.value = ta.value + '\n';
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+    parseOptions();
+  }, 300);
+});
+
+// ====== 音效（Web Audio API，无需外部文件） ======
+var audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) {
+    try {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch(e) {}
+  }
+  if (audioCtx && audioCtx.state === 'suspended') {
+    try { audioCtx.resume(); } catch(e) {}
+  }
+}
+
+function playRollSound() {
+  ensureAudio();
+  if (!audioCtx) return;
+  var now = audioCtx.currentTime;
+  // 短促噪声模拟摇动
+  for (var i = 0; i < 5; i++) {
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = 200 + Math.random() * 800;
+    gain.gain.setValueAtTime(0.03, now + i * 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.04 + 0.06);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(now + i * 0.04); osc.stop(now + i * 0.04 + 0.06);
+  }
+}
+
+function playResultSound() {
+  ensureAudio();
+  if (!audioCtx) return;
+  var now = audioCtx.currentTime;
+  // 清脆叮声
+  var osc = audioCtx.createOscillator();
+  var gain = audioCtx.createGain();
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(880, now);
+  osc.frequency.exponentialRampToValueAtTime(1760, now + 0.08);
+  gain.gain.setValueAtTime(0.08, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(now); osc.stop(now + 0.3);
+}
+
+// ====== 动画引擎 ======
+var isAnimating = false;
+var rerollCount = 0;
+
+function animateCards(onComplete) {
+  if (options.length === 0) return;
+  isAnimating = true;
+
+  var cards = document.querySelectorAll('#cardArea .card');
+  var totalOptions = options.length;
+  var visibleSlots = cards.length;
+
+  // 先随机决定结果
+  var chosenIndex = Math.floor(Math.random() * totalOptions);
+
+  if (totalOptions === 1) {
+    chosenIndex = 0;
+    for (var s = 0; s < visibleSlots; s++) {
+      if (s !== Math.floor(visibleSlots/2)) cards[s].classList.add('hidden');
+    }
+    document.getElementById('cardArea').classList.add('single');
+    var onlyCard = cards[Math.floor(visibleSlots/2)];
+    onlyCard.textContent = options[0];
+    onlyCard.classList.add('reveal');
+    onlyCard.style.opacity = '1';
+    isAnimating = false;
+    onComplete(0);
+    return;
+  }
+
+  var i = 0;
+  var delay = 60;
+  var timer;
+
+  function step() {
+    for (var s = 0; s < visibleSlots; s++) {
+      var optIndex = (i + s) % totalOptions;
+      cards[s].textContent = options[optIndex];
+      cards[s].classList.remove('reveal');
+    }
+    highlightCard(Math.floor(visibleSlots/2));
+
+    i++;
+    delay += 12;
+    if (delay > 180) {
+      clearTimeout(timer);
+      // 最后两帧：让中间卡显示目标结果，再揭晓
+      cards[Math.floor(visibleSlots/2)].textContent = options[chosenIndex];
+      highlightCard(Math.floor(visibleSlots/2));
+      setTimeout(function() {
+        for (var s = 0; s < visibleSlots; s++) {
+          if (s !== Math.floor(visibleSlots/2)) cards[s].classList.add('hidden');
+        }
+        document.getElementById('cardArea').classList.add('single');
+        var resultCard = cards[Math.floor(visibleSlots/2)];
+        resultCard.classList.add('reveal');
+        resultCard.style.opacity = '1';
+        isAnimating = false;
+        onComplete(chosenIndex);
+      }, 120);
+      return;
+    }
+    timer = setTimeout(step, delay);
+  }
+
+  highlightCard(Math.floor(visibleSlots/2));
+  timer = setTimeout(step, delay);
+}
+
+function highlightCard(idx) {
+  var cards = document.querySelectorAll('#cardArea .card');
+  cards.forEach(function(c, i) {
+    c.classList.toggle('active', i === idx);
+    c.style.opacity = i === idx ? '1' : '0.3';
+  });
+}
+
+function resetCards() {
+  var area = document.getElementById('cardArea');
+  area.classList.remove('single');
+  var cards = area.querySelectorAll('.card');
+  cards.forEach(function(c) { c.classList.remove('hidden', 'reveal'); c.style.opacity = ''; c.textContent = '?'; });
+}
+
+function doRoll() {
+  if (isAnimating || options.length === 0) return;
+  var btnRoll = document.getElementById('btnRoll');
+  var btnReroll = document.getElementById('btnReroll');
+  btnRoll.disabled = true;
+  btnReroll.disabled = true;
+  rerollCount++;
+
+  document.getElementById('resultSection').classList.remove('show');
+  resetCards();
+  playRollSound();
+
+  try {
+    animateCards(function(resultIndex) {
+      playResultSound();
+      showResult(resultIndex);
+      btnRoll.disabled = false;
+      btnReroll.disabled = false;
+    });
+  } catch(e) {
+    isAnimating = false;
+    btnRoll.disabled = false;
+    btnReroll.disabled = false;
+  }
+}
+
+function spawnParticles() {
+  var container = document.getElementById('resultParticles');
+  var colors = ['#e17055','#fdcb6e','#fd79a8','#00b894','#0984e3','#6c5ce7'];
+  var html = '';
+  for (var i = 0; i < 20; i++) {
+    var angle = (Math.PI * 2 * i) / 20 + (Math.random() - 0.5) * 0.3;
+    var dist = 60 + Math.random() * 80;
+    var px = Math.cos(angle) * dist;
+    var py = Math.sin(angle) * dist;
+    var color = colors[Math.floor(Math.random() * colors.length)];
+    var size = 6 + Math.random() * 8;
+    html += '<div class="result-particle" style="--px:' + px + 'px;--py:' + py + 'px;background:' + color + ';width:' + size + 'px;height:' + size + 'px;animation-delay:' + (Math.random() * 0.2) + 's;"></div>';
+  }
+  container.innerHTML = html;
+  setTimeout(function() { container.innerHTML = ''; }, 800);
+}
+
+function showResult(idx) {
+  var sec = document.getElementById('resultSection');
+  sec.classList.add('show');
+  document.getElementById('resultIcon').textContent = currentTemplate ? '🎯' : '🎲';
+  document.getElementById('resultText').textContent = '就它了 — ' + options[idx];
+  document.getElementById('commentText').textContent = pickComment(options[idx]);
+  spawnParticles();
+}
+
+document.getElementById('btnRoll').addEventListener('click', doRoll);
+document.getElementById('btnReroll').addEventListener('click', doRoll);
+
+// ====== 评论系统 ======
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+// 每个选项的专属评论
+var OPTION_COMMENTS_FOOD = {
+  '黄焖鸡': ['黄焖鸡：永远的神，永不翻车','鸡肉配米饭，简单粗暴但幸福','黄焖鸡从不让人失望'],
+  '麻辣烫': ['又是麻辣烫，这周第几次了？但确实香','麻辣烫：把想吃的全扔进去就对了','辣度自己调，命运自己掌握'],
+  '沙县小吃': ['沙县：打工人最后的尊严','拌面扁肉，十块钱的快乐','沙县老板永远记得你'],
+  '兰州拉面': ['兰州拉面：一碗清汤走天下','毛细还是二细？选面比选对象还认真','师傅手艺都在那几下拉扯里'],
+  '食堂自选': ['食堂阿姨今天手别抖啊','食堂：熟悉的配方，熟悉的味道','吃食堂是一种生活态度'],
+  '麻辣香锅': ['麻辣香锅：今日放纵卡已激活','香锅配米饭，热量拉满但值得','锅底选微辣还是特辣？微辣是广东人的倔强'],
+  '盖浇饭': ['盖浇饭：碳水炸弹但快乐','一碗盖浇，朴素却踏实','浇头选对了，一天都好了'],
+  '酸菜鱼': ['酸菜鱼：又酸又菜又多余？不，又酸又爽又下饭','酸菜比鱼好吃系列','吃完酸菜鱼，心情也开胃'],
+  '煲仔饭': ['煲仔饭：等20分钟值得','锅巴是灵魂，不接受反驳','煲仔饭：广式浪漫都在这一锅'],
+  '螺蛳粉': ['螺蛳粉：有人爱有人恨，你属于前者','酸笋yyds，旁人退散','吃螺蛳粉的人不需要解释'],
+  '奶茶': ['奶茶续命中，血糖也续上了','不是奶茶不健康，是我需要不健康','三分糖是最后的倔强'],
+  '咖啡': ['咖啡：成年人的合法兴奋剂','这杯喝完今天就正式开始了','美式不加糖，苦得像周一'],
+  '果茶': ['果茶：假装在养生','喝完告诉自己今天吃水果了','每一口都是夏天的味道'],
+  '白开水': ['白开水最健康但最难喝','养生从一杯白开水开始','白开水：真正的强者饮品'],
+  '可乐': ['可乐：快乐水不是白叫的','冰可乐，一口回魂','碳酸的快乐，懂的人自然懂'],
+  '看剧': ['追剧一时爽，一直追剧一直爽','今天看哪部？选剧比选对象还难','囤的剧终于有时间看了'],
+  '打游戏': ['又肝？肝还好吗','王者一把，输了再说不玩','赢一局就睡→凌晨三点'],
+  '刷手机': ['刷到天亮，我懂的','短视频：时间消失术','今天又看了三小时别人的人生'],
+  '出门散步': ['出门散步？外面有蚊子','散步：最低成本的有氧运动','呼吸一下外面的空气也不错'],
+  '早点睡觉': ['今晚早睡flag已立，凌晨两点见','早睡是不可能早睡的','早睡这种话，说说就好'],
+  '找人聊天': ['找人聊天：最高效的情绪解药','有时候就是想有个人说说话','聊天五分钟，治愈一整天'],
+  '收拾房间': ['收拾完房间，心情也会变好','断舍离也是一种快乐','打扫卫生也是一种运动'],
+  '王者荣耀': ['王者：输赢看淡，不服就干','又到了掉分的时间','五连跪之后你会感谢这个选项'],
+  '原神': ['原神：肝就完了','今天树脂清了吗','抽卡不出货，摇一摇转运'],
+  '吃鸡': ['大吉大利，今晚吃鸡','落地成盒也是常态','苟到决赛圈就算赢'],
+  '斗地主': ['斗地主：中老年友谊赛','超级加倍！然后输了','三带一对，人生也是如此'],
+  '羊了个羊': ['羊了个羊：至今没过第二关','通关了吗？没有。还玩吗？还玩。','这个游戏教会我们：有些事注定失败'],
+  '不玩了': ['不玩游戏：今天的健康选择','早睡早起身体好','这才是成年人该选的事'],
+};
+
+var OPTION_COMMENTS_TRUTH = {
+  '真心话：你最尴尬的一件事？': ['这题杀伤力不大，但尴尬值拉满','准备好社死了吗','说出来让大家开心开心'],
+  '真心话：你暗恋过谁？': ['八卦之魂在燃烧','暗恋这种事，说出来就不是暗恋了','老实交代，大家都等着听'],
+  '大冒险：学猫叫三声': ['喵喵喵！给我认真叫','猫叫是门槛最低的大冒险','学得像不像不重要，重要的是态度'],
+  '真心话：上一次哭是什么时候？': ['这题有点重量级','准备好纸巾了吗','有时候哭出来反而舒服'],
+  '大冒险：发一条朋友圈"我好帅"': ['发完截图，别想赖','这条朋友圈会获得多少赞','自信的人最帅，发自拍也行'],
+  '真心话：说一个你撒过的最大谎': ['诚实是美德，但从心更重要','说谎被拆穿也是一种体验','希望你说的不是"我没有说谎"'],
+  '大冒险：翻一张你相册里最丑的自拍': ['丑照是人类共同的财富','翻出来大家一起开心','自拍丑也是一种美'],
+};
+
+function getOptionComment(resultText) {
+  var maps = [OPTION_COMMENTS_FOOD, OPTION_COMMENTS_TRUTH];
+  for (var i = 0; i < maps.length; i++) {
+    if (maps[i][resultText]) return pick(maps[i][resultText]);
+  }
+  return null;
+}
+
+var FOOD_COMMENTS = [
+  '又是麻辣烫，这周第几次了？但确实香',
+  '食堂阿姨今天手别抖啊',
+  '黄焖鸡：永远的神',
+  '沙县：打工人最后的尊严',
+  '盖浇饭：碳水炸弹但快乐',
+  '螺蛳粉：有人爱有人恨，你属于前者',
+  '吃饱了才有力气减肥',
+  '这个月第8次选这个了吧？',
+  '别问 问就是食堂',
+];
+
+var NIGHT_COMMENTS = [
+  '今晚早睡flag已立，凌晨两点见',
+  '刷手机到天亮，我懂的',
+  '出门散步？外面有蚊子',
+  '早睡是不可能早睡的',
+];
+
+var TRUTH_COMMENTS = [
+  '稳住，别怂',
+  '说完自己别脸红',
+  '这题答完，朋友友谊+1',
+  '我替ta问的，别怪ta',
+  '真心话：这可能是今晚最刺激的一题',
+];
+
+var BEHAVIOR_COMMENTS = {
+  'two': ['就俩选项还纠结？','是A还是B，你心里有数','选不出来我帮你选了'],
+  'many': ['N个选项……选择困难晚期','你这是菜单不是选项','这么多选项你是认真的吗'],
+  'reroll': ['还不满意？我继续摇','行，这个也不满意？','你是来测试我耐心的吧','第N次了，希望这次你喜欢'],
+  'first': ['欢迎！我是你的决策替身','不想选的事情都交给我','今天帮你做的第1个决定'],
+  'allSame': ['全写一样的？你在逗我','这有区别吗朋友','你是在测试我还是测试你自己'],
+  'one': ['就一个选项还摇什么？','没得选，就是它了','唯一选项，天选之子'],
+  'three': ['三个选项，完美的数量','不多不少，刚好选得出来'],
+  'generic': [
+    '我知道，这个结果你其实不满意。但这就是命运。',
+    '你心里早就有答案了，只是让我来帮你背锅对吧？',
+    '不满意就点重选，我习惯了。',
+    '选了又不做，你跟渣男有什么区别？',
+    '屏幕前的你，别再纠结了。就是它了。',
+    '反正你也不会真的照做，随便选一个呗。',
+    '别想了，想太多会掉头发。',
+    '帮你选了，不用谢。真要谢的话点个赞。',
+  ],
+};
+
+function pickComment(resultText) {
+  var n = options.length;
+
+  // 优先选项专属评论（60% 概率，避免总是同一条）
+  var specific = getOptionComment(resultText);
+  if (specific && Math.random() < 0.6) return specific;
+
+  if (currentTemplate && currentTemplate.indexOf('午饭') !== -1 && n > 1) return pick(FOOD_COMMENTS);
+  if (currentTemplate && currentTemplate.indexOf('今晚') !== -1 && n > 1) return pick(NIGHT_COMMENTS);
+  if (currentTemplate && currentTemplate.indexOf('真心话') !== -1 && n > 1) return pick(TRUTH_COMMENTS);
+
+  if (n === 1) return pick(BEHAVIOR_COMMENTS.one);
+  if (n === 2) return pick(BEHAVIOR_COMMENTS.two);
+  if (n === 3) { if (Math.random() > 0.5) return pick(BEHAVIOR_COMMENTS.three); }
+  if (n > 10) return pick(BEHAVIOR_COMMENTS.many).replace('N', String(n));
+  if (rerollCount >= 3) return pick(BEHAVIOR_COMMENTS.reroll).replace('第N次', '第' + rerollCount + '次');
+
+  return pick(BEHAVIOR_COMMENTS.generic);
+}
+
+// ====== 分享系统 ======
+function copyToClipboard(text) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() { showToast('已复制'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('已复制');
+  }
+}
+
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  clearTimeout(toastTimer);
+  t.classList.remove('show');
+  t.textContent = msg;
+  // 强制回流后重新显示
+  void t.offsetWidth;
+  t.classList.add('show');
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 1500);
+}
+
+document.getElementById('linkCopyResult').addEventListener('click', function() {
+  var icon = document.getElementById('resultIcon').textContent;
+  var text = document.getElementById('resultText').textContent;
+  if (!text) { showToast('先摇一个结果'); return; }
+  copyToClipboard(icon + ' ' + text);
+});
+
+document.getElementById('linkCopyShare').addEventListener('click', function() {
+  if (options.length === 0) { showToast('先输入选项'); return; }
+  var params = new URLSearchParams();
+  params.set('opts', options.join('|'));
+  if (currentTemplate) params.set('title', currentTemplate);
+  var base = location.origin === 'null' || location.protocol === 'file:'
+    ? 'https://你的域名' + location.pathname
+    : location.origin + location.pathname;
+  var url = base + '?' + params.toString();
+  if (location.protocol === 'file:') {
+    copyToClipboard(url + '\n\n⚠️ 部署到线上后链接才能直接打开，当前是本地文件');
+  } else {
+    copyToClipboard(url);
+  }
+});
+
+// 页面加载时检测 URL params
+(function initFromURL() {
+  var params = new URLSearchParams(location.search);
+  var optsParam = params.get('opts');
+  var titleParam = params.get('title');
+  if (optsParam) {
+    var urlOpts = optsParam.split('|').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+    if (urlOpts.length > 0) {
+      document.getElementById('optionInput').value = urlOpts.join('\n');
+      parseOptions();
+    }
+  }
+  if (titleParam && templates[titleParam]) {
+    selectTemplate(titleParam);
+  }
+})();
+
+// ====== 边界情况 ======
+function updateButtonState() {
+  var btn = document.getElementById('btnRoll');
+  btn.disabled = options.length === 0;
+}
+var origParseOptions = parseOptions;
+parseOptions = function() {
+  origParseOptions();
+  updateButtonState();
+};
+updateButtonState();
+
+// ====== 模板编辑（长按） ======
+function isCustomTemplate(name) {
+  return !PRESET_TEMPLATES.hasOwnProperty(name);
+}
+
+function hasCustomOverride(name) {
+  try {
+    var raw = localStorage.getItem('custom_templates');
+    if (!raw) return false;
+    var custom = JSON.parse(raw);
+    return custom.hasOwnProperty(name);
+  } catch(e) { return false; }
+}
+
+function editTemplate(name) {
+  var newOpts = prompt('编辑模板「' + name + '」的选项（一行一个）：', (templates[name] || []).join('\n'));
+  if (newOpts !== null) {
+    var opts = newOpts.split('\n').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+    if (opts.length > 0) {
+      templates[name] = opts;
+      saveCustomTemplate(name, opts);
+      document.getElementById('optionInput').value = opts.join('\n');
+      selectTemplate(name);
+    }
+  }
+}
+
+function deleteTemplate(name) {
+  delete templates[name];
+  deleteCustomTemplate(name);
+  renderChips();
+  document.getElementById('optionInput').value = '';
+  currentTemplate = null;
+  options = [];
+  updateCardCount();
+  updateButtonState();
+  showToast('模板「' + name + '」已删除');
+}
+
+function handleChipLongPress(name) {
+  if (name === '__custom__') return;
+  var isPreset = PRESET_TEMPLATES.hasOwnProperty(name);
+  var overridden = isPreset && hasCustomOverride(name);
+
+  if (!isPreset) {
+    // 纯自定义模板：删除 / 编辑
+    if (confirm('「' + name + '」\n确定=删除  取消=编辑')) {
+      deleteTemplate(name);
+    } else {
+      editTemplate(name);
+    }
+  } else if (overridden) {
+    // 预设被覆盖：重置 / 编辑
+    if (confirm('「' + name + '」已被自定义修改\n确定=重置为默认  取消=编辑覆盖')) {
+      delete templates[name];
+      deleteCustomTemplate(name);
+      renderChips();
+      selectTemplate(name);
+      showToast('已重置为默认');
+    } else {
+      editTemplate(name);
+    }
+  } else {
+    // 纯预设：只能编辑
+    editTemplate(name);
+  }
+}
+
+var editTimeout;
+var pressingChip = null;
+document.getElementById('templateChips').addEventListener('touchstart', function(e) {
+  var chip = e.target.closest('.chip');
+  if (!chip) return;
+  pressingChip = chip;
+  chip.classList.add('pressing');
+  editTimeout = setTimeout(function() {
+    chip.classList.remove('pressing');
+    handleChipLongPress(chip.dataset.name);
+  }, 500);
+});
+document.getElementById('templateChips').addEventListener('touchend', function() {
+  clearTimeout(editTimeout);
+  if (pressingChip) { pressingChip.classList.remove('pressing'); pressingChip = null; }
+});
+document.getElementById('templateChips').addEventListener('touchmove', function() {
+  clearTimeout(editTimeout);
+  if (pressingChip) { pressingChip.classList.remove('pressing'); pressingChip = null; }
+});
+
+// 桌面端右键
+document.getElementById('templateChips').addEventListener('contextmenu', function(e) {
+  var chip = e.target.closest('.chip');
+  if (!chip) return;
+  e.preventDefault();
+  handleChipLongPress(chip.dataset.name);
+});
+
+</script>
+</body>
+</html>
