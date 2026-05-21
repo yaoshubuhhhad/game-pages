@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <title>选啥</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 <style>
@@ -139,7 +140,7 @@ textarea::placeholder { color: rgba(255,255,255,0.25); }
   <div class="subtitle">替你做决定的小工具 · 点一下出答案</div>
 
   <div class="template-section">
-    <div class="template-label">快捷场景 <span class="clear-tpl" id="clearTemplate" style="display:none;">✕ 清除</span></div>
+    <div class="template-label">快捷场景 <span class="clear-tpl" id="clearTemplate" style="display:none;">✕ 清除</span><span class="clear-tpl" id="cloudBtn" style="margin-left:4px;">☁️</span></div>
     <div class="template-chips" id="templateChips"></div>
   </div>
 
@@ -868,6 +869,86 @@ document.getElementById('templateChips').addEventListener('contextmenu', functio
   e.preventDefault();
   handleChipLongPress(chip.dataset.name);
 });
+
+// ====== 云端同步（Supabase） ======
+var SUPABASE_URL = 'https://kzcmavjvsowcmglcutds.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_qB7PKRmlPsJdb-PFzpxY7A_QVF9BNcG';
+var supabase = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+function getDeviceId() {
+  var id = localStorage.getItem('device_id');
+  if (!id) { id = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); localStorage.setItem('device_id', id); }
+  return id;
+}
+
+// 自动云端保存（每次模板改动后调用）
+var cloudSaveTimer;
+function cloudAutoSave() {
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(cloudSave, 2000);
+}
+
+function cloudSave() {
+  if (!supabase) return;
+  try {
+    var raw = localStorage.getItem('custom_templates');
+    var data = raw ? JSON.parse(raw) : {};
+    var deviceId = getDeviceId();
+    supabase.from('templates').upsert({
+      device_id: deviceId,
+      data: data,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'device_id' }).then(function() {
+      document.getElementById('cloudBtn').textContent = '☁️✅';
+      setTimeout(function(){ document.getElementById('cloudBtn').textContent = '☁️'; }, 2000);
+    }).catch(function(){});
+  } catch(e) {}
+}
+
+// 云端恢复
+function cloudLoad() {
+  if (!supabase) { showToast('云端暂不可用'); return; }
+  var deviceId = prompt('输入你的恢复码（换设备时使用）：\n（留空则使用当前设备自动恢复）');
+  var id = deviceId || getDeviceId();
+
+  supabase.from('templates').select('data').eq('device_id', id).single().then(function(res) {
+    if (res.data && res.data.data) {
+      localStorage.setItem('custom_templates', JSON.stringify(res.data.data));
+      showToast('云端模板已恢复！即将刷新');
+      setTimeout(function() { location.reload(); }, 1000);
+    } else {
+      showToast('云端没有找到模板数据');
+    }
+  }).catch(function() {
+    showToast('恢复失败，请检查网络');
+  });
+}
+
+// 暴露恢复码给用户
+function showDeviceCode() {
+  var id = getDeviceId();
+  copyText('恢复码：' + id);
+  showToast('恢复码已复制，发给另一台设备使用');
+}
+
+// 云端按钮：点击显示恢复码/恢复选项
+document.getElementById('cloudBtn').addEventListener('click', function() {
+  var choice = confirm('☁️ 云端同步\n\n你的恢复码：' + getDeviceId() + '\n\n确定=云端恢复  取消=复制恢复码');
+  if (choice) { cloudLoad(); } else { showDeviceCode(); }
+});
+
+// 每次保存模板时自动触发云端同步
+var origSaveCustom = saveCustomTemplate;
+saveCustomTemplate = function(name, opts) {
+  origSaveCustom(name, opts);
+  cloudAutoSave();
+};
+
+var origDeleteCustom = deleteCustomTemplate;
+deleteCustomTemplate = function(name) {
+  origDeleteCustom(name);
+  cloudAutoSave();
+};
 
 </script>
 </body>
