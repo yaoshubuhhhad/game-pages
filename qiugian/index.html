@@ -82,6 +82,11 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
 
 .toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:8px 20px;border-radius:20px;font-size:12px;z-index:99;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
+.match-box{margin-top:10px;border-radius:10px;padding:12px;border:1px solid rgba(220,180,60,.12)}
+.match-header{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:6px}
+.match-badge{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600}
+.match-detail{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:4px}
+.match-desc{font-size:11px;color:rgba(255,255,255,.25);line-height:1.6}
 </style>
 </head>
 <body>
@@ -166,6 +171,14 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
       <div class="lot-meaning">
         <div class="meaning-label">📖 解签</div>
         <div id="lotMeaning"></div>
+      </div>
+      <div class="match-box" id="matchBox" style="display:none;">
+        <div class="match-header">
+          <span>🔮 命理匹配</span>
+          <span class="match-badge" id="matchBadge"></span>
+        </div>
+        <div class="match-detail" id="matchDetail"></div>
+        <div class="match-desc" id="matchDesc"></div>
       </div>
       <div style="text-align:center;margin-top:10px;">
         <button class="retry-btn" onclick="goStage('stageShake')">🔄 再求一签</button>
@@ -924,6 +937,64 @@ var LOT_DATA = {
   ],
 };
 
+// ====== 五行计算工具 ======
+// 天干 → 五行映射
+var GAN_ELEMENTS = ['水','木','木','火','火','土','土','金','金','水']; // 0=癸,1=甲,2=乙...9=壬
+// 注意：GAN_ELEMENTS[0]=癸(水), [1]=甲(木), [2]=乙(木), [3]=丙(火), [4]=丁(火), [5]=戊(土), [6]=己(土), [7]=庚(金), [8]=辛(金), [9]=壬(水)
+
+// 五行生克关系: 0=木,1=火,2=土,3=金,4=水
+var SHENG = [1,2,3,4,0]; // SHENG[i] = i 生的元素
+var KE = [2,3,4,0,1];    // KE[i] = i 克的元素
+var ELEM_IDX = { '木':0,'火':1,'土':2,'金':3,'水':4 };
+
+// 从生日字符串提取出生年天干 → 五行
+function getBirthElement(birthStr) {
+  var m = birthStr.match(/(\d{4})/);
+  if (!m) return null;
+  var year = parseInt(m[1]);
+  var stemIdx = (year - 3) % 10; // 0=癸, 1=甲 ...
+  return GAN_ELEMENTS[stemIdx];
+}
+
+// 从所求之事提取五行（关键词匹配）
+function getMatterElement(matterStr) {
+  if (!matterStr || !matterStr.trim()) return null;
+  var s = matterStr;
+  if (/事业|工作|前程|官|职场|升职|求职/.test(s)) return '木';
+  if (/感情|姻缘|婚姻|恋爱|爱情|缘分|桃花/.test(s)) return '火';
+  if (/财运|生意|投资|赚钱|财富|钱|理财/.test(s)) return '金';
+  if (/健康|身体|疾病|养生|康复|治病/.test(s)) return '土';
+  if (/学业|考试|读书|学习|成绩|升学/.test(s)) return '水';
+  if (/出行|迁居|搬家|旅行|远行|迁移/.test(s)) return '水';
+  return null;
+}
+
+// 五行生克分析：userEl vs signEl
+// 返回 { relation: '相生'|'相克'|'同气', score: '大吉'|'吉'|'平'|'凶', desc: '...' }
+function analyzeMatch(userEl, signEl) {
+  if (!userEl || !signEl) return null;
+  var u = ELEM_IDX[userEl], s = ELEM_IDX[signEl];
+  if (u === s) return { relation:'同气', score:'吉', desc:'五行相同，气场和谐，签文可信。' };
+  if (SHENG[s] === u) return { relation:'相生', score:'大吉',
+    desc:'签(' + signEl + ')生你(' + userEl + ')，' + getElIcon(signEl) + '→' + getElIcon(userEl) + '，气运相济，此签对你极为有利，可深信。' };
+  if (SHENG[u] === s) return { relation:'相生', score:'平',
+    desc:'你(' + userEl + ')生签(' + signEl + ')，' + getElIcon(userEl) + '→' + getElIcon(signEl) + '，你需付出，签为消耗之象，仅供参考。' };
+  if (KE[s] === u) return { relation:'相克', score:'凶',
+    desc:'签(' + signEl + ')克你(' + userEl + ')，' + getElIcon(signEl) + '→' + getElIcon(userEl) + '，气场相冲，此签警示意义大于吉凶本身，宜谨慎。' };
+  if (KE[u] === s) return { relation:'相克', score:'平',
+    desc:'你(' + userEl + ')克签(' + signEl + ')，' + getElIcon(userEl) + '→' + getElIcon(signEl) + '，你能掌控局面，签为可控之象，可参考。' };
+  return null;
+}
+
+// 获取匹配分数的样式
+function getMatchStyle(score) {
+  if (!score) return 'color:rgba(255,255,255,.2);background:transparent;border-color:rgba(255,255,255,.06);';
+  if (score === '大吉') return 'color:#fdcb6e;background:rgba(253,203,110,.1);border-color:rgba(253,203,110,.2);';
+  if (score === '吉') return 'color:#d4a030;background:rgba(212,160,48,.1);border-color:rgba(212,160,48,.15);';
+  if (score === '平') return 'color:rgba(255,255,255,.3);background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06);';
+  return 'color:#e17055;background:rgba(225,112,85,.1);border-color:rgba(225,112,85,.15);';
+}
+
 // ====== 渲染签谱 ======
 function renderCategories() {
   var html = '';
@@ -1027,6 +1098,26 @@ function revealLot() {
     document.getElementById('lotPoem').textContent = currentLot.poem;
     document.getElementById('lotElement').innerHTML = getElIcon(currentLot.element) + ' ' + currentLot.element + ' · 宜' + currentLot.direction + '方';
     document.getElementById('lotMeaning').textContent = currentLot.meaning;
+    // 命理匹配分析
+    var birthEl = getBirthElement(document.getElementById('inputBirth').value);
+    var matterEl = getMatterElement(document.getElementById('inputMatter').value);
+    var signEl = currentLot.element;
+    var userEl = matterEl || birthEl;
+    var match = analyzeMatch(userEl, signEl);
+    var matchBox = document.getElementById('matchBox');
+    var matchBadge = document.getElementById('matchBadge');
+    var matchDetail = document.getElementById('matchDetail');
+    var matchDesc = document.getElementById('matchDesc');
+    if (match) {
+      matchBox.style.cssText = getMatchStyle(match.score);
+      matchBox.style.display = 'block';
+      matchBadge.textContent = match.score;
+      matchBadge.style.cssText = 'padding:2px 10px;border-radius:8px;font-size:10px;font-weight:600;' + getMatchStyle(match.score);
+      matchDetail.innerHTML = '你的五行：' + userEl + '&nbsp;&nbsp;·&nbsp;&nbsp;签的五行：' + signEl + '&nbsp;&nbsp;·&nbsp;&nbsp;' + match.relation;
+      matchDesc.textContent = match.desc;
+    } else {
+      matchBox.style.display = 'none';
+    }
   }, 400);
 }
 function getElIcon(el){var m={'金':'🪙','木':'🌿','水':'💧','火':'🔥','土':'⛰️'};return m[el]||'';}
