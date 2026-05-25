@@ -90,6 +90,7 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
 .match-interaction-section{color:rgba(255,255,255,.35)}
 .match-advice-section{color:#d4a030}
 .match-section-label{font-size:10px;color:rgba(255,255,255,.18);margin-right:4px}
+.multi-draw-hint{text-align:center;font-size:10px;color:rgba(255,255,255,.15);margin-top:8px;line-height:1.6;font-family:serif;letter-spacing:2px}
 </style>
 </head>
 <body>
@@ -184,6 +185,7 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
         <div class="match-interaction-section" id="matchInteraction"></div>
         <div class="match-advice-section" id="matchAdvice"></div>
       </div>
+      <div class="multi-draw-hint" id="multiDrawHint" style="display:none;"></div>
       <div style="text-align:center;margin-top:10px;">
         <button class="retry-btn" onclick="goStage('stageShake')">🔄 再求一签</button>
         <button class="retry-btn" onclick="goStage('stageCategory')">🎋 换签谱</button>
@@ -1148,6 +1150,7 @@ function copyPrayer() {
 
 // ====== 摇签交互 ======
 var pressTimer = null, isShaking = false;
+var drawHistory = []; // [{category, time, lotId}]
 var tubeEl = document.getElementById('tubeEl');
 
 function onPressStart(e) {
@@ -1205,6 +1208,19 @@ function revealLot() {
     } else {
       matchBox.style.display = 'none';
     }
+    // 连续求签提示
+    var now = Date.now();
+    var sameCategory = drawHistory.filter(function(d) {
+      return d.category === currentCategory.name && (now - d.time) < 300000;
+    });
+    var hint = document.getElementById('multiDrawHint');
+    if (sameCategory.length >= 1) {
+      hint.style.display = 'block';
+      hint.textContent = '一事不三占。签映当下，不测终局——签是「占」，不是「命」。';
+    } else {
+      hint.style.display = 'none';
+    }
+    drawHistory.push({ category: currentCategory.name, time: now, lotId: currentLot.id });
   }, 400);
 }
 function getElIcon(el){var m={'金':'🪙','木':'🌿','水':'💧','火':'🔥','土':'⛰️'};return m[el]||'';}
