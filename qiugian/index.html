@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>求签</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
+.back-link{position:absolute;top:20px;left:16px;color:rgba(255,255,255,.25);font-size:12px;text-decoration:none;z-index:2}
+.back-link:active{color:#e17055}
+.container{max-width:420px;margin:0 auto;padding:50px 20px 30px;display:flex;flex-direction:column;align-items:center;min-height:100vh;position:relative;z-index:1}
+.title{font-size:22px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:8px;font-family:serif;margin-bottom:4px}
+.subtitle{font-size:11px;color:rgba(255,255,255,.2);margin-bottom:12px;letter-spacing:4px}
+
+/* 竹筒区域 */
+.tube-wrapper{position:relative;margin:8px 0 0}
+.tube{width:90px;height:230px;position:relative}
+.tube-body{width:100%;height:100%;background:linear-gradient(180deg,#c49a4a 0%,#a07030 15%,#8B6914 30%,#7a5a10 50%,#8B6914 70%,#a07030 85%,#b8860b 100%);border-radius:8px 8px 6px 6px;box-shadow:0 8px 32px rgba(0,0,0,.45),inset 2px 0 8px rgba(255,255,255,.06),inset -2px 0 8px rgba(0,0,0,.08);overflow:hidden;position:relative}
+.tube-body::before{content:'';position:absolute;inset:0;opacity:.06;background:repeating-linear-gradient(90deg,transparent 4px,rgba(0,0,0,.3) 5px,transparent 6px)}
+.tube-ring{position:absolute;left:3px;right:3px;height:3px;border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);z-index:2}
+.tube-ring.top{top:10px;background:linear-gradient(180deg,#d4a030,#b8860b,#d4a030)}
+.tube-ring.bottom{bottom:10px;background:linear-gradient(180deg,#b8860b,#d4a030,#b8860b)}
+.tube-base{position:absolute;bottom:-12px;left:50%;margin-left:-42px;width:84px;height:14px;background:linear-gradient(180deg,#8B6914,#6b4c12,#8B6914);border-radius:0 0 12px 12px;box-shadow:0 3px 10px rgba(0,0,0,.5)}
+
+/* 签条容器 */
+.sticks-container{position:absolute;top:16px;left:18px;right:18px;bottom:16px;display:flex;gap:4px;flex-wrap:wrap;justify-content:center;align-content:flex-start;overflow:hidden}
+.stick{width:5px;border-radius:1px;background:linear-gradient(90deg,#faf3e6,#fff,#f5e6ca)}
+/* 弹出的签 */
+.stick-popped{position:absolute;top:-65px;left:50%;margin-left:-4px;width:8px;height:80px;background:linear-gradient(90deg,#f5e6ca,#fff,#f0e6d0);border-radius:3px 3px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.3);z-index:4;display:none}
+.stick-popped.show{display:block;animation:stick-out .35s ease-out}
+.stick-popped .num{position:absolute;top:16px;left:0;right:0;text-align:center;font-size:7px;color:#8B6914;writing-mode:vertical-rl;font-family:serif;line-height:1}
+
+/* 摇摆动画 */
+@keyframes tube-shake{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-6deg)}75%{transform:rotate(5deg)}}
+@keyframes stick-out{0%{transform:translateY(0);opacity:0}100%{transform:translateY(-65px);opacity:1}}
+
+/* 按钮 */
+.btn-zone{margin-top:12px;text-align:center}
+.shake-btn{display:inline-block;background:linear-gradient(135deg,rgba(180,130,50,.1),rgba(180,130,50,.03));border:1.5px solid rgba(200,160,60,.18);color:#d4a030;padding:12px 44px;border-radius:26px;font-size:14px;font-weight:600;letter-spacing:4px;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.shake-btn:active{background:rgba(200,160,60,.15);border-color:rgba(220,180,60,.35)}
+.hint{color:rgba(255,255,255,.13);font-size:10px;margin-top:6px}
+.shake-btn.shaking{background:rgba(200,160,60,.2);border-color:rgba(220,180,60,.4)}
+
+/* 结果 */
+.result-zone{margin-top:14px;width:100%;max-width:320px;display:none}
+.result-zone.show{display:block}
+.lot-card{background:linear-gradient(135deg,rgba(253,203,110,.06),rgba(200,160,60,.03));border:1px solid rgba(220,180,60,.12);border-radius:12px;padding:16px}
+.lot-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.lot-num{color:#d4a030;font-size:15px;font-weight:700;font-family:serif}
+.lot-level{background:rgba(220,180,60,.15);color:#d4a030;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600}
+.lot-poem{color:rgba(255,255,255,.55);font-size:14px;line-height:2.2;text-align:center;font-family:serif;letter-spacing:3px}
+.lot-element{margin-top:10px;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.3);font-size:11px}
+.lot-meaning{margin-top:10px;background:rgba(255,255,255,.02);border-radius:10px;padding:12px;color:rgba(255,255,255,.35);font-size:12px;line-height:1.8}
+.meaning-label{color:rgba(255,255,255,.18);font-size:10px;margin-bottom:4px}
+
+.retry-btn{margin-top:10px;display:inline-block;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.25);padding:8px 28px;border-radius:24px;font-size:12px;cursor:pointer}
+.retry-btn:active{background:rgba(255,255,255,.08)}
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="../index.html" class="back-link">← 工具站</a>
+  <div class="title">求 签</div>
+  <div class="subtitle">长按签筒摇动 · 松手即出签</div>
+
+  <div class="tube-wrapper" id="tubeWrapper">
+    <div class="tube" id="tube">
+      <div class="tube-body">
+        <div class="tube-ring top"></div>
+        <div class="tube-ring bottom"></div>
+        <div class="sticks-container" id="sticksContainer"></div>
+      </div>
+      <div class="tube-base"></div>
+      <div class="stick-popped" id="stickPopped"><div class="num" id="stickNum"></div></div>
+    </div>
+  </div>
+
+  <div class="btn-zone">
+    <div class="shake-btn" id="shakeBtn">🖐 长按摇签</div>
+    <div class="hint">按住摇动 · 松手出签</div>
+  </div>
+
+  <div class="result-zone" id="resultZone">
+    <div class="lot-card">
+      <div class="lot-header">
+        <span class="lot-num" id="lotNum"></span>
+        <span class="lot-level" id="lotLevel"></span>
+      </div>
+      <div class="lot-poem" id="lotPoem"></div>
+      <div class="lot-element" id="lotElement"></div>
+    </div>
+    <div class="lot-meaning">
+      <div class="meaning-label">📖 解签</div>
+      <div id="lotMeaning"></div>
+    </div>
+    <div style="text-align:center;">
+      <div class="retry-btn" id="retryBtn">🔄 再求一签</div>
+    </div>
+  </div>
+</div>
+<script>
+// ====== 签条渲染 ======
+function renderSticks() {
+  var container = document.getElementById('sticksContainer');
+  var html = '';
+  var heights = [145,142,148,140,146,143,147,141,149,144,146,142,148,143,145,141,147,144,146,142,148,140,145,143,147,141,149,144,146,142];
+  for (var i = 0; i < 30; i++) {
+    var h = heights[i] || 145;
+    var rot = (Math.random() - 0.5) * 6;
+    var shade = ['#faf3e6','#f5e6ca','#f0e6d0'][i % 3];
+    html += '<div class="stick" style="height:' + h + 'px;background:' + shade + ';transform:rotate(' + rot.toFixed(1) + 'deg);"></div>';
+  }
+  container.innerHTML = html;
+}
+renderSticks();
+
+// ====== 100签数据 ======
+var LOTS = [
+  {id:1,level:'上上',element:'火',direction:'南',poem:'云开见月明\n风正一帆轻\n莫愁前路远\n自有贵人迎',meaning:'所求之事虽有波折但终成。事业稳扎稳打，感情莫急。近期有惊喜，保持期待。'},
+  {id:2,level:'上',element:'木',direction:'东',poem:'春风吹又生\n枯木亦逢春\n待到花开日\n自有好前程',meaning:'当前虽有困境如枯木，但春天将至。坚持就是胜利，不要放弃。'},
+  {id:3,level:'上',element:'金',direction:'西',poem:'金石可镂坚\n磨砺出锋寒\n一朝青云上\n声名四海传',meaning:'适合埋头苦干，积累实力。金子总会发光，时机未到莫急。'},
+  {id:4,level:'中',element:'土',direction:'中',poem:'地势坤载物\n厚德可载福\n安分守己处\n自有天来助',meaning:'稳字当头，不宜冒进。按部就班行事，踏实者终得好报。'},
+  {id:5,level:'上上',element:'火',direction:'南',poem:'日照千山暖\n风和万物春\n今朝行好事\n自有福临门',meaning:'大吉大利。万事俱备，火借风势。抓住当下的好时机。'},
+  {id:6,level:'中',element:'水',direction:'北',poem:'水到渠自成\n莫问路几程\n但行脚下事\n功到自然成',meaning:'水到渠成，顺其自然。不必过度焦虑结果，做好眼前的事即可。'},
+  {id:7,level:'上',element:'金',direction:'西',poem:'金声玉振新\n一鸣天下闻\n但看风云会\n终须踏青云',meaning:'有贵人提携之象。适合展示才华，积极参加社交活动。'},
+  {id:8,level:'中',element:'木',direction:'东',poem:'木秀于林易\n风摧亦不奇\n守得初心在\n何惧风雨欺',meaning:'保持初心，不必羡慕他人速成。慢工出细活，后发可先至。'},
+  {id:9,level:'下',element:'火',direction:'南',poem:'火急燎原势\n须防反噬身\n劝君收烈火\n徐徐可图成',meaning:'急火攻心反伤身。放缓节奏，欲速则不达。谨慎行事。'},
+  {id:10,level:'中',element:'水',direction:'北',poem:'水静深流远\n不争自向前\n心安即是福\n何必问神仙',meaning:'心静自然顺。有些事急不来，交给时间。知足常乐。'},
+  {id:11,level:'上',element:'土',direction:'中',poem:'土厚根基固\n枝繁叶自舒\n辛勤终有报\n不必叹劳劬',meaning:'播种与收获不在同一季节。之前的辛劳快要结果了，保持耐心。'},
+  {id:12,level:'中',element:'金',direction:'西',poem:'金玉其外装\n内里须自强\n莫羡他人好\n修身是良方',meaning:'外表不如内在重要。专心提升自己，比较是偷走快乐的贼。'},
+  {id:13,level:'上上',element:'火',direction:'南',poem:'祥云天上聚\n瑞气满华堂\n所求皆如愿\n万事尽辉煌',meaning:'诸事顺遂。事业爱情健康均有喜象。分享好运给身边人。'},
+  {id:14,level:'中',element:'木',direction:'东',poem:'木已成舟去\n莫念旧时航\n前路风光好\n何必回头望',meaning:'放下过去，向前看。沉没成本无须纠结，新的机会正在路上。'},
+  {id:15,level:'下下',element:'水',direction:'北',poem:'水覆难收转\n风波几度翻\n劝君收羽翼\n暂避此难关',meaning:'前方有险。不建议近期做大决定，避风头为上策。'},
+  {id:16,level:'上',element:'土',direction:'中',poem:'土能生万物\n善心种福田\n积德终须报\n天公不误贤',meaning:'善有善报。最近做的善事会有回应，继续保持。'},
+  {id:17,level:'中',element:'金',direction:'西',poem:'金在沙中埋\n终须淘浪开\n咬牙撑一载\n自有出头来',meaning:'暂时埋没，但金子会发光。再坚持一阵，转机将至。'},
+  {id:18,level:'下',element:'火',direction:'南',poem:'火种将熄尽\n灰中觅火星\n熬得寒夜过\n方可见天明',meaning:'低谷期，但触底必反弹。等待是最难的事，却是唯一的解。'},
+  {id:19,level:'上',element:'水',direction:'北',poem:'水润万物生\n阴德暗中增\n他日回头看\n福报自分明',meaning:'默默付出终有回报。不必四处宣扬自己的好，老天会记得。'},
+  {id:20,level:'中',element:'木',direction:'东',poem:'木有连理枝\n姻缘自有时\n莫催花早放\n春风会来迟',meaning:'姻缘方面顺其自然。强扭的瓜不甜，对的人在对的时间出现。'}
+];
+
+// ====== 交互逻辑 ======
+var tubeEl = document.getElementById('tube');
+var resultZone = document.getElementById('resultZone');
+var stickPopped = document.getElementById('stickPopped');
+var stickNum = document.getElementById('stickNum');
+var pressTimer = null;
+var isShaking = false;
+
+function onPressStart(e) {
+  if (isShaking) return;
+  e.preventDefault();
+  pressTimer = setTimeout(function() {
+    isShaking = true;
+    tubeEl.style.animation = 'tube-shake .1s infinite';
+    document.getElementById('shakeBtn').classList.add('shaking');
+    document.getElementById('shakeBtn').textContent = '🤚 摇动中...';
+    stickPopped.classList.remove('show');
+    resultZone.classList.remove('show');
+  }, 400);
+}
+
+function onPressEnd(e) {
+  e.preventDefault();
+  if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+  if (!isShaking) return;
+  isShaking = false;
+  tubeEl.style.animation = '';
+  document.getElementById('shakeBtn').classList.remove('shaking');
+  document.getElementById('shakeBtn').textContent = '🖐 长按摇签';
+  revealLot();
+}
+
+function revealLot() {
+  var idx = Math.floor(Math.random() * LOTS.length);
+  var lot = LOTS[idx];
+  stickNum.textContent = lot.id;
+  stickPopped.classList.add('show');
+  setTimeout(function() {
+    resultZone.classList.add('show');
+    document.getElementById('lotNum').textContent = '第' + lot.id + '签';
+    document.getElementById('lotLevel').textContent = lot.level + '签';
+    document.getElementById('lotPoem').textContent = lot.poem;
+    document.getElementById('lotElement').innerHTML = getElementIcon(lot.element) + ' ' + lot.element + ' · 宜' + lot.direction + '方';
+    document.getElementById('lotMeaning').textContent = lot.meaning;
+  }, 350);
+}
+
+function getElementIcon(el) {
+  var map = {'金':'🪙','木':'🌿','水':'💧','火':'🔥','土':'⛰️'};
+  return map[el] || '';
+}
+
+function resetLot() {
+  stickPopped.classList.remove('show');
+  resultZone.classList.remove('show');
+}
+
+var btn = document.getElementById('shakeBtn');
+btn.addEventListener('touchstart', onPressStart, {passive: false});
+btn.addEventListener('touchend', onPressEnd, {passive: false});
+btn.addEventListener('touchcancel', onPressEnd, {passive: false});
+btn.addEventListener('mousedown', onPressStart);
+btn.addEventListener('mouseup', onPressEnd);
+btn.addEventListener('mouseleave', onPressEnd);
+document.getElementById('retryBtn').addEventListener('click', resetLot);
+btn.addEventListener('touchmove', function(e) { e.preventDefault(); }, {passive: false});
+</script>
+</body>
+</html>
