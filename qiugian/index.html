@@ -82,11 +82,14 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
 
 .toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:8px 20px;border-radius:20px;font-size:12px;z-index:99;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
-.match-box{margin-top:10px;border-radius:10px;padding:12px;border:1px solid rgba(220,180,60,.12)}
-.match-header{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:6px}
-.match-badge{padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600}
-.match-detail{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:4px}
-.match-desc{font-size:11px;color:rgba(255,255,255,.25);line-height:1.6}
+.match-box{margin-top:10px;border-radius:10px;padding:12px;border:1px solid rgba(220,180,60,.12);line-height:1.7}
+.match-header{display:flex;justify-content:space-between;align-items:center;font-size:11px;margin-bottom:8px;color:rgba(255,255,255,.3)}
+.match-badge{padding:2px 10px;border-radius:8px;font-size:10px;font-weight:600;border:1px solid}
+.match-sign-section,.match-interaction-section,.match-advice-section{font-size:11px;margin-bottom:8px;line-height:1.7}
+.match-sign-section{color:rgba(255,255,255,.45)}
+.match-interaction-section{color:rgba(255,255,255,.35)}
+.match-advice-section{color:#d4a030}
+.match-section-label{font-size:10px;color:rgba(255,255,255,.18);margin-right:4px}
 </style>
 </head>
 <body>
@@ -177,8 +180,9 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
           <span>🔮 五行参考</span>
           <span class="match-badge" id="matchBadge"></span>
         </div>
-        <div class="match-detail" id="matchDetail"></div>
-        <div class="match-desc" id="matchDesc"></div>
+        <div class="match-sign-section" id="matchSign"></div>
+        <div class="match-interaction-section" id="matchInteraction"></div>
+        <div class="match-advice-section" id="matchAdvice"></div>
       </div>
       <div style="text-align:center;margin-top:10px;">
         <button class="retry-btn" onclick="goStage('stageShake')">🔄 再求一签</button>
@@ -1009,30 +1013,62 @@ function getMatterElement(matterStr) {
   return null;
 }
 
-// 五行生克分析：userEl vs signEl
-// 返回 { relation: '相生'|'相克'|'同气', score: '大吉'|'吉'|'平'|'凶', desc: '...' }
+// ====== 五行行为模型 ======
+var ELEMENT_THEMES = {
+  '木': { keywords:'成长·开启·贵人·学习·远行', sign:'此签属木，主题为成长、开启新局、贵人相助、学习进取。气场向上，宜开拓而非冒进。', balanced:'方向明确，步伐稳健，成长有序。', excess:'方向过多、贪多难精、急于求成反增焦虑。' },
+  '火': { keywords:'行动·表达·突破·自信·竞争', sign:'此签属火，主题为行动突破、自我表达、争取机会。动能强劲，需聚焦而非发散。', balanced:'行动有力，进退果断，影响持续扩大。', excess:'冲动急躁、过度消耗、易失分寸伤及自身。' },
+  '土': { keywords:'稳定·积累·守成·责任·耐力', sign:'此签属土，主题为稳守积累、脚踏实地、承担责任。不宜冒进，厚积方可薄发。', balanced:'根基稳固，步步为营，虽慢必达。', excess:'保守迟缓、压抑停滞、过度谨慎错失良机。' },
+  '金': { keywords:'决断·收获·规则·事业·财富', sign:'此签属金，主题为判断抉择、收获成果、建立规则。宜理性行事，明确边界。', balanced:'判断精准，决策果断，所获实在有分量。', excess:'控制过强、冷漠苛刻、压力感重易伤关系。' },
+  '水': { keywords:'变化·缘分·情绪·转机·智慧', sign:'此签属水，主题为变通流转、感知机缘、顺势而为。柔能克刚，宜静观而非强求。', balanced:'智慧通达，随机应变，缘法自然而来。', excess:'犹豫逃避、情绪起伏、方向迷茫难以落地。' }
+};
+
+// 五行生克分析 → 三段式解读: { signTheme, interaction, advice, relation, vibe }
 function analyzeMatch(userEl, signEl) {
   if (!userEl || !signEl) return null;
   var u = ELEM_IDX[userEl], s = ELEM_IDX[signEl];
-  if (u === s) return { relation:'同气', score:'吉', desc:'五行相同，气场和谐，签文可信。' };
-  if (SHENG[s] === u) return { relation:'相生', score:'大吉',
-    desc:'签(' + signEl + ')生你(' + userEl + ')，' + getElIcon(signEl) + '→' + getElIcon(userEl) + '，气运相济，此签对你极为有利，可深信。' };
-  if (SHENG[u] === s) return { relation:'相生', score:'平',
-    desc:'你(' + userEl + ')生签(' + signEl + ')，' + getElIcon(userEl) + '→' + getElIcon(signEl) + '，你需付出，签为消耗之象，仅供参考。' };
-  if (KE[s] === u) return { relation:'相克', score:'凶',
-    desc:'签(' + signEl + ')克你(' + userEl + ')，' + getElIcon(signEl) + '→' + getElIcon(userEl) + '，气场相冲，此签警示意义大于吉凶本身，宜谨慎。' };
-  if (KE[u] === s) return { relation:'相克', score:'平',
-    desc:'你(' + userEl + ')克签(' + signEl + ')，' + getElIcon(userEl) + '→' + getElIcon(signEl) + '，你能掌控局面，签为可控之象，可参考。' };
+  var st = ELEMENT_THEMES[signEl], ut = ELEMENT_THEMES[userEl];
+  var k = st.keywords.split('·')[0], uk = ut.keywords.split('·')[0];
+  var xe = ut.excess.split('、')[0], se = st.excess.split('、')[0];
+
+  if (u === s) return {
+    relation:'同气共振', vibe:'harmonious',
+    signTheme: st.sign,
+    interaction: '你日主与签同属' + userEl + '，能量天然共振。' + st.balanced + '但需觉察：若近期已有' + xe + '的倾向，此签不是催促，而是提醒你平衡节奏。',
+    advice: '保持' + k + '的正面力量，同时留意不陷入' + xe + '的失衡态。顺势而为，不须强推——同频已是最大的助力。'
+  };
+  if (SHENG[s] === u) return {
+    relation:'外力滋养', vibe:'favorable',
+    signTheme: st.sign,
+    interaction: '你日主属' + userEl + '，' + signEl + '生' + userEl + '——当前外境正在滋养你的内在特质。签的' + st.keywords + '的能量，恰好与你' + ut.keywords + '所需相呼应。时机有利，但别因顺利而放松节奏。',
+    advice: '趁势而为，把握' + k + '的机会窗口。注意不要因太顺而' + xe + '——稳中求进，才是这局最好的打法。'
+  };
+  if (SHENG[u] === s) return {
+    relation:'你需付出', vibe:'effort',
+    signTheme: st.sign,
+    interaction: '你日主属' + userEl + '，' + userEl + '生' + signEl + '——你以自身能量去推动当前的' + k + '主题。你能成就此事，但需要持续的投入与耐心。留意：不要让' + xe + '耗尽你的储备。',
+    advice: '量力而行，分阶段推进。' + k + '是长期的功课，不必急于一次完成。适时回收能量、给自己喘息的空间，比强推更持久。'
+  };
+  if (KE[s] === u) return {
+    relation:'外境压制', vibe:'caution',
+    signTheme: st.sign,
+    interaction: '你日主属' + userEl + '，' + signEl + '克' + userEl + '——当前局势与你内在节奏形成张力。签的' + st.keywords + '的能量，与你' + ut.keywords + '的特质并不合拍。这不是凶兆，而是在提醒：当前方向可能与你的本性格格不入。',
+    advice: '不宜硬碰。与其强推' + k + '方向，不如先用你' + uk + '的优势迂回观察。等局势松动、时机更契合时，再做判断。'
+  };
+  if (KE[u] === s) return {
+    relation:'你为主导', vibe:'control',
+    signTheme: st.sign,
+    interaction: '你日主属' + userEl + '，' + userEl + '克' + signEl + '——你比当前的' + k + '局面更强。主动权在你手中，局势整体可控。但需留意：掌控不等于压制，过度' + xe + '反而会破坏已有的平衡。',
+    advice: '以' + uk + '的正面力量去引导，而非控制。你已占优势，给对方（或事态）留一些空间，水到自然渠成。'
+  };
   return null;
 }
 
-// 获取匹配分数的样式
-function getMatchStyle(score) {
-  if (!score) return 'color:rgba(255,255,255,.2);background:transparent;border-color:rgba(255,255,255,.06);';
-  if (score === '大吉') return 'color:#fdcb6e;background:rgba(253,203,110,.1);border-color:rgba(253,203,110,.2);';
-  if (score === '吉') return 'color:#d4a030;background:rgba(212,160,48,.1);border-color:rgba(212,160,48,.15);';
-  if (score === '平') return 'color:rgba(255,255,255,.3);background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.06);';
-  return 'color:#e17055;background:rgba(225,112,85,.1);border-color:rgba(225,112,85,.15);';
+function getVibeStyle(vibe) {
+  if (vibe === 'favorable') return 'color:#fdcb6e;background:rgba(253,203,110,.08);border-color:rgba(253,203,110,.15);';
+  if (vibe === 'harmonious') return 'color:#d4a030;background:rgba(212,160,48,.08);border-color:rgba(212,160,48,.12);';
+  if (vibe === 'control') return 'color:#74b9ff;background:rgba(116,185,255,.08);border-color:rgba(116,185,255,.12);';
+  if (vibe === 'effort') return 'color:rgba(255,255,255,.25);background:rgba(255,255,255,.03);border-color:rgba(255,255,255,.06);';
+  return 'color:#e17055;background:rgba(225,112,85,.08);border-color:rgba(225,112,85,.12);';
 }
 
 // ====== 渲染签谱 ======
@@ -1145,20 +1181,16 @@ function revealLot() {
     var userEl = matterEl || birthEl;
     var match = analyzeMatch(userEl, signEl);
     var matchBox = document.getElementById('matchBox');
-    var matchBadge = document.getElementById('matchBadge');
-    var matchDetail = document.getElementById('matchDetail');
-    var matchDesc = document.getElementById('matchDesc');
     if (match) {
-      matchBox.style.cssText = getMatchStyle(match.score);
+      matchBox.style.cssText = getVibeStyle(match.vibe);
       matchBox.style.display = 'block';
-      matchBadge.textContent = match.score;
-      matchBadge.style.cssText = 'padding:2px 10px;border-radius:8px;font-size:10px;font-weight:600;' + getMatchStyle(match.score);
-      if (matterEl) {
-        matchDetail.innerHTML = '所求之事：' + matterEl + '&nbsp;&nbsp;·&nbsp;&nbsp;签的五行：' + signEl + '&nbsp;&nbsp;·&nbsp;&nbsp;' + match.relation;
-      } else {
-        matchDetail.innerHTML = '你的日主：' + birthEl + '&nbsp;&nbsp;·&nbsp;&nbsp;签的五行：' + signEl + '&nbsp;&nbsp;·&nbsp;&nbsp;' + match.relation;
-      }
-      matchDesc.textContent = match.desc;
+      var badge = document.getElementById('matchBadge');
+      badge.textContent = match.relation;
+      badge.style.cssText = 'padding:2px 10px;border-radius:8px;font-size:10px;font-weight:600;border:1px solid;' + getVibeStyle(match.vibe);
+      var ctx = matterEl ? '所求之事：' + matterEl : '你的日主：' + birthEl;
+      document.getElementById('matchSign').innerHTML = '<span class="match-section-label">📜 签意</span>' + match.signTheme;
+      document.getElementById('matchInteraction').innerHTML = '<span class="match-section-label">🔗 互动</span>' + ctx + ' · 签属' + signEl + ' · ' + match.relation + '。' + match.interaction;
+      document.getElementById('matchAdvice').innerHTML = '<span class="match-section-label">💡 建议</span>' + match.advice;
     } else {
       matchBox.style.display = 'none';
     }
