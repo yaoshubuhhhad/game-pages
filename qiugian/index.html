@@ -49,7 +49,7 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
 .lot-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .lot-num{color:#d4a030;font-size:15px;font-weight:700;font-family:serif}
 .lot-level{background:rgba(220,180,60,.15);color:#d4a030;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:600}
-.lot-poem{color:rgba(255,255,255,.55);font-size:14px;line-height:2.2;text-align:center;font-family:serif;letter-spacing:3px}
+.lot-poem{color:rgba(255,255,255,.55);font-size:14px;line-height:2.2;text-align:center;font-family:serif;letter-spacing:3px;white-space:pre-line}
 .lot-element{margin-top:10px;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.3);font-size:11px}
 .lot-meaning{margin-top:10px;background:rgba(255,255,255,.02);border-radius:10px;padding:12px;color:rgba(255,255,255,.35);font-size:12px;line-height:1.8}
 .meaning-label{color:rgba(255,255,255,.18);font-size:10px;margin-bottom:4px}
@@ -148,7 +148,7 @@ var pressTimer = null;
 var isShaking = false;
 
 function onPressStart(e) {
-  if (isShaking) return;
+  if (isShaking || pressTimer) return;
   e.preventDefault();
   pressTimer = setTimeout(function() {
     isShaking = true;
@@ -180,6 +180,7 @@ function revealLot() {
     resultZone.classList.add('show');
     document.getElementById('lotNum').textContent = '第' + lot.id + '签';
     document.getElementById('lotLevel').textContent = lot.level + '签';
+    document.getElementById('lotLevel').style.color = lot.level === '上上' ? '#fdcb6e' : lot.level.indexOf('下') === 0 ? '#e17055' : '#d4a030';
     document.getElementById('lotPoem').textContent = lot.poem;
     document.getElementById('lotElement').innerHTML = getElementIcon(lot.element) + ' ' + lot.element + ' · 宜' + lot.direction + '方';
     document.getElementById('lotMeaning').textContent = lot.meaning;
