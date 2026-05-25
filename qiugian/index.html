@@ -1023,42 +1023,53 @@ var ELEMENT_THEMES = {
 };
 
 // 五行生克分析 → 三段式解读: { signTheme, interaction, advice, relation, vibe }
-function analyzeMatch(userEl, signEl) {
+// isMatter: true=userEl来自所求之事, false=userEl来自日主
+// lotLevel: 签的等级(上上/上吉/...)，用于下下签加限定词
+function analyzeMatch(userEl, signEl, isMatter, lotLevel) {
   if (!userEl || !signEl) return null;
   var u = ELEM_IDX[userEl], s = ELEM_IDX[signEl];
   var st = ELEMENT_THEMES[signEl], ut = ELEMENT_THEMES[userEl];
   var k = st.keywords.split('·')[0], uk = ut.keywords.split('·')[0];
-  var xe = ut.excess.split('、')[0], se = st.excess.split('、')[0];
+  var xe = ut.excess.split('、')[0];
+  var selfLabel = isMatter ? '所求之事属' : '你日主属';
+  var selfRef = isMatter ? '此事' : '你';
+
+  // 签意文本 — 下下/下平签加入限定词
+  var signText = st.sign;
+  var isLow = lotLevel && (lotLevel.indexOf('下下')===0 || lotLevel.indexOf('下平')===0);
+  if (isLow) {
+    signText += ' 但因签文等级偏低，此元素主题需在约束中理解——请以签文具体内容为准，不可因主题正向而轻视签中警示。';
+  }
 
   if (u === s) return {
     relation:'同气共振', vibe:'harmonious',
-    signTheme: st.sign,
-    interaction: '你日主与签同属' + userEl + '，能量天然共振。' + st.balanced + '但需觉察：若近期已有' + xe + '的倾向，此签不是催促，而是提醒你平衡节奏。',
+    signTheme: signText,
+    interaction: selfLabel + userEl + '，与签同属' + userEl + '，能量天然共振。' + st.balanced + '但需觉察：若近期已有' + xe + '的倾向，此签不是催促，而是提醒你平衡节奏。',
     advice: '保持' + k + '的正面力量，同时留意不陷入' + xe + '的失衡态。顺势而为，不须强推——同频已是最大的助力。'
   };
   if (SHENG[s] === u) return {
     relation:'外力滋养', vibe:'favorable',
-    signTheme: st.sign,
-    interaction: '你日主属' + userEl + '，' + signEl + '生' + userEl + '——当前外境正在滋养你的内在特质。签的' + st.keywords + '的能量，恰好与你' + ut.keywords + '所需相呼应。时机有利，但别因顺利而放松节奏。',
+    signTheme: signText,
+    interaction: selfLabel + userEl + '，' + signEl + '生' + userEl + '——当前外境正在滋养' + selfRef + '的内在特质。签的' + st.keywords + '的能量，恰好与' + selfRef + ut.keywords + '所需相呼应。时机有利，但别因顺利而放松节奏。',
     advice: '趁势而为，把握' + k + '的机会窗口。注意不要因太顺而' + xe + '——稳中求进，才是这局最好的打法。'
   };
   if (SHENG[u] === s) return {
     relation:'你需付出', vibe:'effort',
-    signTheme: st.sign,
-    interaction: '你日主属' + userEl + '，' + userEl + '生' + signEl + '——你以自身能量去推动当前的' + k + '主题。你能成就此事，但需要持续的投入与耐心。留意：不要让' + xe + '耗尽你的储备。',
+    signTheme: signText,
+    interaction: selfLabel + userEl + '，' + userEl + '生' + signEl + '——' + selfRef + '以自身能量去推动当前的' + k + '主题。能成此事，但需要持续的投入与耐心。留意：不要让' + xe + '耗尽储备。',
     advice: '量力而行，分阶段推进。' + k + '是长期的功课，不必急于一次完成。适时回收能量、给自己喘息的空间，比强推更持久。'
   };
   if (KE[s] === u) return {
     relation:'外境压制', vibe:'caution',
-    signTheme: st.sign,
-    interaction: '你日主属' + userEl + '，' + signEl + '克' + userEl + '——当前局势与你内在节奏形成张力。签的' + st.keywords + '的能量，与你' + ut.keywords + '的特质并不合拍。这不是凶兆，而是在提醒：当前方向可能与你的本性格格不入。',
+    signTheme: signText,
+    interaction: selfLabel + userEl + '，' + signEl + '克' + userEl + '——当前局势与' + selfRef + '内在节奏形成张力。签的' + st.keywords + '的能量，与' + selfRef + ut.keywords + '的特质并不合拍。这不是凶兆，而是提醒：当前方向可能与' + selfRef + '本性格格不入。',
     advice: '不宜硬碰。与其强推' + k + '方向，不如先用你' + uk + '的优势迂回观察。等局势松动、时机更契合时，再做判断。'
   };
   if (KE[u] === s) return {
     relation:'你为主导', vibe:'control',
-    signTheme: st.sign,
-    interaction: '你日主属' + userEl + '，' + userEl + '克' + signEl + '——你比当前的' + k + '局面更强。主动权在你手中，局势整体可控。但需留意：掌控不等于压制，过度' + xe + '反而会破坏已有的平衡。',
-    advice: '以' + uk + '的正面力量去引导，而非控制。你已占优势，给对方（或事态）留一些空间，水到自然渠成。'
+    signTheme: signText,
+    interaction: selfLabel + userEl + '，' + userEl + '克' + signEl + '——' + selfRef + '比当前的' + k + '局面更强。主动权在' + selfRef + '手中，局势整体可控。但需留意：掌控不等于压制，过度' + xe + '反而会破坏已有的平衡。',
+    advice: '以' + uk + '的正面力量去引导，而非控制。' + selfRef + '已占优势，给对方（或事态）留一些空间，水到自然渠成。'
   };
   return null;
 }
@@ -1179,7 +1190,7 @@ function revealLot() {
     var matterEl = getMatterElement(document.getElementById('inputMatter').value);
     var signEl = currentLot.element;
     var userEl = matterEl || birthEl;
-    var match = analyzeMatch(userEl, signEl);
+    var match = analyzeMatch(userEl, signEl, !!matterEl, currentLot.level);
     var matchBox = document.getElementById('matchBox');
     if (match) {
       matchBox.style.cssText = getVibeStyle(match.vibe);
