@@ -42,6 +42,7 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
 .meditation-area{text-align:center;padding:20px 0}
 .meditation-icon{font-size:64px;margin-bottom:12px}
 .meditation-title{font-size:16px;color:rgba(255,255,255,.65);font-weight:600;margin-bottom:8px}
+.meditation-hint{text-align:center;font-size:10px;color:rgba(255,255,255,.15);margin-top:2px;letter-spacing:4px;font-family:serif}
 .prayer-text{background:rgba(255,255,255,.04);border-radius:12px;padding:16px;color:rgba(255,255,255,.35);font-size:12px;line-height:1.8;text-align:left;margin:16px 0;font-family:serif;letter-spacing:1px}
 .copy-prayer{font-size:10px;color:rgba(255,255,255,.18);cursor:pointer;margin-top:4px;display:inline-block}
 
@@ -132,6 +133,7 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
       <div class="meditation-icon">🙏</div>
       <div class="meditation-title">静心默念</div>
       <div class="subtitle">心诚则灵 · 一事一问</div>
+      <div class="meditation-hint">签不测命，只映此刻</div>
       <div class="prayer-text" id="prayerText"></div>
       <span class="copy-prayer" onclick="copyPrayer()">📋 复制祷告文</span>
     </div>
@@ -1017,11 +1019,11 @@ function getMatterElement(matterStr) {
 
 // ====== 五行行为模型 ======
 var ELEMENT_THEMES = {
-  '木': { keywords:'成长·开启·贵人·学习·远行', sign:'此签属木，主题为成长、开启新局、贵人相助、学习进取。气场向上，宜开拓而非冒进。', balanced:'方向明确，步伐稳健，成长有序。', excess:'方向过多、贪多难精、急于求成反增焦虑。' },
-  '火': { keywords:'行动·表达·突破·自信·竞争', sign:'此签属火，主题为行动突破、自我表达、争取机会。动能强劲，需聚焦而非发散。', balanced:'行动有力，进退果断，影响持续扩大。', excess:'冲动急躁、过度消耗、易失分寸伤及自身。' },
-  '土': { keywords:'稳定·积累·守成·责任·耐力', sign:'此签属土，主题为稳守积累、脚踏实地、承担责任。不宜冒进，厚积方可薄发。', balanced:'根基稳固，步步为营，虽慢必达。', excess:'保守迟缓、压抑停滞、过度谨慎错失良机。' },
-  '金': { keywords:'决断·收获·规则·事业·财富', sign:'此签属金，主题为判断抉择、收获成果、建立规则。宜理性行事，明确边界。', balanced:'判断精准，决策果断，所获实在有分量。', excess:'控制过强、冷漠苛刻、压力感重易伤关系。' },
-  '水': { keywords:'变化·缘分·情绪·转机·智慧', sign:'此签属水，主题为变通流转、感知机缘、顺势而为。柔能克刚，宜静观而非强求。', balanced:'智慧通达，随机应变，缘法自然而来。', excess:'犹豫逃避、情绪起伏、方向迷茫难以落地。' }
+  '木': { keywords:'成长·开启·贵人·学习·远行', sign:'此刻映照：木气上升。你的能量倾向于成长、开启新局、向外联结。若感受确是如此，宜顺势开拓。', balanced:'步伐稳健，成长有序，方向明朗。', excess:'方向过多、贪多难精、急于求成反增焦虑。' },
+  '火': { keywords:'行动·表达·突破·自信·竞争', sign:'此刻映照：火气旺盛。你的能量倾向于行动、表达、争取与突破。动能充足时，需聚焦而非发散。', balanced:'行动有力，进退果断，影响自然扩大。', excess:'冲动急躁、过度消耗、易失分寸伤及自身。' },
+  '土': { keywords:'稳定·积累·守成·责任·耐力', sign:'此刻映照：土气沉实。你的能量倾向于稳定、积累、承担责任。厚积方能薄发，不必急于求成。', balanced:'根基稳固，步步为营，虽慢必达。', excess:'保守迟缓、压抑停滞、过度谨慎错失良机。' },
+  '金': { keywords:'决断·收获·规则·事业·财富', sign:'此刻映照：金气凝聚。你的能量倾向于判断、抉择、建立规则与收获成果。理性清晰时，边界自明。', balanced:'判断精准，决策果断，所获实在有分量。', excess:'控制过强、冷漠苛刻、压力感重易伤关系。' },
+  '水': { keywords:'变化·缘分·情绪·转机·智慧', sign:'此刻映照：水气流转。你的能量倾向于感知、变通、顺势而为。柔能克刚——静观往往比强求更有力。', balanced:'智慧通达，随机应变，缘法自然而来。', excess:'犹豫逃避、情绪起伏、方向迷茫难以落地。' }
 };
 
 // 五行生克分析 → 三段式解读: { signTheme, interaction, advice, relation, vibe }
@@ -1033,45 +1035,45 @@ function analyzeMatch(userEl, signEl, isMatter, lotLevel) {
   var st = ELEMENT_THEMES[signEl], ut = ELEMENT_THEMES[userEl];
   var k = st.keywords.split('·')[0], uk = ut.keywords.split('·')[0];
   var xe = ut.excess.split('、')[0];
-  var selfLabel = isMatter ? '所求之事属' : '你日主属';
-  var selfRef = isMatter ? '此事' : '你';
+  var selfLabel = isMatter ? '你问的这件事，五行属' : '此刻的你，日主';
+  var selfRef = isMatter ? '这件事' : '你';
 
   // 签意文本 — 下下/下平签加入限定词
   var signText = st.sign;
   var isLow = lotLevel && (lotLevel.indexOf('下下')===0 || lotLevel.indexOf('下平')===0);
   if (isLow) {
-    signText += ' 但因签文等级偏低，此元素主题需在约束中理解——请以签文具体内容为准，不可因主题正向而轻视签中警示。';
+    signText += ' 签文等级偏低，映照出此刻或有阻滞——请以签文具体内容为重，元素主题仅供参考。';
   }
 
   if (u === s) return {
     relation:'同气共振', vibe:'harmonious',
     signTheme: signText,
-    interaction: selfLabel + userEl + '，与签同属' + userEl + '，能量天然共振。' + st.balanced + '但需觉察：若近期已有' + xe + '的倾向，此签不是催促，而是提醒你平衡节奏。',
-    advice: '保持' + k + '的正面力量，同时留意不陷入' + xe + '的失衡态。顺势而为，不须强推——同频已是最大的助力。'
+    interaction: selfLabel + userEl + '，与签同属' + userEl + '——此刻你与外界同频共振。' + st.balanced + '若近期已有' + xe + '的感受，这支签不是催促，而是提醒：平衡比加速重要。',
+    advice: '保持' + k + '的正面力量，同时觉察' + xe + '的倾向。同频是最大的助力——此时顺势即可，不须强推。'
   };
   if (SHENG[s] === u) return {
     relation:'外力滋养', vibe:'favorable',
     signTheme: signText,
-    interaction: selfLabel + userEl + '，' + signEl + '生' + userEl + '——当前外境正在滋养' + selfRef + '的内在特质。签的' + st.keywords + '的能量，恰好与' + selfRef + ut.keywords + '所需相呼应。时机有利，但别因顺利而放松节奏。',
-    advice: '趁势而为，把握' + k + '的机会窗口。注意不要因太顺而' + xe + '——稳中求进，才是这局最好的打法。'
+    interaction: selfLabel + userEl + '，' + signEl + '生' + userEl + '——此刻你感受到的，是外界在推动' + selfRef + '的内在。签的' + st.keywords + '的能量，恰好呼应了' + selfRef + ut.keywords + '的方向。这是一个有风可借的时刻。',
+    advice: '若感受确是如此，可顺势向前，把握' + k + '的窗口。同时留心：太顺时容易' + xe + '——稳中求进，比疾冲更远。'
   };
   if (SHENG[u] === s) return {
     relation:'你需付出', vibe:'effort',
     signTheme: signText,
-    interaction: selfLabel + userEl + '，' + userEl + '生' + signEl + '——' + selfRef + '以自身能量去推动当前的' + k + '主题。能成此事，但需要持续的投入与耐心。留意：不要让' + xe + '耗尽储备。',
-    advice: '量力而行，分阶段推进。' + k + '是长期的功课，不必急于一次完成。适时回收能量、给自己喘息的空间，比强推更持久。'
+    interaction: selfLabel + userEl + '，' + userEl + '生' + signEl + '——此刻' + selfRef + '正以自身能量推动' + k + '的方向。你能成此事，但它是长期的功课。留意：不要因持续投入而' + xe + '。',
+    advice: '量力而行，分阶段推进。适时回收能量、给自己喘息的空间——持久的节奏，比一次耗尽更有力量。'
   };
   if (KE[s] === u) return {
     relation:'外境压制', vibe:'caution',
     signTheme: signText,
-    interaction: selfLabel + userEl + '，' + signEl + '克' + userEl + '——当前局势与' + selfRef + '内在节奏形成张力。签的' + st.keywords + '的能量，与' + selfRef + ut.keywords + '的特质并不合拍。这不是凶兆，而是提醒：当前方向可能与' + selfRef + '本性格格不入。',
-    advice: '不宜硬碰。与其强推' + k + '方向，不如先用你' + uk + '的优势迂回观察。等局势松动、时机更契合时，再做判断。'
+    interaction: selfLabel + userEl + '，' + signEl + '克' + userEl + '——此刻外界与' + selfRef + '内在之间有一种张力。签的' + st.keywords + '的能量，与' + selfRef + ut.keywords + '的节奏并不合拍。这不是坏事，而是在映照：当前方向或许与你的本性格格不入。',
+    advice: '若感受确是如此，不必硬碰。与其强推' + k + '方向，不如先以' + uk + '的方式迂回观察。等张力自然松动，再做判断。'
   };
   if (KE[u] === s) return {
     relation:'你为主导', vibe:'control',
     signTheme: signText,
-    interaction: selfLabel + userEl + '，' + userEl + '克' + signEl + '——' + selfRef + '比当前的' + k + '局面更强。主动权在' + selfRef + '手中，局势整体可控。但需留意：掌控不等于压制，过度' + xe + '反而会破坏已有的平衡。',
-    advice: '以' + uk + '的正面力量去引导，而非控制。' + selfRef + '已占优势，给对方（或事态）留一些空间，水到自然渠成。'
+    interaction: selfLabel + userEl + '，' + userEl + '克' + signEl + '——此刻的你，比眼前的' + k + '局面更有主动权。局势在你手中，但掌控不等于压制。过度' + xe + '反而会破坏已有的平衡。',
+    advice: '以' + uk + '的力量去引导，而非控制。你已占优势——给对方也给自己留一些空间，水到自然渠成。'
   };
   return null;
 }
@@ -1208,19 +1210,35 @@ function revealLot() {
     } else {
       matchBox.style.display = 'none';
     }
-    // 连续求签提示
+    // 连续求签叙事
     var now = Date.now();
+    drawHistory.push({ category: currentCategory.name, time: now, lotId: currentLot.id, level: currentLot.level });
     var sameCategory = drawHistory.filter(function(d) {
       return d.category === currentCategory.name && (now - d.time) < 300000;
     });
     var hint = document.getElementById('multiDrawHint');
-    if (sameCategory.length >= 1) {
+    if (sameCategory.length >= 2) {
+      var seq = sameCategory.map(function(d) { return d.level; }).join(' → ');
+      var first = sameCategory[0].level, last = sameCategory[sameCategory.length-1].level;
+      var hasUp = sameCategory.some(function(d) { return d.level.indexOf('上')===0; });
+      var hasDown = sameCategory.some(function(d) { return d.level.indexOf('下下')===0 || d.level.indexOf('下平')===0; });
+      var story;
+      if (first === last && sameCategory.length === 2) {
+        story = '两签一致——此刻这件事的能量确实是' + last + '的格局。';
+      } else if (hasUp && hasDown) {
+        story = '波动本身恰是证明：签映当下，不定终局。不同时刻的你，状态本来就不一样。';
+      } else if (hasUp && last.indexOf('上')===0) {
+        story = '趋势向上——在对的时刻，你能触达很好的状态。';
+      } else if (sameCategory.length >= 3 && sameCategory[0].level === sameCategory[1].level && sameCategory[1].level !== last) {
+        story = '常态是' + first + '，但在某个时刻出现了' + last + '——这不是不准，这恰是签的本质：映照此刻，不测终局。';
+      } else {
+        story = '签在变，因为你在变。不同时刻问同一件事，本就是不同的你。';
+      }
       hint.style.display = 'block';
-      hint.textContent = '一事不三占。签映当下，不测终局——签是「占」，不是「命」。';
+      hint.innerHTML = '你对此事求了' + sameCategory.length + '签：<b>' + seq + '</b>。' + story + ' ——签是「占」，不是「命」。';
     } else {
       hint.style.display = 'none';
     }
-    drawHistory.push({ category: currentCategory.name, time: now, lotId: currentLot.id });
   }, 400);
 }
 function getElIcon(el){var m={'金':'🪙','木':'🌿','水':'💧','火':'🔥','土':'⛰️'};return m[el]||'';}
