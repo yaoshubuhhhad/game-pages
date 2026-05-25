@@ -91,6 +91,7 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
 .match-interaction-section{color:rgba(255,255,255,.35)}
 .match-advice-section{color:#d4a030}
 .match-section-label{font-size:10px;color:rgba(255,255,255,.18);margin-right:4px}
+.match-source{font-size:9px;color:rgba(255,255,255,.12);margin-top:6px;line-height:1.5}
 .multi-draw-hint{text-align:center;font-size:11px;color:rgba(255,255,255,.3);margin-top:10px;line-height:1.7;font-family:serif;letter-spacing:2px}
 </style>
 </head>
@@ -186,6 +187,7 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
         <div class="match-sign-section" id="matchSign"></div>
         <div class="match-interaction-section" id="matchInteraction"></div>
         <div class="match-advice-section" id="matchAdvice"></div>
+        <div class="match-source" id="matchSource"></div>
       </div>
       <div class="multi-draw-hint" id="multiDrawHint" style="display:none;"></div>
       <div style="text-align:center;margin-top:10px;">
@@ -1008,12 +1010,14 @@ function getBirthElement(birthStr) {
 function getMatterElement(matterStr) {
   if (!matterStr || !matterStr.trim()) return null;
   var s = matterStr;
-  if (/事业|工作|前程|官|职场|升职|求职/.test(s)) return '木';
-  if (/感情|姻缘|婚姻|恋爱|爱情|缘分|桃花/.test(s)) return '火';
-  if (/财运|生意|投资|赚钱|财富|钱|理财/.test(s)) return '金';
-  if (/健康|身体|疾病|养生|康复|治病/.test(s)) return '土';
-  if (/学业|考试|读书|学习|成绩|升学/.test(s)) return '水';
-  if (/出行|迁居|搬家|旅行|远行|迁移/.test(s)) return '水';
+  if (/官司|诉讼|纠纷|仲裁|维权|合同|法务/.test(s)) return '金';
+  if (/事业|工作|前程|职场|升职|求职|跳槽|创业|面试|转行|晋升|项目/.test(s)) return '木';
+  if (/感情|姻缘|婚姻|恋爱|爱情|缘分|桃花|分手|复合|相亲|对象|冷战|暧昧/.test(s)) return '火';
+  if (/财运|生意|投资|赚钱|财富|钱|理财|收入|亏|负债|贷款|买房|开销/.test(s)) return '金';
+  if (/健康|身体|疾病|养生|康复|治病|手术|失眠|体检|不适|调养/.test(s)) return '土';
+  if (/学业|考试|读书|学习|成绩|升学|考研|考公|留学|论文|备考|毕业/.test(s)) return '水';
+  if (/出行|迁居|搬家|旅行|远行|迁移|出国|回国|出差|签证/.test(s)) return '水';
+  if (/家庭|家人|父母|孩子|子女|亲子|婆媳|亲戚/.test(s)) return '土';
   return null;
 }
 
@@ -1152,8 +1156,13 @@ function copyPrayer() {
 
 // ====== 摇签交互 ======
 var pressTimer = null, isShaking = false;
-var drawHistory = []; // [{category, time, lotId}]
+var drawHistory = []; // [{category, time, lotId, level}]
 var tubeEl = document.getElementById('tubeEl');
+
+function cleanDrawHistory() {
+  var cutoff = Date.now() - 300000;
+  drawHistory = drawHistory.filter(function(d) { return d.time > cutoff; });
+}
 
 function onPressStart(e) {
   if (isShaking || pressTimer) return;
@@ -1193,6 +1202,7 @@ function revealLot() {
     // 命理匹配分析
     var birthEl = getBirthElement(document.getElementById('inputBirth').value);
     var matterEl = getMatterElement(document.getElementById('inputMatter').value);
+    var userName = (document.getElementById('inputName').value || '').trim();
     var signEl = currentLot.element;
     var userEl = matterEl || birthEl;
     var match = analyzeMatch(userEl, signEl, !!matterEl, currentLot.level);
@@ -1203,15 +1213,20 @@ function revealLot() {
       var badge = document.getElementById('matchBadge');
       badge.textContent = match.relation;
       badge.style.cssText = 'padding:2px 10px;border-radius:8px;font-size:10px;font-weight:600;border:1px solid;' + getVibeStyle(match.vibe);
-      var ctx = matterEl ? '所求之事：' + matterEl : '你的日主：' + birthEl;
+      var prefix = userName ? userName + '，' : '';
+      var ctx = matterEl ? prefix + '所求之事：' + matterEl : prefix + '你的日主：' + birthEl;
       document.getElementById('matchSign').innerHTML = '<span class="match-section-label">📜 签意</span>' + match.signTheme;
       document.getElementById('matchInteraction').innerHTML = '<span class="match-section-label">🔗 互动</span>' + ctx + ' · 签属' + signEl + ' · ' + match.relation + '。' + match.interaction;
       document.getElementById('matchAdvice').innerHTML = '<span class="match-section-label">💡 建议</span>' + match.advice;
+      var srcNote = birthEl ? '日主由出生日期推算日柱天干得出，反映先天倾向' : '';
+      if (birthEl && matterEl) srcNote += '；当前以所求之事五行优先匹配';
+      document.getElementById('matchSource').textContent = srcNote;
     } else {
       matchBox.style.display = 'none';
     }
     // 连续求签叙事
     var now = Date.now();
+    cleanDrawHistory();
     drawHistory.push({ category: currentCategory.name, time: now, lotId: currentLot.id, level: currentLot.level });
     var sameCategory = drawHistory.filter(function(d) {
       return d.category === currentCategory.name && (now - d.time) < 300000;
