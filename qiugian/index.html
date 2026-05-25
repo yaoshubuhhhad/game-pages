@@ -174,7 +174,7 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
       </div>
       <div class="match-box" id="matchBox" style="display:none;">
         <div class="match-header">
-          <span>🔮 命理匹配</span>
+          <span>🔮 五行参考</span>
           <span class="match-badge" id="matchBadge"></span>
         </div>
         <div class="match-detail" id="matchDetail"></div>
@@ -878,12 +878,12 @@ var LOT_DATA = {
     {id:2,level:'上',element:'金',direction:'西',poem:'云开月出正分明\n不须进退问前程\n；婚姻皆由天注\n定和合清吉万事成',meaning:'时运开朗，天定良缘。谋事有成，婚姻和合，家运渐吉，求财有份。'},
     {id:3,level:'中',element:'火',direction:'南',poem:'财中渐渐见分明\n花开花谢结子成\n；宽心且看月中\n桂郎君即便见太平',meaning:'先难后易，渐入佳境。财运缓至，事业稳进，婚姻迟成，守旧吉。'},
     {id:4,level:'上上',element:'火',direction:'南',poem:'风恬浪静可行船\n恰似中秋月一轮\n；凡事不须多忧\n虑福禄自有庆家门',meaning:'风平浪静，圆满吉祥。万事无忧，福禄自来，家道昌盛，婚姻和谐。'},
-    {id:5,level:'中',element:'土',direction:'中',poem:'只恐前途有变迁\n劝君作事可宜先\n；且去长江无大\n事命逢太白守身边',meaning:'变数较多，宜早筹划。先凶后吉，守旧无灾，进取需谨慎，贵人暗助。'},
-    {id:6,level:'下下',element:'土',direction:'中',poem:'风云致雨落洋洋\n天灾时气必有伤\n；命内此事难和\n合更逢一足出外乡',meaning:'时运不济，灾病口舌。谋事难成，破财招灾，婚姻不合，远行不利。'},
-    {id:7,level:'上',element:'金',direction:'西',poem:'红日当头照四方\n贵人指引到金阶\n；求财谋利皆如\n意福禄寿喜自安康',meaning:'红日高照，贵人提携。事业高升，财运亨通，家宅兴旺，万事称心。'},
-    {id:8,level:'中',element:'金',direction:'西',poem:'渐渐禾苗结实完\n看看作事定周全\n；宽心且向静中\n坐妻儿鼓舞乐团圆',meaning:'功成圆满，家宅和合。谋事有成，婚姻美满，求财得利，骨肉团圆。'},
-    {id:9,level:'下下',element:'水',direction:'北',poem:'龙虎相随在深山\n君尔何须背后看\n；不知此去相爱\n误他日与我却无干',meaning:'小人暗算，内斗耗损。事业受阻，财运破败，感情反目，防人暗算。'},
-    {id:10,level:'下下',element:'水',direction:'北',poem:'花开结子一半枯\n可惜今年汝虚度\n；日落西山渐渐\n去劝君不用问前途',meaning:'时运衰败，徒劳无功。谋事难成，破财虚耗，婚姻难就，前途暗淡。'},
+    {id:5,level:'中',element:'木',direction:'中',poem:'只恐前途有变迁\n劝君作事可宜先\n；且去长江无大\n事命逢太白守身边',meaning:'变数较多，宜早筹划。先凶后吉，守旧无灾，进取需谨慎，贵人暗助。'},
+    {id:6,level:'下下',element:'木',direction:'中',poem:'风云致雨落洋洋\n天灾时气必有伤\n；命内此事难和\n合更逢一足出外乡',meaning:'时运不济，灾病口舌。谋事难成，破财招灾，婚姻不合，远行不利。'},
+    {id:7,level:'上',element:'土',direction:'西',poem:'红日当头照四方\n贵人指引到金阶\n；求财谋利皆如\n意福禄寿喜自安康',meaning:'红日高照，贵人提携。事业高升，财运亨通，家宅兴旺，万事称心。'},
+    {id:8,level:'中',element:'土',direction:'西',poem:'渐渐禾苗结实完\n看看作事定周全\n；宽心且向静中\n坐妻儿鼓舞乐团圆',meaning:'功成圆满，家宅和合。谋事有成，婚姻美满，求财得利，骨肉团圆。'},
+    {id:9,level:'下下',element:'金',direction:'北',poem:'龙虎相随在深山\n君尔何须背后看\n；不知此去相爱\n误他日与我却无干',meaning:'小人暗算，内斗耗损。事业受阻，财运破败，感情反目，防人暗算。'},
+    {id:10,level:'下下',element:'金',direction:'北',poem:'花开结子一半枯\n可惜今年汝虚度\n；日落西山渐渐\n去劝君不用问前途',meaning:'时运衰败，徒劳无功。谋事难成，破财虚耗，婚姻难就，前途暗淡。'},
     {id:11,level:'中',element:'火',direction:'南',poem:'灵鸡渐渐叫分明\n凡事且看子丑寅\n；云开月出照天\n下郎君即便见太平',meaning:'转机渐至，守时待命。前期奔波，后期安稳，财运平平，婚姻迟吉。'},
     {id:12,level:'上',element:'火',direction:'南',poem:'长江风浪渐渐静\n于今得进可安宁\n；必有贵人相扶\n助凶事脱出见太平',meaning:'风波渐息，贵人解围。脱离险境，事业转好，财运渐佳，家宅安宁。'},
     {id:13,level:'上上',element:'水',direction:'北',poem:'一轮明月照中庭\n万里无云万里清\n；谋事求财皆遂\n意贵人指引遇知音',meaning:'光明澄澈，万事称心。事业大成，财运鼎盛，婚姻美满，贵人知心。'},
@@ -892,46 +892,46 @@ var LOT_DATA = {
     {id:16,level:'中',element:'土',direction:'中',poem:'世事无常难预料\n财缘浅薄莫强求\n；平平淡淡才是\n福知足常乐少烦忧',meaning:'财运普通，知足常乐。安稳度日，不宜冒险，事业平淡，感情平稳。'},
     {id:17,level:'上上',element:'金',direction:'西',poem:'满门朱紫庆生辰\n福寿双全世所珍\n；七子八婿皆显\n贵荣华富贵享天伦',meaning:'福禄寿全，家运昌盛。事业、财运、感情、家宅皆吉，万事圆满。'},
     {id:18,level:'中',element:'金',direction:'西',poem:'镇守三关胆气豪\n忠心报国显英豪\n；虽有险阻终能\n守名利双收步步高',meaning:'守成得利，稳扎稳打。事业稳守可成，财运平稳，感情忠贞，家宅安宁。'},
-    {id:19,level:'上',element:'水',direction:'北',poem:'跨海征东胆气豪\n功成名就显英豪\n；衣锦还乡荣故\n里荣华富贵乐逍遥',meaning:'远征得利，建功立业。外出发展吉，事业成功，财运大进，感情圆满。'},
-    {id:20,level:'下下',element:'水',direction:'北',poem:'富贵忘恩负义肠\n不认妻儿丧天良\n；一朝事发身败\n裂荣华富贵化黄粱',meaning:'忘恩负义，身败名裂。事业因负义失败，财运破败，感情不忠，防报应。'},
-    {id:21,level:'中',element:'木',direction:'东',poem:'知音难觅恨难平\n碎琴绝弦不再鸣\n；满腔心事无人\n诉孤芳自赏度余生',meaning:'知音难遇，孤独寂寞。事业少贵人，财运平平，感情难寻知己，易孤独。'},
-    {id:22,level:'中',element:'木',direction:'东',poem:'举贤荐能为国忙\n慧眼识才助君王\n；功德圆满名垂\n史福禄寿喜自安康',meaning:'贵人荐贤，助人助己。事业得贵人助，财运渐佳，感情和睦，家宅安宁。'},
+    {id:19,level:'上',element:'木',direction:'北',poem:'跨海征东胆气豪\n功成名就显英豪\n；衣锦还乡荣故\n里荣华富贵乐逍遥',meaning:'远征得利，建功立业。外出发展吉，事业成功，财运大进，感情圆满。'},
+    {id:20,level:'下下',element:'木',direction:'北',poem:'富贵忘恩负义肠\n不认妻儿丧天良\n；一朝事发身败\n裂荣华富贵化黄粱',meaning:'忘恩负义，身败名裂。事业因负义失败，财运破败，感情不忠，防报应。'},
+    {id:21,level:'中',element:'水',direction:'东',poem:'知音难觅恨难平\n碎琴绝弦不再鸣\n；满腔心事无人\n诉孤芳自赏度余生',meaning:'知音难遇，孤独寂寞。事业少贵人，财运平平，感情难寻知己，易孤独。'},
+    {id:22,level:'中',element:'水',direction:'东',poem:'举贤荐能为国忙\n慧眼识才助君王\n；功德圆满名垂\n史福禄寿喜自安康',meaning:'贵人荐贤，助人助己。事业得贵人助，财运渐佳，感情和睦，家宅安宁。'},
     {id:23,level:'下下',element:'土',direction:'中',poem:'渔阳鼙鼓破霓裳\n盛世繁华一旦亡\n；叛乱四起生灵\n炭财运功名尽遭殃',meaning:'大乱将至，灾祸连连。事业崩溃，财运破败，家宅不宁，诸事凶险。'},
     {id:24,level:'上上',element:'土',direction:'中',poem:'陈桥兵变黄袍加\n万里山河一掌拿\n；天意人心皆归\n顺荣华富贵享无涯',meaning:'大权在握，基业稳固。事业登顶，财运鼎盛，家宅安宁，万事大吉。'},
     {id:25,level:'上',element:'火',direction:'南',poem:'隆中对策定三分\n未出茅庐知乾坤\n；一朝得志辅明\n主功成名就万古存',meaning:'未卜先知，大业可成。事业凭智慧成功，财运鼎盛，感情和睦，家宅安宁。'},
     {id:26,level:'中',element:'火',direction:'南',poem:'两句三年得\n一吟双泪流\n；知音如不\n赏归卧故山秋',meaning:'精益求精，慢工出细活。事业需打磨，财运慢进，感情细腻，追求完美。'},
-    {id:27,level:'上上',element:'金',direction:'西',poem:'中兴汉室显英才\n扫平群寇定尘埃\n；天意人心皆归\n顺荣华富贵享天开',meaning:'绝地重生，复国大业。事业东山再起，财运鼎盛，家宅安宁，万事顺遂。'},
-    {id:28,level:'中',element:'金',direction:'西',poem:'过五关来斩六将\n千里独行义气扬\n；虽有险阻终能\n过功成名就耀四方',meaning:'突破难关，勇往直前。克服困难，事业成功，财运渐佳，感情忠贞。'},
+    {id:27,level:'上上',element:'木',direction:'西',poem:'中兴汉室显英才\n扫平群寇定尘埃\n；天意人心皆归\n顺荣华富贵享天开',meaning:'绝地重生，复国大业。事业东山再起，财运鼎盛，家宅安宁，万事顺遂。'},
+    {id:28,level:'中',element:'木',direction:'西',poem:'过五关来斩六将\n千里独行义气扬\n；虽有险阻终能\n过功成名就耀四方',meaning:'突破难关，勇往直前。克服困难，事业成功，财运渐佳，感情忠贞。'},
     {id:29,level:'中',element:'水',direction:'北',poem:'东西南北不堪行\n前途此事正可当\n；劝君把定莫烦\n恼家门自有保安康',meaning:'四方不利，安守家门。不宜远行，守旧平安，财运平平，家宅安宁。'},
     {id:30,level:'下下',element:'水',direction:'北',poem:'貌美才高遭人妒\n仕途坎坷祸难除\n；虽有才华难展\n志到头难免受刑诛',meaning:'才美招妒，灾祸连连。事业遭小人嫉妒，财运受损，感情招祸，防纠纷。'},
     {id:31,level:'上上',element:'金',direction:'西',poem:'风恬浪静可行船\n恰似中秋月一轮\n；凡事不须多忧\n虑福禄自有庆家门',meaning:'风平浪静，圆满吉祥。万事无忧，福禄自来，家道昌盛，婚姻和谐。'},
     {id:32,level:'下下',element:'金',direction:'西',poem:'花开结子一半枯\n可惜今年汝虚度\n；日落西山渐渐\n去劝君不用问前途',meaning:'时运衰败，徒劳无功。谋事难成，破财虚耗，婚姻难就，前途暗淡。'},
     {id:33,level:'上',element:'火',direction:'南',poem:'智谋过人平叛功\n心学传世显英雄\n；功成名就身不\n退福禄寿喜乐无穷',meaning:'智谋平叛，建功立业。事业凭智慧成功，财运大进，感情聪慧圆满，家宅安宁。'},
     {id:34,level:'中',element:'火',direction:'南',poem:'昔日阿蒙不学无\n后来勤学智有余\n；士别三日刮目\n看功成名就显英奇',meaning:'勤学成才，后来居上。事业靠学习进步，财运渐佳，感情成熟，越来越好。'},
-    {id:35,level:'中',element:'土',direction:'中',poem:'壮志未酬鬓已霜\n时运不济命多乖\n；空有才华无处\n用光阴虚度恨难排',meaning:'怀才不遇，时不我与。事业难展，财运平平，感情易错过，需惜时。'},
-    {id:36,level:'下下',element:'土',direction:'中',poem:'荒淫无道乱朝纲\n民怨沸腾国祚亡\n；大运河畔尸骨\n累荣华富贵一场空',meaning:'荒淫败国，灾祸连连。事业因纵欲失败，财运破败，感情混乱，防家破。'},
-    {id:37,level:'上上',element:'金',direction:'西',poem:'禅让贤明万古传\n民心归顺自安然\n；国泰民安享太\n平福禄寿喜乐无边',meaning:'谦让得福，名利双收。事业平稳晋升，财运亨通，感情和睦，家宅安宁。'},
-    {id:38,level:'中',element:'金',direction:'西',poem:'老当益壮胆气豪\n宝刀未老显英豪\n；虽非年少身强\n健建功立业在今朝',meaning:'老运亨通，宝刀未老。中老年事业财运转好，健康尚可，感情稳定。'},
-    {id:39,level:'上',element:'水',direction:'北',poem:'装病避祸藏锋芒\n静待时机起四方\n；一朝得志掌大\n权名利双收福自长',meaning:'隐忍待时，大权在握。事业宜隐忍，时机一到成功，财运亨通，感情沉稳。'},
-    {id:40,level:'下下',element:'水',direction:'北',poem:'脑后反骨祸心藏\n背叛主公不义彰\n；虽有战功难掩\n恶到头难免丧身亡',meaning:'背叛招祸，身败名裂。事业因背叛失败，财运破败，感情不忠，防小人背叛。'},
-    {id:41,level:'上上',element:'木',direction:'东',poem:'渭水垂钓待时来\n直钩不钓世间财\n；一朝得遇文王\n聘万里鹏程任剪裁',meaning:'大器晚成，贵人提携。事业腾飞，财运亨通，婚姻美满。'},
-    {id:42,level:'中',element:'木',direction:'东',poem:'同窗结义却相残\n诡计阴谋惹祸端\n；莫道智谋能取\n胜到头终究受天瞒',meaning:'小人当道，内斗耗损。防竞争、纠纷、背叛，合作不利，感情不和。'},
-    {id:43,level:'上上',element:'火',direction:'南',poem:'铁面无私断案明\n善恶分明不徇情\n；一身正气鬼神\n敬福禄寿喜自临门',meaning:'公正得福，是非分明。事业凭正直成功，财运稳，感情忠贞，家宅安宁。'},
-    {id:44,level:'中',element:'火',direction:'南',poem:'自作聪明盗书忙\n中计反害友身亡\n；虽有小聪明无\n大智慧到头终究受祸殃',meaning:'自作聪明，弄巧成拙。事业耍小聪明反坏事，财运受损，感情挑拨，防小人。'},
+    {id:35,level:'中',element:'木',direction:'中',poem:'壮志未酬鬓已霜\n时运不济命多乖\n；空有才华无处\n用光阴虚度恨难排',meaning:'怀才不遇，时不我与。事业难展，财运平平，感情易错过，需惜时。'},
+    {id:36,level:'下下',element:'木',direction:'中',poem:'荒淫无道乱朝纲\n民怨沸腾国祚亡\n；大运河畔尸骨\n累荣华富贵一场空',meaning:'荒淫败国，灾祸连连。事业因纵欲失败，财运破败，感情混乱，防家破。'},
+    {id:37,level:'上上',element:'土',direction:'西',poem:'禅让贤明万古传\n民心归顺自安然\n；国泰民安享太\n平福禄寿喜乐无边',meaning:'谦让得福，名利双收。事业平稳晋升，财运亨通，感情和睦，家宅安宁。'},
+    {id:38,level:'中',element:'土',direction:'西',poem:'老当益壮胆气豪\n宝刀未老显英豪\n；虽非年少身强\n健建功立业在今朝',meaning:'老运亨通，宝刀未老。中老年事业财运转好，健康尚可，感情稳定。'},
+    {id:39,level:'上',element:'金',direction:'北',poem:'装病避祸藏锋芒\n静待时机起四方\n；一朝得志掌大\n权名利双收福自长',meaning:'隐忍待时，大权在握。事业宜隐忍，时机一到成功，财运亨通，感情沉稳。'},
+    {id:40,level:'下下',element:'金',direction:'北',poem:'脑后反骨祸心藏\n背叛主公不义彰\n；虽有战功难掩\n恶到头难免丧身亡',meaning:'背叛招祸，身败名裂。事业因背叛失败，财运破败，感情不忠，防小人背叛。'},
+    {id:41,level:'上上',element:'火',direction:'东',poem:'渭水垂钓待时来\n直钩不钓世间财\n；一朝得遇文王\n聘万里鹏程任剪裁',meaning:'大器晚成，贵人提携。事业腾飞，财运亨通，婚姻美满。'},
+    {id:42,level:'中',element:'火',direction:'东',poem:'同窗结义却相残\n诡计阴谋惹祸端\n；莫道智谋能取\n胜到头终究受天瞒',meaning:'小人当道，内斗耗损。防竞争、纠纷、背叛，合作不利，感情不和。'},
+    {id:43,level:'上上',element:'水',direction:'南',poem:'铁面无私断案明\n善恶分明不徇情\n；一身正气鬼神\n敬福禄寿喜自临门',meaning:'公正得福，是非分明。事业凭正直成功，财运稳，感情忠贞，家宅安宁。'},
+    {id:44,level:'中',element:'水',direction:'南',poem:'自作聪明盗书忙\n中计反害友身亡\n；虽有小聪明无\n大智慧到头终究受祸殃',meaning:'自作聪明，弄巧成拙。事业耍小聪明反坏事，财运受损，感情挑拨，防小人。'},
     {id:45,level:'上',element:'土',direction:'中',poem:'单骑见敌胆气豪\n一言能退万军骄\n；智勇双全人敬\n仰名利双收步步高',meaning:'智勇化解危机，贵人相助。事业凭智慧脱困，财运渐佳，感情和睦。'},
     {id:46,level:'下下',element:'土',direction:'中',poem:'沉迷书画废朝政\n金兵南下国祚倾\n；荣华富贵一场\n梦北狩他乡恨难平',meaning:'玩物丧志，事业荒废。沉迷爱好误正事，财运耗散，感情不稳，防灾祸。'},
     {id:47,level:'上',element:'金',direction:'西',poem:'精忠报国气轩昂\n收复失地显英豪\n；虽遭陷害名不\n朽福禄寿喜自昭彰',meaning:'精忠报国，名垂青史。事业凭忠心成功，财运稳，感情忠贞，家宅安宁，名成利就。'},
     {id:48,level:'中',element:'金',direction:'西',poem:'人生自古谁无死\n留取丹心照汗青\n；忠心耿耿为家\n国名垂万古永留馨',meaning:'忠贞殉国，名垂千古。事业凭气节成功，财运稳，感情忠贞，家宅安宁，流芳百世。'},
-    {id:49,level:'中',element:'水',direction:'北',poem:'言语虽多不可从\n风云静处未行龙\n；暗中终得明消\n息君尔何须问重重',meaning:'流言勿信，静待佳音。事业需防口舌，财运平平，感情有误会，终得澄清。'},
-    {id:50,level:'下下',element:'水',direction:'北',poem:'妖妃乱国祸连连\n忠臣尽丧国祚偏\n；酒池肉林荒朝\n政财运功名尽化烟',meaning:'女色 / 小人乱局，灾祸不断。感情招祸，家宅不宁，财运破败，事业崩塌。'},
-    {id:51,level:'中',element:'木',direction:'东',poem:'世事如蝶梦一场\n荣华富贵镜中光\n；不如安分随缘\n过免惹灾殃祸自亡',meaning:'梦幻泡影，随缘度日。事业平淡，财运平平，感情随缘，不宜强求。'},
-    {id:52,level:'中',element:'木',direction:'东',poem:'渐渐禾苗结实完\n看看作事定周全\n；宽心且向静中\n坐妻儿鼓舞乐团圆',meaning:'功成圆满，家宅和合。谋事有成，婚姻美满，求财得利，骨肉团圆。'},
+    {id:49,level:'中',element:'木',direction:'北',poem:'言语虽多不可从\n风云静处未行龙\n；暗中终得明消\n息君尔何须问重重',meaning:'流言勿信，静待佳音。事业需防口舌，财运平平，感情有误会，终得澄清。'},
+    {id:50,level:'下下',element:'木',direction:'北',poem:'妖妃乱国祸连连\n忠臣尽丧国祚偏\n；酒池肉林荒朝\n政财运功名尽化烟',meaning:'女色 / 小人乱局，灾祸不断。感情招祸，家宅不宁，财运破败，事业崩塌。'},
+    {id:51,level:'中',element:'水',direction:'东',poem:'世事如蝶梦一场\n荣华富贵镜中光\n；不如安分随缘\n过免惹灾殃祸自亡',meaning:'梦幻泡影，随缘度日。事业平淡，财运平平，感情随缘，不宜强求。'},
+    {id:52,level:'中',element:'水',direction:'东',poem:'渐渐禾苗结实完\n看看作事定周全\n；宽心且向静中\n坐妻儿鼓舞乐团圆',meaning:'功成圆满，家宅和合。谋事有成，婚姻美满，求财得利，骨肉团圆。'},
     {id:53,level:'上上',element:'土',direction:'中',poem:'功成身退不贪荣\n归隐山林自安宁\n；荣华富贵如浮\n云福寿绵长乐太平',meaning:'功成身退，福寿绵长。事业圆满后宜退，财运够用，感情和睦，健康长寿。'},
     {id:54,level:'下下',element:'土',direction:'中',poem:'口蜜腹剑祸心藏\n陷害忠良乱朝纲\n；虽得荣华一时\n乐到头终究受天殃',meaning:'小人阴险，祸国殃民。事业遭小人陷害，财运受损，感情挑拨，防官司灾祸。'},
     {id:55,level:'中',element:'火',direction:'南',poem:'须知进退总言虚\n看看发暗未必全\n；珠玉深藏还未\n变心中但得枉徒然',meaning:'进退两难，徒劳心机。谋事难成，财运平平，感情误会多，需耐心等待。'},
     {id:56,level:'中',element:'火',direction:'南',poem:'火烧连营破敌强\n智谋过人显英芒\n；功成名就步步\n高福禄寿喜乐安康',meaning:'智谋破敌，大功告成。事业凭智慧成功，财运大进，感情聪慧圆满，家宅安宁。'},
-    {id:57,level:'上上',element:'金',direction:'西',poem:'蜀川基业已分明\n五虎同心辅圣明\n；天意人心皆顺\n泰荣华富贵享升平',meaning:'大业可成，地位稳固。事业登顶，财运鼎盛，家宅安宁。'},
-    {id:58,level:'中',element:'金',direction:'西',poem:'年少才华盖世雄\n一朝才尽梦成空\n；笔墨难写心中\n事壮志难酬恨不穷',meaning:'才华衰退，后劲不足。事业后期乏力，财运平平，感情易变淡，需充电。'},
+    {id:57,level:'上上',element:'木',direction:'西',poem:'蜀川基业已分明\n五虎同心辅圣明\n；天意人心皆顺\n泰荣华富贵享升平',meaning:'大业可成，地位稳固。事业登顶，财运鼎盛，家宅安宁。'},
+    {id:58,level:'中',element:'木',direction:'西',poem:'年少才华盖世雄\n一朝才尽梦成空\n；笔墨难写心中\n事壮志难酬恨不穷',meaning:'才华衰退，后劲不足。事业后期乏力，财运平平，感情易变淡，需充电。'},
     {id:59,level:'上',element:'水',direction:'北',poem:'鬼谷学艺已学成\n下山辅佐帝王兴\n；智谋过人平天\n下名利双收显威名',meaning:'智谋成事，大展宏图。事业凭智慧成功，财运大进，感情聪慧圆满。'},
     {id:60,level:'下下',element:'水',direction:'北',poem:'月落星沉风\n生雨至；只\n要龙虎不相\n争方可如时利',meaning:'大凶之象，诸事不宜。事业失败，财运破败，健康堪忧，感情破裂，防灾祸、丧事。'},
   ],
@@ -947,13 +947,53 @@ var SHENG = [1,2,3,4,0]; // SHENG[i] = i 生的元素
 var KE = [2,3,4,0,1];    // KE[i] = i 克的元素
 var ELEM_IDX = { '木':0,'火':1,'土':2,'金':3,'水':4 };
 
-// 从生日字符串提取出生年天干 → 五行
+// 日柱天干 → 五行（索引0=甲,1=乙...9=癸）
+var JIAZI_STEMS = ['木','木','火','火','土','土','金','金','水','水'];
+
+// 解析生日字符串 → {year, month, day} 或 null
+// 支持: "1995年3月8日", "1995-03-08", "1995/3/8", "1995.3.8", "1995"
+function parseBirthDate(str) {
+  if (!str) return null;
+  var m1 = str.match(/(\d{4})\s*年\s*(\d{1,2})\s*月\s*(\d{1,2})\s*日/);
+  if (m1) return { year: +m1[1], month: +m1[2], day: +m1[3] };
+  var m2 = str.match(/(\d{4})[-.\/]\s*(\d{1,2})[-.\/]\s*(\d{1,2})/);
+  if (m2) return { year: +m2[1], month: +m2[2], day: +m2[3] };
+  var m3 = str.match(/(\d{4})\s+(\d{1,2})\s+(\d{1,2})/);
+  if (m3) return { year: +m3[1], month: +m3[2], day: +m3[3] };
+  var m4 = str.match(/(\d{4})/);
+  if (m4) return { year: +m4[1], month: null, day: null };
+  return null;
+}
+
+function isLeapYear(y) { return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
+
+// 从1900-01-01起算的天数（基准: 1900-01-01 = 庚子日）
+function daysFrom1900(y, m, d) {
+  var total = 0;
+  for (var yr = 1900; yr < y; yr++) total += isLeapYear(yr) ? 366 : 365;
+  var MD = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  if (isLeapYear(y)) MD[2] = 29;
+  for (var mo = 1; mo < m; mo++) total += MD[mo];
+  total += d - 1;
+  return total;
+}
+
+// 从生日获取日干五行（日主=你本人，八字核心）
+// 有完整日期→算日柱日干；仅年份→回退年干
 function getBirthElement(birthStr) {
-  var m = birthStr.match(/(\d{4})/);
-  if (!m) return null;
-  var year = parseInt(m[1]);
-  var stemIdx = (year - 3) % 10; // 0=癸, 1=甲 ...
-  return GAN_ELEMENTS[stemIdx];
+  var date = parseBirthDate(birthStr);
+  if (!date) return null;
+  // 仅有年份：回退年干（立春假设：无月日信息时无法判断，取日历年）
+  if (date.month === null || date.day === null) {
+    var stemIdx = (date.year - 3) % 10;
+    return GAN_ELEMENTS[stemIdx];
+  }
+  // 完整日期：计算日柱 → 日干 → 五行
+  var days = daysFrom1900(date.year, date.month, date.day);
+  var jiaziIdx = (days + 37) % 60; // 37 = 庚子在六十甲子中的序号
+  if (jiaziIdx === 0) jiaziIdx = 60;
+  var stemIdx = (jiaziIdx - 1) % 10; // 0=甲,1=乙...9=癸
+  return JIAZI_STEMS[stemIdx];
 }
 
 // 从所求之事提取五行（关键词匹配）
@@ -1113,7 +1153,11 @@ function revealLot() {
       matchBox.style.display = 'block';
       matchBadge.textContent = match.score;
       matchBadge.style.cssText = 'padding:2px 10px;border-radius:8px;font-size:10px;font-weight:600;' + getMatchStyle(match.score);
-      matchDetail.innerHTML = '你的五行：' + userEl + '&nbsp;&nbsp;·&nbsp;&nbsp;签的五行：' + signEl + '&nbsp;&nbsp;·&nbsp;&nbsp;' + match.relation;
+      if (matterEl) {
+        matchDetail.innerHTML = '所求之事：' + matterEl + '&nbsp;&nbsp;·&nbsp;&nbsp;签的五行：' + signEl + '&nbsp;&nbsp;·&nbsp;&nbsp;' + match.relation;
+      } else {
+        matchDetail.innerHTML = '你的日主：' + birthEl + '&nbsp;&nbsp;·&nbsp;&nbsp;签的五行：' + signEl + '&nbsp;&nbsp;·&nbsp;&nbsp;' + match.relation;
+      }
       matchDesc.textContent = match.desc;
     } else {
       matchBox.style.display = 'none';
