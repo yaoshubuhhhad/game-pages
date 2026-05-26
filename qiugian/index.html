@@ -1157,6 +1157,9 @@ function copyPrayer() {
 var pressTimer = null, isShaking = false;
 var drawHistory = []; // [{category, time, lotId, level}]
 var tubeEl = document.getElementById('tubeEl');
+var shakeAudio = new Audio('assets/sounds/freesound_community-spray-can-shake-92396.mp3');
+shakeAudio.loop = true;
+shakeAudio.volume = 0.4;
 
 function cleanDrawHistory() {
   var cutoff = Date.now() - 300000;
@@ -1172,6 +1175,8 @@ function onPressStart(e) {
     document.getElementById('shakeBtn').classList.add('shaking');
     document.getElementById('shakeBtn').textContent = '🤚 摇动中...';
     document.getElementById('stickPopped').classList.remove('show');
+    shakeAudio.currentTime = 0;
+    shakeAudio.play().catch(function(){});
   }, 400);
 }
 function onPressEnd(e) {
@@ -1182,6 +1187,8 @@ function onPressEnd(e) {
   tubeEl.style.animation = '';
   document.getElementById('shakeBtn').classList.remove('shaking');
   document.getElementById('shakeBtn').textContent = '🖐 长按摇签';
+  shakeAudio.pause();
+  shakeAudio.currentTime = 0;
   revealLot();
 }
 function revealLot() {
