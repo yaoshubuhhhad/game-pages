@@ -52,10 +52,12 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
 .tube{width:120px;height:230px;position:relative}
 .tube-body{width:100%;height:100%;background:url('assets/images/4.png') center/cover no-repeat;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.45);overflow:hidden;position:relative}
 .stick-popped{position:absolute;top:-65px;left:50%;margin-left:-4px;width:8px;height:80px;background:linear-gradient(90deg,#f5e6ca,#fff,#f0e6d0);border-radius:3px 3px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.3);z-index:4;display:none}
-.stick-popped.show{display:block;animation:stick-out .35s ease-out}
+.stick-popped.show{display:block;animation:stick-out .35s ease-out;box-shadow:0 -6px 20px rgba(0,0,0,.3),0 0 24px rgba(253,203,110,.5),0 0 48px rgba(253,203,110,.2)}
 .stick-popped .num{position:absolute;top:16px;left:0;right:0;text-align:center;font-size:7px;color:#8B6914;writing-mode:vertical-rl;font-family:serif}
 @keyframes tube-shake{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-6deg)}75%{transform:rotate(5deg)}}
 @keyframes stick-out{0%{transform:translateY(0);opacity:0}100%{transform:translateY(-65px);opacity:1}}
+@keyframes result-reveal{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
+.stage#stageResult.active .result-zone{animation:result-reveal .5s ease-out}
 
 .shake-btn{display:inline-block;background:linear-gradient(135deg,rgba(180,130,50,.1),rgba(180,130,50,.03));border:1.5px solid rgba(200,160,60,.18);color:#d4a030;padding:12px 44px;border-radius:26px;font-size:14px;font-weight:600;letter-spacing:4px;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 .shake-btn:active{background:rgba(200,160,60,.15)}
@@ -1136,6 +1138,8 @@ shakeAudio.loop = true;
 shakeAudio.volume = 0.4;
 var dropAudio = new Audio('assets/sounds/freesound_community-falling-bamboo-83469.mp3');
 dropAudio.volume = 0.5;
+var chimeAudio = new Audio('assets/sounds/reveal-chime.mp3');
+chimeAudio.volume = 0.4;
 
 function cleanDrawHistory() {
   var cutoff = Date.now() - 300000;
@@ -1178,6 +1182,8 @@ function revealLot() {
   document.getElementById('stickPopped').classList.add('show');
   setTimeout(function() {
     goStage('stageResult');
+    chimeAudio.currentTime = 0;
+    chimeAudio.play().catch(function(){});
     document.getElementById('lotNum').textContent = '第' + currentLot.id + '签';
     document.getElementById('lotLevel').textContent = currentLot.level + '签';
     document.getElementById('lotLevel').style.color = currentLot.level.indexOf('上上')===0?'#fdcb6e':currentLot.level.indexOf('下')===0?'#e17055':'#d4a030';
