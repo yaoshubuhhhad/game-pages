@@ -1189,11 +1189,11 @@ function revealLot() {
   setTimeout(function() {
     goStage('stageResult');
     var chimeNow = Date.now();
-    if (chimeNow - lastChimeTime > 2000) {
+    if (chimeNow - lastChimeTime > 1500) {
       chimeAudio.currentTime = 0;
       chimeAudio.play().catch(function(){});
       lastChimeTime = chimeNow;
-      setTimeout(function() { chimeAudio.pause(); }, 2500);
+      setTimeout(function() { chimeAudio.pause(); }, 1200);
     }
     document.getElementById('lotNum').textContent = '第' + currentLot.id + '签';
     document.getElementById('lotLevel').textContent = currentLot.level + '签';
