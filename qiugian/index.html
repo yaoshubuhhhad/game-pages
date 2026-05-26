@@ -1139,10 +1139,6 @@ shakeAudio.loop = true;
 shakeAudio.volume = 0.4;
 var dropAudio = new Audio('assets/sounds/freesound_community-falling-bamboo-83469.mp3');
 dropAudio.volume = 0.5;
-var chimeAudio = new Audio('assets/sounds/reveal-chime.mp3.mp3');
-chimeAudio.volume = 0.4;
-var lastChimeTime = 0;
-
 function cleanDrawHistory() {
   var cutoff = Date.now() - 300000;
   drawHistory = drawHistory.filter(function(d) { return d.time > cutoff; });
@@ -1188,14 +1184,6 @@ function revealLot() {
   document.getElementById('stickPopped').classList.add('show');
   setTimeout(function() {
     goStage('stageResult');
-    var chimeNow = Date.now();
-    if (chimeNow - lastChimeTime > 1500) {
-      chimeAudio.currentTime = 0;
-      chimeAudio.play().then(function() {
-        setTimeout(function() { chimeAudio.pause(); chimeAudio.currentTime = 0; }, 900);
-      }).catch(function(){});
-      lastChimeTime = chimeNow;
-    }
     document.getElementById('lotNum').textContent = '第' + currentLot.id + '签';
     document.getElementById('lotLevel').textContent = currentLot.level + '签';
     document.getElementById('lotLevel').style.color = currentLot.level.indexOf('上上')===0?'#fdcb6e':currentLot.level.indexOf('下')===0?'#e17055':'#d4a030';
