@@ -112,10 +112,6 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
     <div class="subtitle">一事一问 · 心诚则灵</div>
     <div class="chosen-cat" id="chosenCat"></div>
     <div class="form-group">
-      <label class="form-label">姓名</label>
-      <input class="form-input" id="inputName" placeholder="你的名字">
-    </div>
-    <div class="form-group">
       <label class="form-label">出生年月日</label>
       <input class="form-input" id="inputBirth" placeholder="例如：1995年3月8日">
       <div class="form-hint">填写完整年月日，可推算日柱天干，解读更准确</div>
@@ -1124,7 +1120,7 @@ function goStage(id) {
   document.getElementById(id).classList.add('active');
 
   if (id === 'stageMeditation') {
-    var name = document.getElementById('inputName').value || '信士';
+    var name = '信士';
     document.getElementById('prayerText').textContent =
       '伏以：\n今有信士' + name + '，虔心叩拜' + currentCategory.name + '圣前。\n' +
       '所求之事，诚心祷告，望神明指示。\n' +
@@ -1205,7 +1201,6 @@ function revealLot() {
     // 命理匹配分析
     var birthEl = getBirthElement(document.getElementById('inputBirth').value);
     var matterEl = getMatterElement(document.getElementById('inputMatter').value);
-    var userName = (document.getElementById('inputName').value || '').trim();
     var signEl = currentLot.element;
     var userEl = matterEl || birthEl;
     var match = analyzeMatch(userEl, signEl, !!matterEl, currentLot.level);
@@ -1216,8 +1211,7 @@ function revealLot() {
       var badge = document.getElementById('matchBadge');
       badge.textContent = match.relation;
       badge.style.cssText = 'padding:2px 10px;border-radius:8px;font-size:10px;font-weight:600;border:1px solid;' + getVibeStyle(match.vibe);
-      var prefix = userName ? userName + '，' : '';
-      var ctx = matterEl ? prefix + '所求之事：' + matterEl : prefix + '你的日主：' + birthEl;
+      var ctx = matterEl ? '所求之事：' + matterEl : '你的日主：' + birthEl;
       document.getElementById('matchSign').innerHTML = '<span class="match-section-label">📜 签意</span>' + match.signTheme;
       document.getElementById('matchInteraction').innerHTML = '<span class="match-section-label">🔗 互动</span>' + ctx + ' · 签属' + signEl + ' · ' + match.relation + '。' + match.interaction;
       document.getElementById('matchAdvice').innerHTML = '<span class="match-section-label">💡 建议</span>' + match.advice;
