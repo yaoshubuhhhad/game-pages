@@ -1131,7 +1131,7 @@ function copyPrayer() {
 }
 
 // ====== 摇签交互 ======
-var pressTimer = null, isShaking = false;
+var pressTimer = null, isShaking = false, isRevealing = false;
 var drawHistory = []; // [{category, time, lotId, level}]
 var tubeEl = document.getElementById('tubeEl');
 var shakeAudio = new Audio('assets/sounds/freesound_community-spray-can-shake-92396.mp3');
@@ -1178,6 +1178,8 @@ function onPressEnd(e) {
   revealLot();
 }
 function revealLot() {
+  if (isRevealing) return;
+  isRevealing = true;
   var lots = LOT_DATA[currentCategory.name] || LOT_DATA['观音灵签'];
   var idx = Math.floor(Math.random() * lots.length);
   currentLot = lots[idx];
@@ -1246,6 +1248,7 @@ function revealLot() {
     } else {
       hint.style.display = 'none';
     }
+    isRevealing = false;
   }, 400);
 }
 function getElIcon(el){var m={'金':'🪙','木':'🌿','水':'💧','火':'🔥','土':'⛰️'};return m[el]||'';}
