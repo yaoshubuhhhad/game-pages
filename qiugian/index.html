@@ -32,6 +32,7 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
 .form-label{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:4px;display:block}
 .form-input{width:100%;padding:10px 12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:rgba(255,255,255,.65);font-size:13px;font-family:inherit}
 .form-input:focus{outline:none;border-color:rgba(220,180,60,.25)}
+.form-hint{font-size:9px;color:rgba(255,255,255,.12);margin-top:3px;line-height:1.4}
 .chosen-cat{text-align:center;color:rgba(255,255,255,.3);font-size:12px;margin-bottom:16px}
 .btn-row{display:flex;gap:10px;justify-content:center;margin-top:16px}
 .btn{padding:11px 28px;border-radius:24px;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit}
@@ -117,10 +118,12 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
     <div class="form-group">
       <label class="form-label">出生年月日</label>
       <input class="form-input" id="inputBirth" placeholder="例如：1995年3月8日">
+      <div class="form-hint">填写完整年月日，可推算日柱天干，解读更准确</div>
     </div>
     <div class="form-group">
       <label class="form-label">所求之事（可选）</label>
-      <input class="form-input" id="inputMatter" placeholder="例如：事业前程 / 姻缘 / 财运">
+      <input class="form-input" id="inputMatter" placeholder="例如：事业前程 / 姻缘 / 财运 / 跳槽 / 考研">
+      <div class="form-hint">用于匹配五行属性，辅助签文解读</div>
     </div>
     <div class="btn-row">
       <button class="btn btn-back" onclick="goStage('stageCategory')">← 重选签谱</button>
