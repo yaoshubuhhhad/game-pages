@@ -50,11 +50,12 @@ body{min-height:100vh;background:linear-gradient(180deg,#1a0a00,#2d1810,#1a0a00)
 /* ====== 阶段4: 摇签 ====== */
 .tube-wrapper{position:relative;margin:8px auto 0;width:120px}
 .tube{width:120px;height:230px;position:relative}
-.tube-body{width:100%;height:100%;background:url('assets/images/4.png') center/cover no-repeat;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.45);overflow:hidden;position:relative}
+.tube-body{width:100%;height:100%;background:url('assets/images/4.png') center/cover no-repeat;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.45),inset 0 0 30px rgba(26,10,0,.5);overflow:hidden;position:relative}
+.tube.shaking{filter:drop-shadow(0 0 16px rgba(253,203,110,.3))}
 .stick-popped{position:absolute;top:-65px;left:50%;margin-left:-4px;width:8px;height:80px;background:linear-gradient(90deg,#f5e6ca,#fff,#f0e6d0);border-radius:3px 3px 0 0;box-shadow:0 -6px 20px rgba(0,0,0,.3);z-index:4;display:none}
 .stick-popped.show{display:block;animation:stick-out .35s ease-out;box-shadow:0 -6px 20px rgba(0,0,0,.3),0 0 24px rgba(253,203,110,.5),0 0 48px rgba(253,203,110,.2)}
 .stick-popped .num{position:absolute;top:16px;left:0;right:0;text-align:center;font-size:7px;color:#8B6914;writing-mode:vertical-rl;font-family:serif}
-@keyframes tube-shake{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-6deg)}75%{transform:rotate(5deg)}}
+@keyframes tube-shake{0%{transform:translate(0,0) rotate(0deg)}12%{transform:translate(-1px,1px) rotate(-3deg)}25%{transform:translate(1px,-1px) rotate(4deg)}37%{transform:translate(-1px,0) rotate(-5deg)}50%{transform:translate(0,1px) rotate(3deg)}62%{transform:translate(1px,0) rotate(-4deg)}75%{transform:translate(-1px,-1px) rotate(5deg)}87%{transform:translate(0,0) rotate(-2deg)}100%{transform:translate(0,0) rotate(0deg)}}
 @keyframes stick-out{0%{transform:translateY(0);opacity:0}100%{transform:translateY(-65px);opacity:1}}
 @keyframes result-reveal{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
 .stage#stageResult.active .result-zone{animation:result-reveal .5s ease-out}
@@ -1138,7 +1139,7 @@ shakeAudio.loop = true;
 shakeAudio.volume = 0.4;
 var dropAudio = new Audio('assets/sounds/freesound_community-falling-bamboo-83469.mp3');
 dropAudio.volume = 0.5;
-var chimeAudio = new Audio('assets/sounds/reveal-chime.mp3');
+var chimeAudio = new Audio('assets/sounds/reveal-chime.mp3.mp3');
 chimeAudio.volume = 0.4;
 
 function cleanDrawHistory() {
@@ -1152,6 +1153,7 @@ function onPressStart(e) {
   pressTimer = setTimeout(function() {
     isShaking = true;
     tubeEl.style.animation = 'tube-shake .1s infinite';
+    tubeEl.classList.add('shaking');
     document.getElementById('shakeBtn').classList.add('shaking');
     document.getElementById('shakeBtn').textContent = '🤚 摇动中...';
     document.getElementById('stickPopped').classList.remove('show');
@@ -1165,6 +1167,7 @@ function onPressEnd(e) {
   if (!isShaking) return;
   isShaking = false;
   tubeEl.style.animation = '';
+  tubeEl.classList.remove('shaking');
   document.getElementById('shakeBtn').classList.remove('shaking');
   document.getElementById('shakeBtn').textContent = '🖐 长按摇签';
   shakeAudio.pause();
