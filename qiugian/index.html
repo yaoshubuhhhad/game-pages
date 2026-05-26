@@ -1209,8 +1209,10 @@ function revealLot() {
       document.getElementById('matchSign').innerHTML = '<span class="match-section-label">📜 签意</span>' + match.signTheme;
       document.getElementById('matchInteraction').innerHTML = '<span class="match-section-label">🔗 互动</span>' + ctx + ' · 签属' + signEl + ' · ' + match.relation + '。' + match.interaction;
       document.getElementById('matchAdvice').innerHTML = '<span class="match-section-label">💡 建议</span>' + match.advice;
-      var srcNote = birthEl ? '日主由出生日期推算日柱天干得出，反映先天倾向' : '';
-      if (birthEl && matterEl) srcNote += '；当前以所求之事五行优先匹配';
+      var srcNote = '';
+      if (birthEl && matterEl) srcNote = '日主由出生日期推算日柱天干得出；当前以所求之事五行优先匹配';
+      else if (birthEl) srcNote = '日主由出生日期推算日柱天干得出，反映先天倾向';
+      else if (matterEl) srcNote = '匹配基于所求之事的关键词五行';
       document.getElementById('matchSource').textContent = srcNote;
     } else {
       matchBox.style.display = 'none';
