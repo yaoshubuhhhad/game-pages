@@ -7,7 +7,7 @@
 
   var ctx = canvas.getContext('2d');
   var particles = [];
-  var COUNT = 35;
+  var COUNT = 55;
   var w, h;
   var running = true;
 
@@ -22,10 +22,10 @@
     return {
       x: Math.random() * w,
       y: Math.random() * h,
-      r: Math.random() * 1.8 + 0.6,        // 0.6 ~ 2.4px
-      vx: (Math.random() - 0.5) * 0.15,     // 极慢水平漂移
-      vy: -(Math.random() * 0.25 + 0.05),   // 缓慢上升
-      opacity: Math.random() * 0.06 + 0.02, // 0.02 ~ 0.08
+      r: Math.random() * 1.5 + 0.4,         // 0.4 ~ 1.9px（更小）
+      vx: (Math.random() - 0.5) * 0.2,      // 更明显的水平漂移
+      vy: -(Math.random() * 0.18 + 0.03),   // 更慢的上升
+      opacity: Math.random() * 0.05 + 0.015, // 0.015 ~ 0.065（更淡）
       hue: Math.random() < 0.3 ? 35 : (Math.random() < 0.5 ? 40 : 20), // 暖金/琥珀/微红
       life: Math.random() * 600 + 200,       // 当前帧寿命
       maxLife: Math.random() * 600 + 200
@@ -48,11 +48,11 @@
       p.y += p.vy;
 
       // 微弱的随机扰动
-      p.vx += (Math.random() - 0.5) * 0.008;
-      p.vy += (Math.random() - 0.5) * 0.008;
+      p.vx += (Math.random() - 0.5) * 0.006;
+      p.vy += (Math.random() - 0.5) * 0.006;
       // 限制速度范围
-      p.vx = Math.max(-0.2, Math.min(0.2, p.vx));
-      p.vy = Math.max(-0.35, Math.min(0.05, p.vy));
+      p.vx = Math.max(-0.25, Math.min(0.25, p.vx));
+      p.vy = Math.max(-0.25, Math.min(0.05, p.vy));
 
       // 生命周期
       p.life--;

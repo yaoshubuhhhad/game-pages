@@ -46,34 +46,38 @@
 
 html, body {
   min-height: 100vh;
-  background: linear-gradient(175deg, var(--bg-deep) 0%, var(--bg-mid) 35%, var(--bg-warm) 65%, var(--bg-deep) 100%);
+  background: linear-gradient(180deg,
+    #100701 0%,        /* 顶部最暗 */
+    #1a0d04 20%,       /* 缓慢过渡 */
+    #24140c 45%,       /* 中央偏暖——视线聚焦 */
+    #1f1108 65%,       /* 逐渐变暗 */
+    #100701 100%       /* 底部最暗 */
+  );
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   overflow-x: hidden;
   color: var(--text-body);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Vignette —— 中心向四边渐暗 */
+/* Vignette —— 极柔、边界消失 */
 body::after {
   content: '';
   position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  background: radial-gradient(ellipse at 50% 40%, transparent 45%, rgba(10, 4, 1, 0.55) 100%);
+  background: radial-gradient(ellipse at 50% 42%, transparent 55%, rgba(8, 3, 0, 0.45) 100%);
 }
 
-/* 中央琥珀呼吸光晕 */
+/* 中央琥珀呼吸光晕 —— 像远处香火把空气微微照暖 */
 body::before {
   content: '';
   position: fixed;
-  top: 20%; left: 50%;
-  width: 60vw; max-width: 500px; height: 50vh;
-  transform: translate(-50%, -20%);
-  background: radial-gradient(ellipse at center, rgba(200, 155, 60, 0.04) 0%, transparent 70%);
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 42%, rgba(210, 145, 50, 0.025) 0%, rgba(180, 120, 40, 0.008) 40%, transparent 70%);
   pointer-events: none; z-index: 0;
   animation: theme-breathe var(--t-breathe) ease-in-out infinite;
 }
 
 @keyframes theme-breathe {
-  0%, 100% { opacity: 0.6; }
+  0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
 }
 
@@ -96,7 +100,8 @@ body::before {
   font-family: inherit;
   cursor: pointer;
   border: 1.5px solid var(--gold-border);
-  background: rgba(200, 155, 60, 0.08);
+  background: linear-gradient(180deg, rgba(200,155,60,.12) 0%, rgba(200,155,60,.04) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,220,150,.04), 0 2px 8px rgba(0,0,0,.3);
   color: var(--gold);
   transition: background var(--t-hover), border-color var(--t-hover), box-shadow var(--t-hover), transform 0.15s;
   user-select: none;
@@ -105,14 +110,14 @@ body::before {
 }
 
 .theme-btn:hover {
-  background: rgba(200, 155, 60, 0.14);
+  background: linear-gradient(180deg, rgba(210,160,65,.18) 0%, rgba(200,155,60,.08) 50%, rgba(180,135,50,.04) 100%);
   border-color: var(--gold-border-hover);
-  box-shadow: 0 0 20px var(--gold-glow);
+  box-shadow: inset 0 1px 0 rgba(255,220,150,.08), 0 0 24px rgba(200,155,60,.12), 0 4px 12px rgba(0,0,0,.4);
 }
 
 .theme-btn:active {
   transform: scale(0.98);
-  box-shadow: var(--shadow-btn-sink);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.4);
 }
 
 /* 次要/回退按钮 */
@@ -125,18 +130,21 @@ body::before {
   font-family: inherit;
   cursor: pointer;
   border: 1px solid var(--border-subtle);
-  background: rgba(255, 255, 255, 0.04);
+  background: linear-gradient(180deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.02) 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.02);
   color: var(--text-secondary);
-  transition: background var(--t-hover), border-color var(--t-hover), transform 0.15s;
+  transition: background var(--t-hover), border-color var(--t-hover), box-shadow var(--t-hover), transform 0.15s;
 }
 
 .theme-btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.03) 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 2px 12px rgba(0,0,0,.3);
 }
 
 .theme-btn-ghost:active {
   transform: scale(0.98);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.3);
 }
 
 /* ====== 卡片 ====== */
