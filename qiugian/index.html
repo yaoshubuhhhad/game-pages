@@ -1160,6 +1160,8 @@ var tubeEl = document.getElementById('tubeEl');
 var shakeAudio = new Audio('assets/sounds/freesound_community-spray-can-shake-92396.mp3');
 shakeAudio.loop = true;
 shakeAudio.volume = 0.4;
+var dropAudio = new Audio('assets/sounds/freesound_community-falling-bamboo-83469.mp3');
+dropAudio.volume = 0.5;
 
 function cleanDrawHistory() {
   var cutoff = Date.now() - 300000;
@@ -1189,6 +1191,9 @@ function onPressEnd(e) {
   document.getElementById('shakeBtn').textContent = '🖐 长按摇签';
   shakeAudio.pause();
   shakeAudio.currentTime = 0;
+  dropAudio.currentTime = 0;
+  dropAudio.play().catch(function(){});
+  setTimeout(function() { dropAudio.pause(); }, 1200);
   revealLot();
 }
 function revealLot() {
