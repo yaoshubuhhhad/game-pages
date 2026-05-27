@@ -4,6 +4,33 @@
 
 东方夜间仪式感数字空间——不是工具 UI，是安静的东方氛围。
 
+## 项目结构
+
+```
+tool-station/
+  index.html         — 首页
+  theme/             — 共享主题（所有页面引入）
+    theme.css          色彩变量、按钮、卡片、vignette、呼吸光晕
+    particles.js       canvas 香灰粒子系统
+  qiugian/           — 求签（主题参考实现——最完整的主题集成范例）
+  yaoshaizi/         — 摇骰子
+  xuansha/           — 选啥
+  CLAUDE.md          — 本文件
+  主题设计.txt        — 完整设计哲学与开发指引
+```
+
+新工具放在独立文件夹，如 `new-tool/index.html`。
+
+## 已有工具
+
+| 工具 | 文件夹 | 状态 |
+|------|--------|------|
+| 求签 | qiugian/ | **主题参考实现**——最完整的集成范例 |
+| 摇骰子 | yaoshaizi/ | 已接入主题 |
+| 选啥 | xuansha/ | 已接入主题 |
+
+部署在 GitHub Pages（picksha.com），推送 main 分支即上线。
+
 ## 主题系统
 
 所有页面共享主题。开发新工具时：
