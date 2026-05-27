@@ -178,3 +178,50 @@ hover：
   第二步：求签页接入主题，验证跑通（不改功能逻辑，只把硬编码颜色/按钮/氛围切到主题文件）
 
 跑通后，这套主题成为所有未来工具的基底。
+
+
+十一、新工具开发指引（给 AI 或开发者）
+
+开发任何新页面/新工具时，按以下步骤接入主题：
+
+1. 引入主题文件
+   在 <head> 中加入：
+   <link rel="stylesheet" href="../theme/theme.css">
+   在 </body> 前加入：
+   <script src="../theme/particles.js"></script>
+
+2. 不要手写颜色
+   所有颜色使用 CSS 变量：
+   金色：var(--gold) / var(--gold-hover) / var(--gold-border)
+   背景：var(--bg-deep) / var(--bg-mid) / var(--bg-warm) / var(--bg-surface)
+   文字：var(--text-body) / var(--text-secondary) / var(--text-faint)
+   边框：var(--border-subtle) / var(--border-card)
+   阴影：var(--shadow-card) / var(--shadow-card-hover)
+
+3. 使用主题组件类
+   按钮：class="theme-btn"（主操作）/ class="theme-btn-ghost"（次要/回退）
+   卡片：class="theme-card"
+   面板：class="theme-panel"
+   标题：class="theme-title"
+   副标题：class="theme-subtitle"
+   呼吸态：class="theme-breathing"
+
+4. 不要写 body 背景和 vignette
+   theme.css 已提供全局背景渐变、vignette、中央琥珀呼吸光晕。
+   如果该页需要比其他页面更暗/更暖，在工具自己的 <style> 中覆盖 body 背景。
+
+5. 不要画按钮和卡片
+   按钮和卡片的颜色、边框、hover、点击下沉、阴影扩散全部由 theme.css 处理。
+   工具 CSS 只写该工具独有的布局（如签筒尺寸、骰面位置、卡牌排列）。
+
+6. 粒子控制
+   particles.js 默认运行。如果需要在某个动作时暂停粒子（如求签摇动时）：
+   if (window.themeParticles) themeParticles.pause();
+   恢复：
+   if (window.themeParticles) themeParticles.resume();
+
+7. 工具专属 CSS 只写这些
+   - 该工具特有的元素尺寸和定位
+   - 该工具特有的动画 keyframes
+   - 该工具特有的交互状态
+   除此以外一律复用主题
