@@ -6,17 +6,7 @@
 <title>小工具站</title>
 <style>
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-body {
-  min-height:100vh;
-  background:linear-gradient(170deg,#3d2317,#4a2c1a);
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  overflow-x:hidden;
-}
-body::before {
-  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
-  opacity:.06;
-  background:repeating-linear-gradient(2deg,transparent,transparent 3px,rgba(255,220,180,.5) 3px,rgba(255,220,180,.5) 5px);
-}
+body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
 .container { max-width:420px; margin:0 auto; padding:50px 20px 40px; position:relative; z-index:1; }
 .header { text-align:center; margin-bottom:32px; }
 .title { font-size:26px; font-weight:700; color:rgba(255,255,255,.88); letter-spacing:6px; }
@@ -25,24 +15,25 @@ body::before {
 .tool-list { display:flex; flex-direction:column; gap:12px; }
 .tool-card {
   display:flex; align-items:center; gap:16px;
-  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08);
-  border-radius:16px; padding:20px; text-decoration:none;
-  transition:background .2s;
+  background:var(--bg-surface); border:1px solid var(--border-card);
+  border-radius:var(--radius-lg); padding:20px; text-decoration:none;
+  transition:transform var(--t-hover),box-shadow var(--t-hover),border-color var(--t-hover);
 }
-.tool-card:active { background:rgba(255,255,255,.1); }
+.tool-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-card-hover);border-color:rgba(200,155,60,.15)}
 .tool-icon { font-size:40px; flex-shrink:0; }
 .tool-info { flex:1; }
-.tool-name { font-size:16px; font-weight:600; color:rgba(255,255,255,.75); }
-.tool-desc { font-size:12px; color:rgba(255,255,255,.3); margin-top:3px; }
-.tool-arrow { font-size:18px; color:rgba(255,255,255,.15); flex-shrink:0; }
+.tool-name { font-size:16px; font-weight:600; color:var(--text-body); }
+.tool-desc { font-size:12px; color:var(--text-secondary); margin-top:3px; }
+.tool-arrow { font-size:18px; color:var(--text-faint); flex-shrink:0; }
 
 .placeholder-card {
   display:flex; align-items:center; justify-content:center; gap:8px;
-  background:rgba(255,255,255,.03); border:1px dashed rgba(255,255,255,.06);
-  border-radius:16px; padding:20px; color:rgba(255,255,255,.2); font-size:13px;
+  background:rgba(255,255,255,.02); border:1px dashed var(--border-subtle);
+  border-radius:16px; padding:20px; color:var(--text-faint); font-size:13px;
 }
-.footer { text-align:center; margin-top:36px; color:rgba(255,255,255,.12); font-size:10px; }
+.footer { text-align:center; margin-top:36px; color:var(--text-faint); font-size:10px; }
 </style>
+<link rel="stylesheet" href="./theme/theme.css">
 </head>
 <body>
 <div class="container">
@@ -81,5 +72,6 @@ body::before {
 
   <div class="footer">暖木暗金 · 小工具系列</div>
 </div>
+<script src="./theme/particles.js"></script>
 </body>
 </html>
