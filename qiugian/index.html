@@ -6,7 +6,10 @@
 <title>求签</title>
 <link rel="stylesheet" href="../theme/theme.css">
 <style>
-body{background:linear-gradient(175deg,var(--bg-deep) 0%,var(--bg-mid) 35%,var(--bg-warm) 65%,var(--bg-deep) 100%)}
+body{background:linear-gradient(180deg,#0b0501 0%,#150b05 30%,#1c1008 55%,#140a04 100%)}
+.qiugian-vignette{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 42%,transparent 48%,rgba(4,1,0,.6) 100%)}
+.qiugian-glow{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 44%,rgba(200,140,40,.018) 0%,rgba(160,100,30,.005) 35%,transparent 60%);animation:qiugian-breathe 4s ease-in-out infinite}
+@keyframes qiugian-breathe{0%,100%{opacity:.4}50%{opacity:1}}
 .back-link{position:absolute;top:20px;left:16px;color:var(--text-faint);font-size:12px;text-decoration:none;z-index:10}
 .back-link:hover{color:var(--gold)}
 .container{max-width:420px;margin:0 auto;padding:50px 20px 30px;position:relative;z-index:1;min-height:100vh}
@@ -94,6 +97,8 @@ body{background:linear-gradient(175deg,var(--bg-deep) 0%,var(--bg-mid) 35%,var(-
 </style>
 </head>
 <body>
+<div class="qiugian-vignette"></div>
+<div class="qiugian-glow"></div>
 <div class="container">
   <a href="../index.html" class="back-link">← 工具站</a>
   <div class="title">求 签</div>
@@ -1157,6 +1162,7 @@ function onPressStart(e) {
     document.getElementById('stickPopped').classList.remove('show');
     shakeAudio.currentTime = 0;
     shakeAudio.play().catch(function(){});
+    if (window.themeParticles) themeParticles.pause();
   }, 400);
 }
 function onPressEnd(e) {
@@ -1184,6 +1190,7 @@ function revealLot() {
   document.getElementById('stickNum').textContent = currentLot.id;
   document.getElementById('stickPopped').classList.add('show');
   setTimeout(function() {
+    if (window.themeParticles) themeParticles.resume();
     goStage('stageResult');
     document.getElementById('lotNum').textContent = '第' + currentLot.id + '签';
     document.getElementById('lotLevel').textContent = currentLot.level + '签';
