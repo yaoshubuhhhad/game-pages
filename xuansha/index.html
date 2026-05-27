@@ -8,22 +8,11 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  min-height: 100vh;
-  background: linear-gradient(170deg, #3d2317, #4a2c1a);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  overflow-x: hidden;
-}
-
-body::before {
-  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-  opacity: 0.06;
-  background: repeating-linear-gradient(2deg, transparent, transparent 3px, rgba(255,220,180,0.5) 3px, rgba(255,220,180,0.5) 5px);
-}
+body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
 
 .container { max-width: 480px; margin: 0 auto; padding: 40px 20px 30px; position: relative; z-index: 1; }
-.title { text-align: center; font-size: 24px; font-weight: 700; color: rgba(255,255,255,0.88); letter-spacing: 6px; margin-bottom: 6px; }
-.subtitle { text-align: center; font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
+.title { text-align: center; font-size: 24px; font-weight: 700; color: rgba(255,255,255,0.82); letter-spacing: 6px; margin-bottom: 6px; }
+.subtitle { text-align: center; font-size: 12px; color: var(--text-faint); margin-bottom: 28px; }
 
 .template-section { margin-bottom: 16px; }
 .template-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
@@ -112,14 +101,9 @@ textarea::placeholder { color: rgba(255,255,255,0.25); }
 .comment-text { font-size: 13px; color: #fdcb6e; margin-top: 10px; line-height: 1.5; }
 
 .btn-row { display: flex; gap: 10px; justify-content: center; margin: 16px 0; }
-.btn {
-  padding: 12px 32px; border-radius: 32px; font-size: 15px; font-weight: 600;
-  border: none; cursor: pointer; transition: all 0.2s; font-family: inherit;
-}
-.btn-primary { background: #e17055; color: white; box-shadow: 0 4px 22px rgba(225,112,85,0.35); }
-.btn-primary:active { transform: scale(0.96); }
-.btn-primary:disabled { opacity: 0.4; pointer-events: none; }
-.btn-secondary { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.6); }
+.btn-row .theme-btn { padding: 12px 32px; border-radius: 32px; font-size: 15px; }
+.btn-row .theme-btn-ghost { padding: 12px 32px; border-radius: 32px; font-size: 15px; }
+.btn-row .theme-btn:disabled { opacity: 0.4; pointer-events: none; }
 
 .actions { display: flex; gap: 16px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
 .action-link { font-size: 11px; color: rgba(255,255,255,0.4); cursor: pointer; }
@@ -129,9 +113,10 @@ textarea::placeholder { color: rgba(255,255,255,0.25); }
 
 .toast { position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 8px 20px; border-radius: 20px; font-size: 12px; z-index: 99; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
 .toast.show { opacity: 1; }
-.back-link { position:absolute; top:-30px; left:0; color:rgba(255,255,255,.25); font-size:12px; text-decoration:none; z-index:2; }
-.back-link:active { color:#e17055; }
+.back-link { position:absolute; top:-30px; left:0; color:var(--text-faint); font-size:12px; text-decoration:none; z-index:2; }
+.back-link:active { color:var(--gold); }
 </style>
+<link rel="stylesheet" href="../theme/theme.css">
 </head>
 <body>
 <div class="container">
@@ -170,8 +155,8 @@ textarea::placeholder { color: rgba(255,255,255,0.25); }
   </div>
 
   <div class="btn-row">
-    <button class="btn btn-secondary" id="btnReroll">重新选</button>
-    <button class="btn btn-primary" id="btnRoll">▶ 选啥</button>
+    <button class="theme-btn-ghost" id="btnReroll">重新选</button>
+    <button class="theme-btn" id="btnRoll">▶ 选啥</button>
   </div>
 
   <div class="actions">
@@ -951,5 +936,6 @@ deleteCustomTemplate = function(name) {
 };
 
 </script>
+<script src="../theme/particles.js"></script>
 </body>
 </html>
