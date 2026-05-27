@@ -15,19 +15,18 @@ tool-station/
   qiugian/           — 求签（主题参考实现——最完整的主题集成范例）
   yaoshaizi/         — 摇骰子
   xuansha/           — 选啥
-  CLAUDE.md          — 本文件
   主题设计.txt        — 完整设计哲学与开发指引
 ```
 
-新工具放在独立文件夹，如 `new-tool/index.html`。
+新工具放在 `tool-station/` 下独立文件夹，如 `tool-station/new-tool/index.html`。
 
 ## 已有工具
 
-| 工具 | 文件夹 | 状态 |
-|------|--------|------|
-| 求签 | qiugian/ | **主题参考实现**——最完整的集成范例 |
-| 摇骰子 | yaoshaizi/ | 已接入主题 |
-| 选啥 | xuansha/ | 已接入主题 |
+| 工具 | 路径 | 状态 |
+|------|------|------|
+| 求签 | tool-station/qiugian/ | **主题参考实现**——最完整的集成范例 |
+| 摇骰子 | tool-station/yaoshaizi/ | 已接入主题 |
+| 选啥 | tool-station/xuansha/ | 已接入主题 |
 
 部署在 GitHub Pages（picksha.com），推送 main 分支即上线。
 
@@ -35,9 +34,9 @@ tool-station/
 
 所有页面共享主题。开发新工具时：
 
-- 阅读 `主题设计.txt` 了解完整设计哲学和色彩/按钮/卡片/动效规范
-- 引入 `theme/theme.css`（色彩变量、按钮、卡片、vignette、呼吸光晕、动效）
-- 引入 `theme/particles.js`（canvas 香灰粒子，pause/resume API）
+- 阅读 `tool-station/主题设计.txt` 了解完整设计哲学和色彩/按钮/卡片/动效规范
+- 引入 `../theme/theme.css`（色彩变量、按钮、卡片、vignette、呼吸光晕、动效）
+- 引入 `../theme/particles.js`（canvas 香灰粒子，pause/resume API）
 - 工具专属 CSS 只写布局和特有动画，颜色一律用 CSS 变量
 
 ## 关键 CSS 变量
