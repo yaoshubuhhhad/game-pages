@@ -25,15 +25,17 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
   border-radius:var(--radius-lg); padding:20px; text-decoration:none;
   transition:transform var(--t-hover),box-shadow var(--t-hover),border-color var(--t-hover),background var(--t-hover);
 }
-.tool-card:first-child{background:linear-gradient(135deg,rgba(255,220,160,.08),rgba(255,220,160,.02))}
+.tool-card:first-child{background:linear-gradient(135deg,rgba(255,220,160,.08),rgba(255,220,160,.02));padding:24px 20px}
 .tool-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,180,80,.06);border-color:rgba(200,155,60,.2);background:linear-gradient(135deg,rgba(255,220,160,.1),rgba(255,220,160,.03))}
-.tool-icon { width:40px; height:40px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.tool-icon { width:40px; height:40px; flex-shrink:0; display:flex; align-items:center; justify-content:center; margin-left:4px; }
 .tool-icon svg { width:30px; height:30px; }
-.tool-info { flex:1; }
+.tool-info { flex:1; padding-left:4px; }
 .tool-name { font-size:16px; font-weight:600; color:var(--text-body); }
 .tool-desc { font-size:12px; color:rgba(255,255,255,.58); margin-top:3px; }
-.tool-arrow { font-size:16px; color:var(--text-faint); flex-shrink:0; opacity:0.35; transition:opacity 0.5s,transform 0.5s; }
-.tool-card:hover .tool-arrow{opacity:0.6;transform:translateX(4px)}
+.tool-arrow { font-size:16px; color:var(--text-faint); flex-shrink:0; opacity:0.08; transition:opacity 0.5s,transform 0.5s; margin-right:2px; }
+.tool-card:hover .tool-arrow{opacity:0.38;transform:translateX(6px)}
+
+.page-glow{position:fixed;top:38%;left:50%;width:70vw;max-width:600px;height:60vh;transform:translate(-50%,-38%);background:radial-gradient(ellipse at center,rgba(210,145,50,.015) 0%,transparent 70%);pointer-events:none;z-index:0;transition:top 1.8s ease-out,left 1.8s ease-out,opacity .8s}
 
 .placeholder-card {
   display:flex; align-items:center; justify-content:center; gap:8px;
@@ -45,6 +47,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 <link rel="stylesheet" href="./theme/theme.css">
 </head>
 <body>
+<div class="page-glow" id="pageGlow"></div>
 <div class="container">
   <div class="header">
     <div class="title">灯札</div>
@@ -82,5 +85,33 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
   <div class="footer">暖木暗金 · 小工具系列</div>
 </div>
 <script src="./theme/particles.js"></script>
+<script>
+(function(){
+  var glow = document.getElementById('pageGlow');
+  var cards = document.querySelectorAll('.tool-card');
+  if (!glow || !cards.length) return;
+  cards.forEach(function(card, i) {
+    card.addEventListener('mouseenter', function() {
+      var rect = card.getBoundingClientRect();
+      glow.style.top = (rect.top + rect.height/2) + 'px';
+      glow.style.left = (rect.left + rect.width/2) + 'px';
+      glow.style.transform = 'translate(-50%,-50%)';
+      glow.style.opacity = '1.2';
+      // 粒子响应
+      if (window.themeParticles) {
+        if (i === 1) themeParticles.resume(); // 摇骰: 粒子加速感
+        if (i === 2) themeParticles.pause();   // 求签: 变安静
+      }
+    });
+    card.addEventListener('mouseleave', function() {
+      glow.style.top = '38%';
+      glow.style.left = '50%';
+      glow.style.transform = 'translate(-50%,-38%)';
+      glow.style.opacity = '0.8';
+      if (window.themeParticles) themeParticles.resume();
+    });
+  });
+})();
+</script>
 </body>
 </html>
