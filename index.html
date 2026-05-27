@@ -11,22 +11,22 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='32' cy='32' r='20'><stop offset='0%' stop-color='%23d6a85f' stop-opacity='0.9'/><stop offset='30%' stop-color='%23c49545' stop-opacity='0.4'/><stop offset='60%' stop-color='%23b08030' stop-opacity='0.08'/><stop offset='100%' stop-color='%23120b09' stop-opacity='0'/></radialGradient><radialGradient id='d' cx='32' cy='32' r='4'><stop offset='0%' stop-color='%23e8c070' stop-opacity='1'/><stop offset='50%' stop-color='%23d6a85f' stop-opacity='0.6'/><stop offset='100%' stop-color='%23b08030' stop-opacity='0'/></radialGradient></defs><rect width='64' height='64' rx='12' fill='%23120b09'/><circle cx='32' cy='32' r='24' fill='none' stroke='rgba(180,140,90,0.12)' stroke-width='1.5' stroke-dasharray='28 6 12 4 20 5 16 3 24 7' stroke-linecap='round'/><circle cx='32' cy='32' r='20' fill='url(%23g)'/><circle cx='32' cy='32' r='3' fill='url(%23d)'/></svg>">
 <style>
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
+body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden;background:linear-gradient(180deg,#1a0f06 0%,#24140b 20%,#2e1c12 45%,#281810 65%,#1a0f06 100%)}
 .container { max-width:420px; margin:0 auto; padding:50px 20px 40px; position:relative; z-index:1; }
 .header { text-align:center; margin-bottom:32px; }
 .title { font-size:26px; font-weight:700; color:rgba(255,255,255,.82); letter-spacing:8px; font-family:serif; }
-.subtitle { font-size:12px; color:rgba(255,255,255,.28); margin-top:8px; letter-spacing:2px; }
+.subtitle { font-size:12px; color:rgba(255,255,255,.35); margin-top:8px; letter-spacing:2px; }
 
 .tool-list { display:flex; flex-direction:column; gap:32px; }
 .tool-card {
   display:flex; align-items:center; gap:16px;
-  background:linear-gradient(135deg,rgba(255,220,160,.05),rgba(255,220,160,.01));
+  background:linear-gradient(135deg,rgba(255,220,160,.08),rgba(255,220,160,.02));
   border:1px solid var(--border-card);
   border-radius:var(--radius-lg); padding:20px; text-decoration:none;
   transition:transform var(--t-hover),box-shadow var(--t-hover),border-color var(--t-hover),background var(--t-hover);
 }
-.tool-card:first-child{background:linear-gradient(135deg,rgba(255,220,160,.08),rgba(255,220,160,.02));padding:24px 20px}
-.tool-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,180,80,.06);border-color:rgba(200,155,60,.2);background:linear-gradient(135deg,rgba(255,220,160,.1),rgba(255,220,160,.03))}
+.tool-card:first-child{background:linear-gradient(135deg,rgba(255,220,160,.12),rgba(255,220,160,.04));padding:24px 20px}
+.tool-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,180,80,.08);border-color:rgba(200,155,60,.22);background:linear-gradient(135deg,rgba(255,220,160,.14),rgba(255,220,160,.04))}
 .tool-icon { width:40px; height:40px; flex-shrink:0; display:flex; align-items:center; justify-content:center; margin-left:4px; }
 .tool-icon svg { width:30px; height:30px; }
 .tool-info { flex:1; padding-left:4px; }
@@ -35,7 +35,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .tool-arrow { font-size:16px; color:var(--text-faint); flex-shrink:0; opacity:0.08; transition:opacity 0.5s,transform 0.5s; margin-right:2px; }
 .tool-card:hover .tool-arrow{opacity:0.38;transform:translateX(6px)}
 
-.page-glow{position:fixed;top:38%;left:50%;width:70vw;max-width:600px;height:60vh;transform:translate(-50%,-38%);background:radial-gradient(ellipse at center,rgba(210,145,50,.015) 0%,transparent 70%);pointer-events:none;z-index:0;transition:top 1.8s ease-out,left 1.8s ease-out,opacity .8s}
+.page-glow{position:fixed;top:38%;left:50%;width:70vw;max-width:600px;height:60vh;transform:translate(-50%,-38%);background:radial-gradient(ellipse at center,rgba(210,145,50,.025) 0%,transparent 70%);pointer-events:none;z-index:0;transition:top 1.8s ease-out,left 1.8s ease-out,opacity .8s}
 
 .placeholder-card {
   display:flex; align-items:center; justify-content:center; gap:8px;
