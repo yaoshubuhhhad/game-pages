@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://picksha.com/sitemap.xml
