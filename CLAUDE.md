@@ -30,6 +30,13 @@ tool-station/
 
 部署在 GitHub Pages（picksha.com），推送 main 分支即上线。
 
+## Git 分支管理（严格遵守）
+
+- **dev**：所有开发工作在此分支进行。提交、修改、实验，一律在 dev。
+- **main**：仅用于部署。不得直接在 main 上做任何改动。
+- **流程**：dev 开发 → 用户预览确认 → 用户许可后 → merge dev 到 main → 推送。
+- **禁止**：未经用户明确许可，绝不擅自 merge 到 main 或 push 到远程。
+
 ## 主题系统
 
 所有页面共享主题。开发新工具时：
