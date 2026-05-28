@@ -34,8 +34,9 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .plaque.dying{opacity:0;filter:blur(6px);transform:translateY(30px);transition:opacity 3s ease-in,filter 3s ease-in,transform 3s ease-in}
 
 /* 空木牌（写留言入口） */
-.plaque.empty{background:linear-gradient(180deg,rgba(200,155,60,.1),rgba(120,80,40,.06));border-color:rgba(200,155,60,.18);color:rgba(255,255,255,.18);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;min-height:50px;letter-spacing:2px}
-.plaque.empty:hover{color:rgba(255,255,255,.4);border-color:rgba(200,155,60,.35);box-shadow:inset 0 1px 0 rgba(255,220,160,.1),0 0 28px rgba(200,155,60,.15),0 4px 14px rgba(0,0,0,.55)}
+.plaque.empty{width:150px;background:linear-gradient(180deg,rgba(200,155,60,.15),rgba(120,80,40,.08));border-color:rgba(200,155,60,.25);color:rgba(255,255,255,.28);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;min-height:56px;letter-spacing:3px;animation:empty-pulse 3s ease-in-out infinite}
+.plaque.empty:hover{color:rgba(255,255,255,.5);border-color:rgba(200,155,60,.45);box-shadow:inset 0 1px 0 rgba(255,220,160,.15),0 0 32px rgba(200,155,60,.2),0 6px 16px rgba(0,0,0,.6)}
+@keyframes empty-pulse{0%,100%{box-shadow:inset 0 1px 0 rgba(255,220,160,.04),0 0 12px rgba(200,155,60,.06)}50%{box-shadow:inset 0 1px 0 rgba(255,220,160,.1),0 0 20px rgba(200,155,60,.15)}}
 
 /* 书写面板 */
 .write-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(8,3,1,.78);backdrop-filter:blur(10px);flex-direction:column;align-items:center;justify-content:center}
@@ -49,7 +50,8 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .write-close{position:absolute;top:24px;right:24px;color:rgba(255,255,255,.18);font-size:22px;cursor:pointer;background:none;border:none;line-height:1}
 
 /* 底部 */
-.footer-hint{text-align:center;color:var(--text-faint);font-size:10px;margin-top:36px;letter-spacing:2px}
+.write-hint{text-align:center;color:rgba(255,255,255,.15);font-size:10px;margin-top:4px;letter-spacing:2px}
+.footer-hint{text-align:center;color:var(--text-faint);font-size:10px;margin-top:24px;letter-spacing:2px}
 </style>
 </head>
 <body>
@@ -66,6 +68,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
     </svg>
     <div id="plaquesContainer"></div>
   </div>
+  <div class="write-hint">↑ 点击发光的空木牌，留下你的话</div>
   <div class="footer-hint">留言在 24 小时后沉入黑暗</div>
 </div>
 
@@ -96,7 +99,7 @@ var plaquesContainer = document.getElementById('plaquesContainer');
 var positions = [
   {x:20,y:75}, {x:155,y:20}, {x:80,y:155},
   {x:210,y:115}, {x:45,y:50}, {x:230,y:85},
-  {x:120,y:130}, {x:175,y:185}
+  {x:120,y:130}, {x:90,y:210}
 ];
 
 function escapeHtml(text) {
