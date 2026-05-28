@@ -91,6 +91,36 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .viewer-hint{font-size:10px;color:rgba(255,255,255,.1);margin-top:16px;letter-spacing:3px}
 .viewer-blow{display:none;font-size:10px;color:rgba(255,255,255,.1);margin-top:20px;letter-spacing:3px;cursor:pointer;transition:color .8s}
 .viewer-blow:hover{color:rgba(255,180,120,.35)}
+
+/* 余烬视图 */
+.yj-overlay{display:none;position:fixed;inset:0;z-index:50;background:#030101}
+.yj-overlay.show{display:flex;flex-direction:column}
+.yj-top{display:flex;justify-content:space-between;padding:20px;z-index:51}
+.yj-back{color:rgba(255,255,255,.18);font-size:12px;cursor:pointer;letter-spacing:2px;background:none;border:none}
+.yj-back:hover{color:var(--gold)}
+.yj-title{color:rgba(255,255,255,.22);font-size:13px;font-family:serif;letter-spacing:6px}
+.yj-layer{position:absolute;inset:0;z-index:1}
+.yj-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.08);font-size:13px;font-family:serif;letter-spacing:4px}
+.yj-frag{position:absolute;font-family:serif;letter-spacing:.5px;line-height:1.65;text-align:center;cursor:pointer}
+.yj-active{font-size:15px;color:rgba(255,240,220,.65);z-index:5;transform:scale(1.01)}
+.yj-fading{font-size:12px;color:rgba(255,220,180,.3);filter:blur(.5px);z-index:3;transform:scale(.94)}
+.yj-ext{font-size:10px;color:rgba(200,170,140,.1);filter:blur(2.5px) grayscale(.6);z-index:1;transform:scale(.85);pointer-events:none}
+.yj-blow{animation:blow-out 1.2s ease-in forwards;pointer-events:none}
+.yj-viewer{display:none;position:fixed;inset:0;z-index:90;background:rgba(5,3,1,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+.yj-viewer.show{display:flex}
+.yj-viewer-card{max-width:320px;padding:32px 28px;background:linear-gradient(180deg,rgba(150,100,50,.35),rgba(80,50,30,.2));border:1px solid rgba(200,155,60,.15);border-radius:6px;text-align:center;box-shadow:0 0 60px rgba(200,155,60,.12),0 12px 40px rgba(0,0,0,.6)}
+.yj-viewer-text{font-size:16px;color:rgba(255,245,230,.88);line-height:2;font-family:serif;letter-spacing:1px}
+.yj-viewer-blow{font-size:10px;color:rgba(255,255,255,.12);margin-top:20px;letter-spacing:3px;cursor:pointer;transition:color .8s}
+.yj-viewer-blow:hover{color:rgba(255,180,120,.4)}
+.yj-viewer-forget{font-size:10px;color:rgba(255,255,255,.08);margin-top:8px;letter-spacing:3px;cursor:pointer;transition:color .8s}
+.yj-viewer-forget:hover{color:rgba(255,140,90,.3)}
+.yj-confirm{display:none;position:fixed;inset:0;z-index:100;background:rgba(2,1,0,.88);flex-direction:column;align-items:center;justify-content:center}
+.yj-confirm.show{display:flex}
+.yj-confirm-text{font-size:14px;color:rgba(255,240,220,.5);text-align:center;line-height:2;font-family:serif;letter-spacing:2px;margin-bottom:32px}
+.yj-confirm-keep{font-size:12px;color:rgba(255,255,255,.25);letter-spacing:3px;cursor:pointer;font-family:serif;margin-right:20px;transition:color .6s}
+.yj-confirm-keep:hover{color:rgba(255,255,255,.5)}
+.yj-confirm-do{font-size:12px;color:rgba(255,140,90,.2);letter-spacing:3px;cursor:pointer;font-family:serif;transition:color .6s}
+.yj-confirm-do:hover{color:rgba(255,140,90,.5)}
 </style>
 </head>
 <body>
@@ -121,6 +151,25 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
     <div class="viewer-blow" id="viewerBlow">吹灭</div>
   </div>
 </div>
+
+<!-- 余烬视图 -->
+<div class="yj-overlay" id="yjOverlay">
+  <div class="yj-top"><button class="yj-back" id="yjBack">← 挂念</button><div class="yj-title">余 烬</div></div>
+  <div class="yj-layer" id="yjLayer"></div>
+  <div class="yj-empty" id="yjEmpty">你还没有点亮过任何东西</div>
+</div>
+<div class="yj-viewer" id="yjViewer">
+  <div class="yj-viewer-card">
+    <div class="yj-viewer-text" id="yjViewerText"></div>
+    <div class="yj-viewer-blow" id="yjViewerBlow">吹灭</div>
+    <div class="yj-viewer-forget" id="yjViewerForget">遗忘</div>
+  </div>
+</div>
+<div class="yj-confirm" id="yjConfirm">
+  <div class="yj-confirm-text">一旦遗忘，<br>它将不再属于你。</div>
+  <div><span class="yj-confirm-keep" id="yjConfirmKeep">让它留下</span><span class="yj-confirm-do" id="yjConfirmDo">遗忘</span></div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../theme/particles.js"></script>
 <script>
@@ -316,10 +365,64 @@ document.getElementById('writeEntry').addEventListener('click',function(){
   document.getElementById('writeInput').focus();
 });
 
-// 跨页面共享 device_id —— file:// 下 localStorage 不互通, 用 cookie
-document.cookie = 'lx_did=' + DEVICE_ID + ';path=/;SameSite=Lax';
-document.getElementById('emLink').addEventListener('click',function(){
-  document.cookie = 'lx_did=' + DEVICE_ID + ';path=/;SameSite=Lax';
+// file:// 下 localStorage 不跨文件互通 —— 余烬改为同页视图
+document.getElementById('emLink').addEventListener('click',function(e){
+  e.preventDefault();
+  showYujin();
+});
+
+// ====== 余烬视图（同页内，共享 DEVICE_ID） ======
+var yjMsgs = [], yjCurFrag = null, yjCurMsg = null;
+function showYujin(){
+  document.getElementById('yjOverlay').classList.add('show');
+  loadYujinMsgs();
+}
+document.getElementById('yjBack').addEventListener('click',function(){
+  document.getElementById('yjOverlay').classList.remove('show');
+});
+function loadYujinMsgs(){
+  if (!DEVICE_ID) return;
+  supabase.from('messages').select('*').eq('device_id',DEVICE_ID).order('created_at',{ascending:false}).limit(50).then(function(res){
+    if (res.error || !res.data || !res.data.length) return;
+    document.getElementById('yjEmpty').style.display = 'none';
+    yjMsgs = res.data;
+    var html = '';
+    yjMsgs.forEach(function(m,i){
+      var cls, mw, txt;
+      if (m.extinguished){ cls='yj-ext'; mw=90; txt=m.content.length>5?m.content.substring(0,5)+'…':m.content; }
+      else { var h=Math.max(0,24-(Date.now()-new Date(m.created_at).getTime())/3600000); cls=h<3?'yj-fading':'yj-active'; mw=h<3?140:200; txt=m.content; }
+      var x=8+Math.random()*76, y=10+Math.random()*70, r=(Math.random()-.5)*4;
+      html+='<div class="yj-frag '+cls+'" style="left:'+x+'vw;top:'+y+'vh;max-width:'+mw+'px;transform:rotate('+r.toFixed(1)+'deg)" data-id="'+m.id+'" data-ext="'+!!m.extinguished+'">'+txt.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>';
+    });
+    document.getElementById('yjLayer').innerHTML = html;
+    document.querySelectorAll('.yj-frag:not(.yj-ext)').forEach(function(f){
+      f.addEventListener('click',function(e){ e.stopPropagation();
+        var id = parseInt(f.dataset.id);
+        yjCurMsg = yjMsgs.find(function(mm){ return mm.id===id; });
+        yjCurFrag = f;
+        document.getElementById('yjViewerText').textContent = yjCurMsg.content;
+        document.getElementById('yjViewer').classList.add('show');
+      });
+    });
+  });
+}
+document.getElementById('yjViewer').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('show'); });
+document.getElementById('yjViewerBlow').addEventListener('click',function(){
+  if (!yjCurFrag || !yjCurMsg) return;
+  document.getElementById('yjViewer').classList.remove('show');
+  yjCurFrag.classList.add('yj-blow');
+  setTimeout(function(){ supabase.from('messages').update({extinguished:true}).eq('id',yjCurMsg.id).then(function(){ loadYujinMsgs(); }); },1300);
+});
+document.getElementById('yjViewerForget').addEventListener('click',function(){
+  document.getElementById('yjViewer').classList.remove('show');
+  document.getElementById('yjConfirm').classList.add('show');
+});
+document.getElementById('yjConfirmKeep').addEventListener('click',function(){ document.getElementById('yjConfirm').classList.remove('show'); });
+document.getElementById('yjConfirmDo').addEventListener('click',function(){
+  document.getElementById('yjConfirm').classList.remove('show');
+  if (!yjCurFrag || !yjCurMsg) return;
+  yjCurFrag.classList.add('yj-blow');
+  setTimeout(function(){ supabase.from('messages').update({forgotten:true,device_id:null}).eq('id',yjCurMsg.id).then(function(){ loadYujinMsgs(); }); },1300);
 });
 
 loadMessages();
