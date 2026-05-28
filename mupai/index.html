@@ -35,9 +35,9 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .frag-far{font-size:10px;color:rgba(220,190,150,.14);filter:blur(1.2px);z-index:2;transform:scale(.88)}
 .frag-far:hover{color:rgba(255,230,200,.45);filter:blur(.5px);text-shadow:0 0 6px rgba(200,155,60,.04);transform:scale(.95)!important}
 
-/* 写入口——像一块特别的碎片漂浮在近景 */
-.frag-entry{font-size:13px;color:rgba(255,255,255,.22);z-index:5;cursor:pointer;letter-spacing:3px;animation:entry-breathe 4s ease-in-out infinite}
-.frag-entry:hover{color:rgba(255,255,255,.5);text-shadow:0 0 20px rgba(200,155,60,.15)}
+/* 写入口——固定在底部居中，不参与漂浮 */
+.write-entry{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);z-index:15;font-size:13px;color:rgba(255,255,255,.28);letter-spacing:4px;font-family:serif;cursor:pointer;animation:entry-breathe 4s ease-in-out infinite}
+.write-entry:hover{color:rgba(255,255,255,.55);text-shadow:0 0 20px rgba(200,155,60,.15)}
 @keyframes entry-breathe{0%,100%{opacity:.5}50%{opacity:1}}
 
 /* 漂浮动画 */
@@ -68,6 +68,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 <div class="space" id="space">
   <a href="../index.html" class="top-left">← 灯札</a>
   <div class="top-right">挂 念</div>
+  <div class="write-entry" id="writeEntry">写些什么</div>
   <div class="whisper">有些话<br>适合留给<br>夜晚</div>
 </div>
 
@@ -137,7 +138,7 @@ function loadMessages() {
 function renderMessages(messages) {
   var now = Date.now();
   var total = messages.length;
-  var positions = spreadPositions(total + 1); // +1 for entry
+  var positions = spreadPositions(total);
   var html = '';
 
   messages.forEach(function(msg,i){
@@ -165,12 +166,6 @@ function renderMessages(messages) {
     '</div>';
   });
 
-  // 写入口——近景漂浮块
-  var ep = positions[messages.length];
-  html += '<div class="fragment frag-drift frag-entry" id="writeEntry" style="left:'+ep.x+'vw;top:'+ep.y+'vh;max-width:160px;transform:rotate('+ep.rot.toFixed(1)+'deg)">'+
-    '留下些什么？'+
-  '</div>';
-
   space.innerHTML += html;
 
   // 绑定 hover 完整显示
@@ -185,14 +180,6 @@ function renderMessages(messages) {
     });
   });
 
-  // 绑定写入口
-  var entry = document.getElementById('writeEntry');
-  if (entry) {
-    entry.addEventListener('click',function(){
-      document.getElementById('writePanel').classList.add('show');
-      document.getElementById('writeInput').focus();
-    });
-  }
 }
 
 // 时间衰减
@@ -240,6 +227,12 @@ document.getElementById('writeSubmit').addEventListener('click',function(){
     space.querySelectorAll('.fragment').forEach(function(f){ f.remove(); });
     loadMessages();
   });
+});
+
+// 固定写入口
+document.getElementById('writeEntry').addEventListener('click',function(){
+  document.getElementById('writePanel').classList.add('show');
+  document.getElementById('writeInput').focus();
 });
 
 loadMessages();
