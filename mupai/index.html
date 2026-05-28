@@ -202,9 +202,6 @@ function showViewer(text){
   document.getElementById('viewerText').textContent = text;
   v.classList.add('show');
 }
-document.getElementById('viewerClose').addEventListener('click',function(){
-  document.getElementById('viewer').classList.remove('show');
-});
 document.getElementById('viewer').addEventListener('click',function(e){
   if (e.target === this) this.classList.remove('show');
 });
