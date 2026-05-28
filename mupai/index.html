@@ -14,35 +14,46 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .back-link{position:absolute;top:20px;left:16px;color:var(--text-faint);font-size:12px;text-decoration:none;z-index:10}
 .back-link:hover{color:var(--gold)}
 .title{font-size:20px;font-weight:700;color:rgba(255,255,255,.78);letter-spacing:8px;font-family:serif;text-align:center;margin-bottom:4px}
-.subtitle{font-size:10px;color:var(--text-faint);letter-spacing:4px;text-align:center;margin-bottom:36px}
+.subtitle{font-size:10px;color:var(--text-faint);letter-spacing:4px;text-align:center;margin-bottom:24px}
 
-/* 树枝区域 */
-.branch-area{position:relative;width:100%;height:340px;overflow:hidden}
-.branch-svg{position:absolute;top:0;left:50%;transform:translateX(-50%);width:340px;height:320px;opacity:.28;animation:branch-sway 12s ease-in-out infinite}
+/* ====== 第一层：树枝 + 木牌（沉浸区，无任何文字） ====== */
+.branch-area{position:relative;width:100%;height:360px;overflow:hidden}
+.branch-svg{position:absolute;top:0;left:50%;transform:translateX(-50%);width:340px;height:340px;opacity:.25;animation:branch-sway 12s ease-in-out infinite}
 @keyframes branch-sway{0%,100%{transform:translateX(-50%) rotate(0deg)}30%{transform:translateX(-50%) rotate(.3deg)}70%{transform:translateX(-50%) rotate(-.25deg)}}
 
 /* 木牌 */
-.plaque-container{position:absolute;animation:plaque-sway 7s ease-in-out infinite}
+.plaque-container{position:absolute;animation:plaque-sway 8s ease-in-out infinite}
 .plaque-container:nth-child(odd){animation-delay:0s}
-.plaque-container:nth-child(even){animation-delay:3.5s}
-.plaque-container:nth-child(3n){animation-delay:1.5s}
-@keyframes plaque-sway{0%,100%{transform:rotate(0deg)}30%{transform:rotate(1.2deg)}60%{transform:rotate(-.8deg)}85%{transform:rotate(.5deg)}}
-.plaque{background:linear-gradient(180deg,rgba(110,70,35,.32),rgba(65,35,18,.24));border:1px solid rgba(200,155,60,.06);border-radius:2px 2px 3px 3px;padding:10px 12px;width:115px;text-align:center;color:rgba(255,240,220,.55);font-size:11px;line-height:1.7;font-family:serif;letter-spacing:.5px;cursor:default;transition:transform .5s,box-shadow .5s,opacity 1.2s,filter 1.2s;backdrop-filter:blur(3px);box-shadow:inset 0 1px 0 rgba(255,220,160,.03),0 2px 8px rgba(0,0,0,.45);position:relative}
-.plaque:hover{transform:translateY(-4px) rotate(0deg);box-shadow:inset 0 1px 0 rgba(255,220,160,.12),0 0 24px rgba(200,155,60,.1),0 6px 18px rgba(0,0,0,.55);color:rgba(255,245,230,.88)}
-.plaque .rope{position:absolute;top:-30px;left:50%;width:1.5px;height:30px;background:rgba(255,220,180,.1);transform:translateX(-50%)}
+.plaque-container:nth-child(even){animation-delay:4s}
+@keyframes plaque-sway{0%,100%{transform:rotate(0deg)}30%{transform:rotate(1deg)}60%{transform:rotate(-.6deg)}85%{transform:rotate(.4deg)}}
+.plaque{background:linear-gradient(180deg,rgba(110,70,35,.32),rgba(65,35,18,.24));border:1px solid rgba(200,155,60,.05);border-radius:2px 2px 3px 3px;padding:10px 12px;width:115px;text-align:center;font-size:11px;line-height:1.7;font-family:serif;letter-spacing:.5px;cursor:default;transition:transform .5s,box-shadow .5s,opacity 1.2s,filter 1.2s;box-shadow:inset 0 1px 0 rgba(255,220,160,.03),0 2px 8px rgba(0,0,0,.45);position:relative}
+.plaque:hover{transform:translateY(-4px) rotate(0deg)!important;box-shadow:inset 0 1px 0 rgba(255,220,160,.12),0 0 24px rgba(200,155,60,.1),0 6px 18px rgba(0,0,0,.55)}
+.plaque .rope{position:absolute;top:-28px;left:50%;width:1.5px;height:28px;background:rgba(255,220,180,.08);transform:translateX(-50%)}
+
+/* 时间层次 */
+.plaque.fading{opacity:.35;filter:blur(1.5px) grayscale(.4)}
+.plaque.dying{opacity:0;filter:blur(6px);transform:translateY(24px) rotate(0deg)!important;transition:opacity 3s ease-in,filter 3s ease-in,transform 3s ease-in}
+
+/* 深度层：非最新木牌缩小、变暗、微模糊 */
+.plaque.depth-1{transform:scale(.92);opacity:.65;filter:blur(.6px)}
+.plaque.depth-2{transform:scale(.85);opacity:.45;filter:blur(1.2px)}
+
+/* 最新木牌——最亮、最暖、最清晰 */
+.plaque.fresh{box-shadow:inset 0 1px 0 rgba(255,220,160,.08),0 0 16px rgba(200,155,60,.08),0 3px 12px rgba(0,0,0,.4)}
+.plaque.fresh .rope{background:rgba(255,220,180,.18)}
 
 /* 新留言浮现 */
 .plaque.emerging{animation:plaque-emerge 1.6s ease-out}
 @keyframes plaque-emerge{0%{opacity:0;transform:translateY(-10px);box-shadow:inset 0 1px 0 rgba(255,220,160,0),0 0 0 rgba(200,155,60,0)}40%{opacity:.6;box-shadow:inset 0 1px 0 rgba(255,220,160,.2),0 0 30px rgba(200,155,60,.25)}100%{opacity:1;transform:translateY(0)}}
 
-/* 时间层次 */
-.plaque.fading{opacity:.38;filter:blur(1.5px) saturate(.5)}
-.plaque.dying{opacity:0;filter:blur(6px);transform:translateY(30px) rotate(0deg);transition:opacity 3s ease-in,filter 3s ease-in,transform 3s ease-in}
+/* ====== 第二层：仪式区（空木牌 = 用户行为入口） ====== */
+.ritual-area{position:relative;width:100%;display:flex;justify-content:center;margin-top:-12px;z-index:2}
+.plaque.empty{width:150px;background:linear-gradient(180deg,rgba(200,155,60,.12),rgba(120,80,40,.06));border:1px solid rgba(200,155,60,.22);color:rgba(255,255,255,.25);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;min-height:52px;letter-spacing:3px;border-radius:2px 2px 3px 3px;animation:empty-pulse 3s ease-in-out infinite}
+.plaque.empty:hover{color:rgba(255,255,255,.5);border-color:rgba(200,155,60,.4);box-shadow:inset 0 1px 0 rgba(255,220,160,.15),0 0 28px rgba(200,155,60,.18),0 4px 14px rgba(0,0,0,.55)}
+@keyframes empty-pulse{0%,100%{box-shadow:inset 0 1px 0 rgba(255,220,160,.03),0 0 10px rgba(200,155,60,.04)}50%{box-shadow:inset 0 1px 0 rgba(255,220,160,.1),0 0 18px rgba(200,155,60,.12)}}
 
-/* 空木牌（写留言入口） */
-.plaque.empty{width:150px;background:linear-gradient(180deg,rgba(200,155,60,.15),rgba(120,80,40,.08));border-color:rgba(200,155,60,.25);color:rgba(255,255,255,.28);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;min-height:56px;letter-spacing:3px;animation:empty-pulse 3s ease-in-out infinite}
-.plaque.empty:hover{color:rgba(255,255,255,.5);border-color:rgba(200,155,60,.45);box-shadow:inset 0 1px 0 rgba(255,220,160,.15),0 0 32px rgba(200,155,60,.2),0 6px 16px rgba(0,0,0,.6)}
-@keyframes empty-pulse{0%,100%{box-shadow:inset 0 1px 0 rgba(255,220,160,.04),0 0 12px rgba(200,155,60,.06)}50%{box-shadow:inset 0 1px 0 rgba(255,220,160,.1),0 0 20px rgba(200,155,60,.15)}}
+/* ====== 第三层：旁白（页面角落的低语） ====== */
+.whisper{position:absolute;bottom:28px;right:20px;color:rgba(255,255,255,.08);font-size:10px;line-height:1.8;text-align:right;letter-spacing:2px;font-family:serif;pointer-events:none}
 
 /* 书写面板 */
 .write-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(8,3,1,.78);backdrop-filter:blur(10px);flex-direction:column;align-items:center;justify-content:center}
@@ -54,10 +65,6 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .write-plaque .char-count{font-size:10px;color:rgba(255,255,255,.13);text-align:right;margin-top:6px}
 .write-actions{margin-top:18px;display:flex;gap:12px}
 .write-close{position:absolute;top:24px;right:24px;color:rgba(255,255,255,.18);font-size:22px;cursor:pointer;background:none;border:none;line-height:1}
-
-/* 底部 */
-.write-hint{text-align:center;color:rgba(255,255,255,.15);font-size:10px;margin-top:4px;letter-spacing:2px}
-.footer-hint{text-align:center;color:var(--text-faint);font-size:10px;margin-top:24px;letter-spacing:2px}
 </style>
 </head>
 <body>
@@ -65,18 +72,26 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
   <a href="../index.html" class="back-link">← 灯札</a>
   <div class="title">挂 念</div>
   <div class="subtitle">留下 · 挂上 · 沉入夜色</div>
+
+  <!-- 第一层：沉浸区 -->
   <div class="branch-area" id="branchArea">
-    <svg class="branch-svg" viewBox="0 0 340 320" fill="none">
-      <path d="M0 60 Q80 38 160 55 Q230 68 300 55" stroke="rgba(180,140,90,.5)" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M160 55 Q170 140 145 230" stroke="rgba(180,140,90,.32)" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M150 150 Q110 185 45 210" stroke="rgba(180,140,90,.22)" stroke-width="1.4" stroke-linecap="round"/>
-      <path d="M155 120 Q195 155 255 175" stroke="rgba(180,140,90,.18)" stroke-width="1.1" stroke-linecap="round"/>
-      <path d="M60 55 Q80 80 70 125" stroke="rgba(180,140,90,.15)" stroke-width="1" stroke-linecap="round"/>
+    <svg class="branch-svg" viewBox="0 0 340 340" fill="none">
+      <path d="M0 60 Q80 38 170 52 Q240 65 340 50" stroke="rgba(180,140,90,.48)" stroke-width="2" stroke-linecap="round"/>
+      <path d="M170 52 Q180 145 155 240" stroke="rgba(180,140,90,.28)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M160 155 Q115 195 40 220" stroke="rgba(180,140,90,.18)" stroke-width="1.3" stroke-linecap="round"/>
+      <path d="M165 125 Q210 160 270 185" stroke="rgba(180,140,90,.15)" stroke-width="1.1" stroke-linecap="round"/>
+      <path d="M70 56 Q90 90 80 135" stroke="rgba(180,140,90,.12)" stroke-width=".9" stroke-linecap="round"/>
     </svg>
     <div id="plaquesContainer"></div>
   </div>
-  <div class="write-hint">有些话，适合留给夜晚</div>
-  <div class="footer-hint">留下的话，会慢慢沉进夜色</div>
+
+  <!-- 第二层：仪式区 -->
+  <div class="ritual-area">
+    <div class="plaque empty" id="emptyPlaque">留下些什么？</div>
+  </div>
+
+  <!-- 第三层：旁白 -->
+  <div class="whisper">有些话，<br>适合留给夜晚。</div>
 </div>
 
 <div class="write-overlay" id="writePanel">
@@ -94,20 +109,21 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../theme/particles.js"></script>
 <script>
-// ====== Supabase ======
 var supabase = window.supabase.createClient(
   'https://kzcmavjvsowcmglcutds.supabase.co',
   'sb_publishable_qB7PKRmlPsJdb-PFzpxY7A_QVF9BNcG'
 );
 
-// ====== 数据 ======
 var messages = [];
 var plaquesContainer = document.getElementById('plaquesContainer');
+// 5个位置：中心最新，越往外越深
 var positions = [
-  {x:10,y:90}, {x:160,y:30}, {x:75,y:170},
-  {x:220,y:110}, {x:35,y:55}, {x:190,y:195}
+  {x:112,y:100}, // 0: center — newest, brightest
+  {x:20,y:60},   // 1: upper-left
+  {x:200,y:50},  // 2: upper-right
+  {x:45,y:175},  // 3: lower-left
+  {x:195,y:170}, // 4: lower-right
 ];
-var emptyPosition = {x:100,y:130};
 
 function escapeHtml(text) {
   var d = document.createElement('div');
@@ -115,7 +131,6 @@ function escapeHtml(text) {
   return d.innerHTML;
 }
 
-// ====== 加载消息 ======
 function loadMessages() {
   supabase.from('messages').select('*').order('created_at',{ascending:false}).limit(30).then(function(res){
     if (res.error){console.error(res.error);return;}
@@ -124,41 +139,34 @@ function loadMessages() {
   });
 }
 
-// ====== 渲染木牌 ======
 function renderPlaques() {
   var now = Date.now();
   var html = '';
-  var active = messages.slice(0,6);
+  var active = messages.slice(0,5);
   active.forEach(function(msg,i){
     var age = now - new Date(msg.created_at).getTime();
     var hoursLeft = Math.max(0, 24 - age/3600000);
-    var rot = (Math.random() - .5) * 5;
+    var rot = (Math.random() - .5) * 4;
     var fadeClass = hoursLeft < 6 ? ' fading' : '';
     var warmth = Math.max(.3, 1 - age / 86400000);
+    // 深度层：i=0 最新最亮；i>=3 更深更暗
+    var depthClass = i === 0 ? ' fresh' : (i >= 3 ? ' depth-2' : ' depth-1');
     var pos = positions[i];
     html += '<div class="plaque-container" style="left:'+pos.x+'px;top:'+pos.y+'px;transform:rotate('+rot.toFixed(1)+'deg)">'+
-      '<div class="plaque'+fadeClass+'" data-id="'+msg.id+'" data-created="'+msg.created_at+'" style="color:rgba(255,'+(220+Math.floor(warmth*35))+','+(180+Math.floor(warmth*60))+','+(.45+warmth*.25).toFixed(2)+');background:linear-gradient(180deg,rgba('+(100+Math.floor(warmth*30))+','+(60+Math.floor(warmth*25))+','+(30+Math.floor(warmth*15))+','+(.28+warmth*.1).toFixed(2)+'),rgba('+(55+Math.floor(warmth*20))+','+(30+Math.floor(warmth*15))+','+(15+Math.floor(warmth*10))+','+(.2+warmth*.08).toFixed(2)+'))">'+
+      '<div class="plaque'+fadeClass+depthClass+'" data-id="'+msg.id+'" data-created="'+msg.created_at+'" style="color:rgba(255,'+(220+Math.floor(warmth*35))+','+(180+Math.floor(warmth*60))+','+(.45+warmth*.25).toFixed(2)+');background:linear-gradient(180deg,rgba('+(100+Math.floor(warmth*30))+','+(60+Math.floor(warmth*25))+','+(30+Math.floor(warmth*15))+','+(.28+warmth*.1).toFixed(2)+'),rgba('+(55+Math.floor(warmth*20))+','+(30+Math.floor(warmth*15))+','+(15+Math.floor(warmth*10))+','+(.2+warmth*.08).toFixed(2)+'))">'+
       '<div class="rope"></div>'+escapeHtml(msg.content)+
       '</div></div>';
   });
-  // 空木牌
-  html += '<div class="plaque-container" style="left:'+emptyPosition.x+'px;top:'+emptyPosition.y+'px">'+
-    '<div class="plaque empty" id="emptyPlaque"><div class="rope"></div>留下些什么？</div></div>';
   plaquesContainer.innerHTML = html;
-  bindEmptyPlaque();
 }
 
-// ====== 空木牌点击 ======
-function bindEmptyPlaque(){
-  var el = document.getElementById('emptyPlaque');
-  if (!el) return;
-  el.addEventListener('click', function(){
-    document.getElementById('writePanel').classList.add('show');
-    document.getElementById('writeInput').focus();
-  });
-}
+// 空木牌
+document.getElementById('emptyPlaque').addEventListener('click',function(){
+  document.getElementById('writePanel').classList.add('show');
+  document.getElementById('writeInput').focus();
+});
 
-// ====== 书写面板 ======
+// 书写面板
 var writeInput = document.getElementById('writeInput');
 var charCount = document.getElementById('charCount');
 writeInput.addEventListener('input',function(){
@@ -182,12 +190,13 @@ document.getElementById('writeSubmit').addEventListener('click',function(){
     isSubmitting = false;
     if (res.error){alert('挂失败了，再试一次');return;}
     closeWrite();
-    // 浮现动画
+    // 浮现——挂上空木牌的位置
     var emerging = document.createElement('div');
     emerging.className = 'plaque-container emerging-temp';
-    emerging.style.cssText = 'left:'+emptyPosition.x+'px;top:'+emptyPosition.y+'px;z-index:5';
+    emerging.style.cssText = 'position:relative';
     emerging.innerHTML = '<div class="plaque emerging"><div class="rope"></div>'+escapeHtml(text)+'</div>';
-    plaquesContainer.appendChild(emerging);
+    var ritual = document.querySelector('.ritual-area');
+    ritual.appendChild(emerging);
     setTimeout(function(){
       if (emerging.parentElement) emerging.remove();
       loadMessages();
@@ -195,7 +204,7 @@ document.getElementById('writeSubmit').addEventListener('click',function(){
   });
 });
 
-// ====== 时间衰减 ======
+// 时间衰减
 setInterval(function(){
   var plaques = document.querySelectorAll('.plaque:not(.empty):not(.dying)');
   var now = Date.now();
@@ -217,7 +226,6 @@ setInterval(function(){
   });
 }, 30000);
 
-// ====== 启动 ======
 loadMessages();
 </script>
 </body>
