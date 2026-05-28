@@ -31,7 +31,19 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .viewer-text{font-size:16px;color:rgba(255,245,230,.88);line-height:2;font-family:serif;letter-spacing:1px}
 .viewer-blow{font-size:10px;color:rgba(255,255,255,.12);margin-top:20px;letter-spacing:3px;cursor:pointer;transition:color .8s}
 .viewer-blow:hover{color:rgba(255,180,120,.4)}
+.viewer-forget{font-size:10px;color:rgba(255,255,255,.08);margin-top:8px;letter-spacing:3px;cursor:pointer;transition:color .8s}
+.viewer-forget:hover{color:rgba(255,140,90,.3)}
 .viewer-hint{font-size:10px;color:rgba(255,255,255,.08);margin-top:12px;letter-spacing:3px}
+
+/* 遗忘确认 */
+.confirm-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(2,1,0,.88);flex-direction:column;align-items:center;justify-content:center}
+.confirm-overlay.show{display:flex}
+.confirm-text{font-size:14px;color:rgba(255,240,220,.5);text-align:center;line-height:2;font-family:serif;letter-spacing:2px;margin-bottom:32px}
+.confirm-actions{display:flex;gap:20px}
+.confirm-keep{font-size:12px;color:rgba(255,255,255,.25);letter-spacing:3px;cursor:pointer;font-family:serif;transition:color .6s}
+.confirm-keep:hover{color:rgba(255,255,255,.5)}
+.confirm-forget{font-size:12px;color:rgba(255,140,90,.2);letter-spacing:3px;cursor:pointer;font-family:serif;transition:color .6s}
+.confirm-forget:hover{color:rgba(255,140,90,.5)}
 </style>
 </head>
 <body>
@@ -46,6 +58,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
   <div class="viewer-card">
     <div class="viewer-text" id="viewerText"></div>
     <div class="viewer-blow" id="viewerBlow">吹灭</div>
+    <div class="viewer-forget" id="viewerForget">遗忘</div>
     <div class="viewer-hint">点击空白处关闭</div>
   </div>
 </div>
@@ -120,7 +133,35 @@ document.getElementById('viewerBlow').addEventListener('click',function(){
   }, 1300);
 });
 
+// 遗忘——空间式确认
+document.getElementById('viewerForget').addEventListener('click',function(){
+  document.getElementById('viewer').classList.remove('show');
+  document.getElementById('confirmOverlay').classList.add('show');
+});
+document.getElementById('confirmKeep').addEventListener('click',function(){
+  document.getElementById('confirmOverlay').classList.remove('show');
+});
+document.getElementById('confirmForget').addEventListener('click',function(){
+  document.getElementById('confirmOverlay').classList.remove('show');
+  var frag = currentFrag;
+  if (!frag || !currentMsg) return;
+  frag.classList.add('blow-out');
+  var id = currentMsg.id;
+  setTimeout(function(){
+    supabase.from('messages').update({forgotten:true,device_id:null}).eq('id',id).then(function(){
+      loadYujin();
+    });
+  }, 1300);
+});
+
 loadYujin();
 </script>
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-text">一旦遗忘，<br>它将不再属于你。</div>
+  <div class="confirm-actions">
+    <span class="confirm-keep" id="confirmKeep">让它留下</span>
+    <span class="confirm-forget" id="confirmForget">遗忘</span>
+  </div>
+</div>
 </body>
 </html>

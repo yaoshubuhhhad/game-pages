@@ -64,6 +64,10 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 /* 残影——已吹灭，像幽魂漂浮 */
 .fragment.extinguished{opacity:.15!important;filter:blur(2.5px) grayscale(.7)!important;pointer-events:none!important}
 
+/* 遗忘——不再属于任何人，永不死亡 */
+.fragment.forgotten{opacity:.08!important;filter:blur(4px) grayscale(.9)!important;pointer-events:auto!important;cursor:default!important}
+.fragment.forgotten:hover{opacity:.18!important;filter:blur(2px) grayscale(.7)!important}
+
 /* 衰退 + 死亡 */
 .fragment.fading{opacity:.2;filter:blur(2.5px) grayscale(.5)}
 .fragment.dying{opacity:0;filter:blur(8px);transform:translateY(20px) scale(.7)!important;transition:opacity 4s ease-in,filter 4s ease-in,transform 4s ease-in;pointer-events:none}
@@ -181,8 +185,12 @@ function renderMessages(messages) {
 
   messages.forEach(function(msg,i){
     var depth, maxW, trunc, fadeClass = '';
-    // 已吹灭——残影层
-    if (msg.extinguished) {
+    // 已遗忘——永不死亡，极远幽灵
+    if (msg.forgotten) {
+      depth = 'frag-far'; maxW = 70; trunc = 4;
+      fadeClass = ' forgotten';
+    } else if (msg.extinguished) {
+      // 已吹灭——残影层
       depth = 'frag-far'; maxW = 90; trunc = 5;
       fadeClass = ' extinguished';
     } else {
@@ -216,10 +224,14 @@ function renderMessages(messages) {
   fragsLayer.querySelectorAll('.fragment').forEach(function(frag){
     var full = frag.dataset.full;
     var short = frag.textContent;
-    frag.addEventListener('mouseenter',function(){ frag.textContent = full; });
+    var forgotten = frag.classList.contains('forgotten');
+    frag.addEventListener('mouseenter',function(){
+      if (forgotten) frag.textContent = '已无人认领';
+      else frag.textContent = full;
+    });
     frag.addEventListener('mouseleave',function(){ frag.textContent = short; });
     var mine = frag.dataset.mine === 'true';
-    frag.addEventListener('click',function(e){ e.stopPropagation(); showViewer(full, mine, frag); });
+    frag.addEventListener('click',function(e){ e.stopPropagation(); if (!forgotten) showViewer(full, mine, frag); });
   });
 
 }
@@ -255,7 +267,7 @@ document.getElementById('viewerBlow').addEventListener('click',function(e){
 
 // 时间衰减
 setInterval(function(){
-  var frags = fragsLayer.querySelectorAll('.fragment:not(.dying)');
+  var frags = fragsLayer.querySelectorAll('.fragment:not(.dying):not(.forgotten)');
   if (frags.length <= DEATH) return;
   var now = Date.now();
   frags.forEach(function(f){
