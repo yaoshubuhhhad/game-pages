@@ -104,10 +104,10 @@ var supabase = window.supabase.createClient(
 var messages = [];
 var plaquesContainer = document.getElementById('plaquesContainer');
 var positions = [
-  {x:20,y:75}, {x:155,y:20}, {x:80,y:155},
-  {x:210,y:115}, {x:45,y:50}, {x:230,y:85},
-  {x:120,y:130}, {x:90,y:210}
+  {x:10,y:90}, {x:160,y:30}, {x:75,y:170},
+  {x:220,y:110}, {x:35,y:55}, {x:190,y:195}
 ];
+var emptyPosition = {x:100,y:130};
 
 function escapeHtml(text) {
   var d = document.createElement('div');
@@ -128,7 +128,7 @@ function loadMessages() {
 function renderPlaques() {
   var now = Date.now();
   var html = '';
-  var active = messages.slice(0,7);
+  var active = messages.slice(0,6);
   active.forEach(function(msg,i){
     var age = now - new Date(msg.created_at).getTime();
     var hoursLeft = Math.max(0, 24 - age/3600000);
@@ -142,8 +142,7 @@ function renderPlaques() {
       '</div></div>';
   });
   // 空木牌
-  var ep = positions[7];
-  html += '<div class="plaque-container" style="left:'+ep.x+'px;top:'+ep.y+'px">'+
+  html += '<div class="plaque-container" style="left:'+emptyPosition.x+'px;top:'+emptyPosition.y+'px">'+
     '<div class="plaque empty" id="emptyPlaque"><div class="rope"></div>留下些什么？</div></div>';
   plaquesContainer.innerHTML = html;
   bindEmptyPlaque();
@@ -184,10 +183,9 @@ document.getElementById('writeSubmit').addEventListener('click',function(){
     if (res.error){alert('挂失败了，再试一次');return;}
     closeWrite();
     // 浮现动画
-    var ep = positions[7];
     var emerging = document.createElement('div');
     emerging.className = 'plaque-container emerging-temp';
-    emerging.style.cssText = 'left:'+ep.x+'px;top:'+ep.y+'px;z-index:5';
+    emerging.style.cssText = 'left:'+emptyPosition.x+'px;top:'+emptyPosition.y+'px;z-index:5';
     emerging.innerHTML = '<div class="plaque emerging"><div class="rope"></div>'+escapeHtml(text)+'</div>';
     plaquesContainer.appendChild(emerging);
     setTimeout(function(){
