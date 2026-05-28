@@ -36,8 +36,8 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .frag-far:hover{color:rgba(255,230,200,.45);filter:blur(.5px);text-shadow:0 0 6px rgba(200,155,60,.04);transform:scale(.95)!important}
 
 /* 写入口——固定在底部居中，不参与漂浮 */
-.write-entry{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);z-index:15;font-size:13px;color:rgba(255,255,255,.28);letter-spacing:4px;font-family:serif;cursor:pointer;animation:entry-breathe 4s ease-in-out infinite}
-.write-entry:hover{color:rgba(255,255,255,.55);text-shadow:0 0 20px rgba(200,155,60,.15)}
+.write-entry{position:absolute;bottom:48px;left:50%;transform:translateX(-50%);z-index:15;font-size:14px;color:rgba(255,255,255,.45);letter-spacing:4px;font-family:serif;cursor:pointer;animation:entry-breathe 4s ease-in-out infinite}
+.write-entry:hover{color:rgba(255,255,255,.7);text-shadow:0 0 24px rgba(200,155,60,.2)}
 @keyframes entry-breathe{0%,100%{opacity:.5}50%{opacity:1}}
 
 /* 漂浮动画 */
@@ -68,6 +68,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 <div class="space" id="space">
   <a href="../index.html" class="top-left">← 灯札</a>
   <div class="top-right">挂 念</div>
+  <div class="fragments-layer" id="fragmentsLayer"></div>
   <div class="write-entry" id="writeEntry">写些什么</div>
   <div class="whisper">有些话<br>适合留给<br>夜晚</div>
 </div>
@@ -93,6 +94,7 @@ var supabase = window.supabase.createClient(
 );
 
 var space = document.getElementById('space');
+var fragsLayer = document.getElementById('fragmentsLayer');
 var DEATH = 30;
 
 // 预计算位置——避免重叠的伪随机网格
@@ -166,10 +168,10 @@ function renderMessages(messages) {
     '</div>';
   });
 
-  space.innerHTML += html;
+  fragsLayer.innerHTML = html;
 
   // 绑定 hover 完整显示
-  space.querySelectorAll('.fragment:not(.frag-entry)').forEach(function(frag){
+  fragsLayer.querySelectorAll('.fragment').forEach(function(frag){
     var full = frag.dataset.full;
     var original = frag.textContent;
     frag.addEventListener('mouseenter',function(){
@@ -184,7 +186,7 @@ function renderMessages(messages) {
 
 // 时间衰减
 setInterval(function(){
-  var frags = space.querySelectorAll('.fragment:not(.frag-entry):not(.dying)');
+  var frags = fragsLayer.querySelectorAll('.fragment:not(.dying)');
   if (frags.length <= DEATH) return;
   var now = Date.now();
   frags.forEach(function(f){
@@ -224,7 +226,7 @@ document.getElementById('writeSubmit').addEventListener('click',function(){
     if (res.error){alert('挂失败了，再试一次');return;}
     closeWrite();
     // 清理旧 DOM 重新渲染
-    space.querySelectorAll('.fragment').forEach(function(f){ f.remove(); });
+    fragsLayer.innerHTML = '';
     loadMessages();
   });
 });
