@@ -8,54 +8,49 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow:hidden;background:#0a0502}
-.page{width:100vw;height:100vh;position:relative;overflow:hidden}
-.page::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 55% 45%,rgba(40,25,12,.5) 0%,rgba(12,6,2,.85) 50%,rgba(4,2,0,.95) 100%)}
+body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow:hidden;background:#050201}
+.space{width:100vw;height:100vh;position:relative;overflow:hidden}
+.space::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 42%,rgba(40,25,12,.35) 0%,rgba(12,6,2,.8) 45%,rgba(3,2,0,.96) 100%)}
 
-/* 顶栏 */
-.top-bar{position:absolute;top:0;left:0;right:0;z-index:10;padding:16px 20px;display:flex;justify-content:space-between;align-items:flex-start}
-.back-link{color:rgba(255,255,255,.18);font-size:12px;text-decoration:none}
-.back-link:hover{color:var(--gold)}
-.top-title{text-align:right}
-.top-title .name{font-size:16px;font-weight:700;color:rgba(255,255,255,.65);letter-spacing:6px;font-family:serif}
-.top-title .hint{font-size:9px;color:rgba(255,255,255,.12);letter-spacing:3px;margin-top:2px}
+/* 顶栏 — 极淡 */
+.top-left{position:absolute;top:20px;left:20px;z-index:10;color:rgba(255,255,255,.15);font-size:11px;text-decoration:none;letter-spacing:2px}
+.top-left:hover{color:var(--gold)}
+.top-right{position:absolute;top:20px;right:24px;z-index:10;text-align:right;color:rgba(255,255,255,.22);font-size:14px;font-family:serif;letter-spacing:6px}
 
-/* 漂浮区 */
-.float-space{position:absolute;inset:0;z-index:1}
+/* 角落旁白 — 几乎消失 */
+.whisper{position:absolute;bottom:28px;right:22px;z-index:10;color:rgba(255,255,255,.05);font-size:9px;text-align:right;line-height:1.8;letter-spacing:2px;font-family:serif;pointer-events:none}
 
-/* 碎片 */
-.fragment{position:absolute;cursor:default;transition:transform .6s ease-out,opacity .8s,filter 1.5s;font-family:serif;letter-spacing:.5px;line-height:1.7;text-align:center;pointer-events:auto}
-/* 默认只显示模糊行 */
-.fragment .inner{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:all .5s}
-.fragment:hover .inner{white-space:normal;overflow:visible}
-.fragment:hover{z-index:30!important;transform:scale(1.05)}
+/* ====== 碎片 ====== */
+.fragment{position:absolute;cursor:default;font-family:serif;letter-spacing:.5px;line-height:1.65;text-align:center;transition:transform .6s ease-out,opacity 2s,filter 2s,text-shadow .6s}
 
-/* 深度层 */
-.frag-near{font-size:14px;color:rgba(255,240,220,.72);filter:blur(0px);z-index:5}
-.frag-mid{font-size:11px;color:rgba(255,230,200,.38);filter:blur(.5px);z-index:3}
-.frag-far{font-size:9px;color:rgba(255,220,180,.15);filter:blur(1.5px);z-index:1}
-.frag-near:hover{color:rgba(255,245,230,.95);filter:blur(0);text-shadow:0 0 20px rgba(200,155,60,.3)}
-.frag-mid:hover{color:rgba(255,240,220,.75);filter:blur(0);text-shadow:0 0 14px rgba(200,155,60,.15)}
-.frag-far:hover{color:rgba(255,230,200,.4);filter:blur(.5px);text-shadow:0 0 8px rgba(200,155,60,.06)}
+/* 近景——大、亮、暖、清晰 */
+.frag-near{font-size:15px;color:rgba(255,240,220,.7);filter:blur(0);z-index:6;transform:scale(1.02);text-shadow:0 0 12px rgba(200,155,60,.08)}
+.frag-near:hover{color:rgba(255,248,238,.95);text-shadow:0 0 24px rgba(200,155,60,.2);transform:scale(1.08)!important}
+
+/* 中景——中等、半透明 */
+.frag-mid{font-size:12px;color:rgba(255,225,195,.35);filter:blur(.4px);z-index:4;transform:scale(.95)}
+.frag-mid:hover{color:rgba(255,240,220,.75);filter:blur(0);text-shadow:0 0 12px rgba(200,155,60,.1);transform:scale(1.04)!important}
+
+/* 远景——小、暗、模糊、像快消失了 */
+.frag-far{font-size:10px;color:rgba(220,190,150,.14);filter:blur(1.2px);z-index:2;transform:scale(.88)}
+.frag-far:hover{color:rgba(255,230,200,.45);filter:blur(.5px);text-shadow:0 0 6px rgba(200,155,60,.04);transform:scale(.95)!important}
+
+/* 写入口——像一块特别的碎片漂浮在近景 */
+.frag-entry{font-size:13px;color:rgba(255,255,255,.22);z-index:5;cursor:pointer;letter-spacing:3px;animation:entry-breathe 4s ease-in-out infinite}
+.frag-entry:hover{color:rgba(255,255,255,.5);text-shadow:0 0 20px rgba(200,155,60,.15)}
+@keyframes entry-breathe{0%,100%{opacity:.5}50%{opacity:1}}
 
 /* 漂浮动画 */
-.frag-drift{animation:drift 20s ease-in-out infinite}
-.frag-drift:nth-child(odd){animation-duration:24s;animation-delay:0s}
-.frag-drift:nth-child(even){animation-duration:18s;animation-delay:6s}
-.frag-drift:nth-child(3n){animation-duration:22s;animation-delay:3s}
-@keyframes drift{0%,100%{transform:translate(0,0)}25%{transform:translate(12px,-8px)}50%{transform:translate(-6px,10px)}75%{transform:translate(-10px,-4px)}}
+.frag-drift{animation:drift 18s ease-in-out infinite}
+.frag-drift:nth-child(odd){animation-duration:22s}
+.frag-drift:nth-child(even){animation-duration:16s;animation-delay:5s}
+.frag-drift:nth-child(3n){animation-duration:20s;animation-delay:2s}
+.frag-drift:nth-child(5n){animation-duration:25s;animation-delay:8s}
+@keyframes drift{0%,100%{transform:translate(0,0) rotate(0deg)}20%{transform:translate(8px,-5px) rotate(.6deg)}40%{transform:translate(-4px,3px) rotate(-.4deg)}60%{transform:translate(-7px,-2px) rotate(.3deg)}80%{transform:translate(3px,6px) rotate(-.5deg)}}
 
-/* 消失态 */
-.fragment.fading{opacity:.25;filter:blur(3px)}
-.fragment.dying{opacity:0;filter:blur(8px);transition:opacity 4s ease-in,filter 4s ease-in;pointer-events:none}
-
-/* 写入口 */
-.write-entry{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);z-index:10;cursor:pointer;font-size:13px;color:rgba(255,255,255,.2);letter-spacing:4px;font-family:serif;transition:color .5s;animation:entry-pulse 4s ease-in-out infinite}
-.write-entry:hover{color:rgba(255,255,255,.45)}
-@keyframes entry-pulse{0%,100%{opacity:.6}50%{opacity:1}}
-
-/* 角落 */
-.corner-whisper{position:absolute;bottom:32px;right:24px;z-index:10;color:rgba(255,255,255,.06);font-size:10px;text-align:right;line-height:1.8;letter-spacing:2px;font-family:serif;pointer-events:none}
+/* 衰退 + 死亡 */
+.fragment.fading{opacity:.2;filter:blur(2.5px) grayscale(.5)}
+.fragment.dying{opacity:0;filter:blur(8px);transform:translateY(20px) scale(.7)!important;transition:opacity 4s ease-in,filter 4s ease-in,transform 4s ease-in;pointer-events:none}
 
 /* 书写面板 */
 .write-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(6,3,1,.82);backdrop-filter:blur(12px);flex-direction:column;align-items:center;justify-content:center}
@@ -70,17 +65,10 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 </style>
 </head>
 <body>
-<div class="page">
-  <div class="top-bar">
-    <a href="../index.html" class="back-link">← 灯札</a>
-    <div class="top-title">
-      <div class="name">挂 念</div>
-      <div class="hint">留下 · 漂浮 · 沉入夜色</div>
-    </div>
-  </div>
-  <div class="float-space" id="floatSpace"></div>
-  <div class="write-entry" id="writeEntry">留下些什么？</div>
-  <div class="corner-whisper">有些话，<br>适合留给夜晚。</div>
+<div class="space" id="space">
+  <a href="../index.html" class="top-left">← 灯札</a>
+  <div class="top-right">挂 念</div>
+  <div class="whisper">有些话<br>适合留给<br>夜晚</div>
 </div>
 
 <div class="write-overlay" id="writePanel">
@@ -103,15 +91,33 @@ var supabase = window.supabase.createClient(
   'sb_publishable_qB7PKRmlPsJdb-PFzpxY7A_QVF9BNcG'
 );
 
-var floatSpace = document.getElementById('floatSpace');
-var DEATH_THRESHOLD = 30;
+var space = document.getElementById('space');
+var DEATH = 30;
 
-// 漂浮位置池（vw/vh 百分比，保证适配不同屏幕）
-function randomPos() {
-  return {
-    x: 5 + Math.random() * 80,   // 5~85vw
-    y: 8 + Math.random() * 70    // 8~78vh
-  };
+// 预计算位置——避免重叠的伪随机网格
+function spreadPositions(count) {
+  var positions = [];
+  var cols = 5, rows = Math.ceil(count / cols);
+  var vwPad = 12, vhPad = 15;
+  var cw = (100 - vwPad*2) / cols;
+  var rh = (80 - vhPad*2) / rows;
+  for (var i = 0; i < count; i++) {
+    var col = i % cols, row = Math.floor(i / cols);
+    // 在网格内加随机偏移
+    var ox = (Math.random() - .5) * cw * .7;
+    var oy = (Math.random() - .5) * rh * .7;
+    positions.push({
+      x: vwPad + col * cw + cw/2 + ox,
+      y: vhPad + row * rh + rh/2 + oy,
+      rot: (Math.random() - .5) * 5 // -2.5° ~ 2.5°
+    });
+  }
+  // 随机打乱
+  for (var j = positions.length - 1; j > 0; j--) {
+    var k = Math.floor(Math.random() * (j + 1));
+    var tmp = positions[j]; positions[j] = positions[k]; positions[k] = tmp;
+  }
+  return positions;
 }
 
 function escapeHtml(text) {
@@ -120,79 +126,81 @@ function escapeHtml(text) {
   return d.innerHTML;
 }
 
-// 加载 + 渲染
 function loadMessages() {
   supabase.from('messages').select('*').order('created_at',{ascending:false}).limit(50).then(function(res){
     if (res.error){console.error(res.error);return;}
     var messages = res.data || [];
-    renderFragments(messages);
+    renderMessages(messages);
   });
 }
 
-function renderFragments(messages) {
+function renderMessages(messages) {
   var now = Date.now();
   var total = messages.length;
+  var positions = spreadPositions(total + 1); // +1 for entry
   var html = '';
 
   messages.forEach(function(msg,i){
     var age = now - new Date(msg.created_at).getTime();
     var hoursLeft = Math.max(0, 24 - age/3600000);
     var fadeClass = '';
-    // 冷启动: 总数不足阈值时不清除
-    if (total > DEATH_THRESHOLD) {
+    if (total > DEATH) {
       if (hoursLeft < 3) fadeClass = ' fading';
       if (hoursLeft < 0.5) fadeClass = ' dying';
     }
-    // 深度层: 前 8 条近景, 8-20 中景, 其余远景
-    var depth, maxW;
-    if (i < 8) { depth = 'frag-near'; maxW = 220; }
-    else if (i < 20) { depth = 'frag-mid'; maxW = 160; }
-    else { depth = 'frag-far'; maxW = 120; }
+    // 深度分层
+    var depth, maxW, trunc;
+    if (i < 7) { depth = 'frag-near'; maxW = 200; trunc = 0; }
+    else if (i < 18) { depth = 'frag-mid'; maxW = 150; trunc = 10; }
+    else { depth = 'frag-far'; maxW = 110; trunc = 6; }
 
-    var pos = randomPos();
-    var text = msg.content;
-    // 显示策略: 近景完整显示, 中景截断, 远景只露首句
-    var displayText = text;
-    if (depth === 'frag-far') {
-      displayText = text.length > 8 ? text.substring(0,8)+'…' : text;
+    var pos = positions[i];
+    var displayText = msg.content;
+    if (trunc > 0 && msg.content.length > trunc) {
+      displayText = msg.content.substring(0, trunc) + '…';
     }
 
-    html += '<div class="fragment frag-drift '+depth+fadeClass+'" style="left:'+pos.x+'vw;top:'+pos.y+'vh;max-width:'+maxW+'px" data-id="'+msg.id+'" data-created="'+msg.created_at+'">'+
-      '<div class="inner">'+escapeHtml(displayText)+'</div>'+
-      '</div>';
-    // hover 时显示完整文字
-    var fullText = escapeHtml(text);
-    if (depth !== 'frag-near') {
-      // 中远景 hover 展开完整文字
-    }
+    html += '<div class="fragment frag-drift '+depth+fadeClass+'" style="left:'+pos.x+'vw;top:'+pos.y+'vh;max-width:'+maxW+'px;transform:rotate('+pos.rot.toFixed(1)+'deg)" data-id="'+msg.id+'" data-depth="'+depth+'" data-created="'+msg.created_at+'" data-full="'+escapeHtml(msg.content)+'">'+
+      escapeHtml(displayText)+
+    '</div>';
   });
 
-  floatSpace.innerHTML = html;
+  // 写入口——近景漂浮块
+  var ep = positions[messages.length];
+  html += '<div class="fragment frag-drift frag-entry" id="writeEntry" style="left:'+ep.x+'vw;top:'+ep.y+'vh;max-width:160px;transform:rotate('+ep.rot.toFixed(1)+'deg)">'+
+    '留下些什么？'+
+  '</div>';
 
-  // hover 完整显示
-  floatSpace.querySelectorAll('.fragment').forEach(function(frag){
-    var id = frag.dataset.id;
-    var msg = messages.find(function(m){ return m.id === parseInt(id); });
-    if (!msg) return;
+  space.innerHTML += html;
+
+  // 绑定 hover 完整显示
+  space.querySelectorAll('.fragment:not(.frag-entry)').forEach(function(frag){
+    var full = frag.dataset.full;
+    var original = frag.textContent;
     frag.addEventListener('mouseenter',function(){
-      frag.querySelector('.inner').textContent = msg.content;
+      frag.textContent = full;
     });
     frag.addEventListener('mouseleave',function(){
-      var d = frag.classList.contains('frag-far') ?
-        (msg.content.length > 8 ? msg.content.substring(0,8)+'…' : msg.content) :
-        msg.content;
-      frag.querySelector('.inner').textContent = d;
+      frag.textContent = original;
     });
   });
+
+  // 绑定写入口
+  var entry = document.getElementById('writeEntry');
+  if (entry) {
+    entry.addEventListener('click',function(){
+      document.getElementById('writePanel').classList.add('show');
+      document.getElementById('writeInput').focus();
+    });
+  }
 }
 
 // 时间衰减
 setInterval(function(){
-  var total = floatSpace.querySelectorAll('.fragment').length;
-  if (total <= DEATH_THRESHOLD) return;
-  var fragments = floatSpace.querySelectorAll('.fragment:not(.dying)');
+  var frags = space.querySelectorAll('.fragment:not(.frag-entry):not(.dying)');
+  if (frags.length <= DEATH) return;
   var now = Date.now();
-  fragments.forEach(function(f){
+  frags.forEach(function(f){
     var created = f.dataset.created;
     if (!created) return;
     var age = now - new Date(created).getTime();
@@ -200,28 +208,18 @@ setInterval(function(){
     if (hoursLeft < 3) f.classList.add('fading');
     if (hoursLeft < 0.5 && !f.dataset.marked){
       f.dataset.marked = '1';
-      var to = hoursLeft * 3600000;
-      if (to < 0) to = 100;
       setTimeout(function(){
         f.classList.add('dying');
         setTimeout(function(){ if(f.parentElement) f.remove(); }, 4500);
-      }, to);
+      }, Math.max(100, hoursLeft * 3600000));
     }
   });
 }, 30000);
 
-// 写入口
-document.getElementById('writeEntry').addEventListener('click',function(){
-  document.getElementById('writePanel').classList.add('show');
-  document.getElementById('writeInput').focus();
-});
-
+// 书写
 var writeInput = document.getElementById('writeInput');
 var charCount = document.getElementById('charCount');
-writeInput.addEventListener('input',function(){
-  charCount.textContent = writeInput.value.length;
-});
-
+writeInput.addEventListener('input',function(){ charCount.textContent = writeInput.value.length; });
 document.getElementById('writeClose').addEventListener('click',closeWrite);
 document.getElementById('writeCancel').addEventListener('click',closeWrite);
 function closeWrite(){
@@ -229,7 +227,6 @@ function closeWrite(){
   writeInput.value = '';
   charCount.textContent = '0';
 }
-
 var isSubmitting = false;
 document.getElementById('writeSubmit').addEventListener('click',function(){
   var text = writeInput.value.trim();
@@ -239,6 +236,8 @@ document.getElementById('writeSubmit').addEventListener('click',function(){
     isSubmitting = false;
     if (res.error){alert('挂失败了，再试一次');return;}
     closeWrite();
+    // 清理旧 DOM 重新渲染
+    space.querySelectorAll('.fragment').forEach(function(f){ f.remove(); });
     loadMessages();
   });
 });
