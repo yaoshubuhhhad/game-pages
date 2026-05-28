@@ -69,7 +69,7 @@ var supabase = window.supabase.createClient(
   'https://kzcmavjvsowcmglcutds.supabase.co',
   'sb_publishable_qB7PKRmlPsJdb-PFzpxY7A_QVF9BNcG'
 );
-var DEVICE_ID = localStorage.getItem('lx_device_id');
+var DEVICE_ID = localStorage.getItem('lx_device_id') || new URLSearchParams(location.search).get('did');
 var fragsLayer = document.getElementById('fragsLayer');
 var emptyState = document.getElementById('emptyState');
 var currentFrag = null, currentMsg = null;

@@ -96,7 +96,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 <body>
 <div class="space" id="space">
   <a href="../index.html" class="top-left">← 灯札</a>
-  <div class="top-right">挂 念<a class="em-link" href="yujin.html">余烬</a></div>
+  <div class="top-right">挂 念<a class="em-link" id="emLink" href="yujin.html">余烬</a></div>
   <div class="fragments-layer" id="fragmentsLayer"></div>
   <div class="write-entry" id="writeEntry">写些什么</div>
   <div class="whisper">有些话<br>适合留给<br>夜晚</div>
@@ -317,6 +317,9 @@ document.getElementById('writeEntry').addEventListener('click',function(){
   document.getElementById('writePanel').classList.add('show');
   document.getElementById('writeInput').focus();
 });
+
+// file:// 下跨页面共享 device_id
+document.getElementById('emLink').href = 'yujin.html?did=' + DEVICE_ID;
 
 loadMessages();
 </script>
