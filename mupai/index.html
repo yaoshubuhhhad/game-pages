@@ -8,56 +8,57 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
-.page{max-width:420px;margin:0 auto;padding:50px 20px 40px;position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center}
-.page::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 35%,rgba(30,18,10,.3) 0%,rgba(8,4,1,.7) 55%,rgba(3,1,0,.9) 100%)}
-.back-link{position:absolute;top:20px;left:16px;color:var(--text-faint);font-size:12px;text-decoration:none;z-index:10}
+body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow:hidden;background:#0a0502}
+.page{width:100vw;height:100vh;position:relative;overflow:hidden}
+.page::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 55% 45%,rgba(40,25,12,.5) 0%,rgba(12,6,2,.85) 50%,rgba(4,2,0,.95) 100%)}
+
+/* 顶栏 */
+.top-bar{position:absolute;top:0;left:0;right:0;z-index:10;padding:16px 20px;display:flex;justify-content:space-between;align-items:flex-start}
+.back-link{color:rgba(255,255,255,.18);font-size:12px;text-decoration:none}
 .back-link:hover{color:var(--gold)}
-.title{font-size:20px;font-weight:700;color:rgba(255,255,255,.78);letter-spacing:8px;font-family:serif;text-align:center;margin-bottom:4px}
-.subtitle{font-size:10px;color:var(--text-faint);letter-spacing:4px;text-align:center;margin-bottom:24px}
+.top-title{text-align:right}
+.top-title .name{font-size:16px;font-weight:700;color:rgba(255,255,255,.65);letter-spacing:6px;font-family:serif}
+.top-title .hint{font-size:9px;color:rgba(255,255,255,.12);letter-spacing:3px;margin-top:2px}
 
-/* ====== 第一层：树枝 + 木牌（沉浸区，无任何文字） ====== */
-.branch-area{position:relative;width:100%;height:360px;overflow:hidden}
-.branch-svg{position:absolute;top:0;left:50%;transform:translateX(-50%);width:340px;height:340px;opacity:.25;animation:branch-sway 12s ease-in-out infinite}
-@keyframes branch-sway{0%,100%{transform:translateX(-50%) rotate(0deg)}30%{transform:translateX(-50%) rotate(.3deg)}70%{transform:translateX(-50%) rotate(-.25deg)}}
+/* 漂浮区 */
+.float-space{position:absolute;inset:0;z-index:1}
 
-/* 木牌 */
-.plaque-container{position:absolute;animation:plaque-sway 8s ease-in-out infinite}
-.plaque-container:nth-child(odd){animation-delay:0s}
-.plaque-container:nth-child(even){animation-delay:4s}
-@keyframes plaque-sway{0%,100%{transform:rotate(0deg)}30%{transform:rotate(1deg)}60%{transform:rotate(-.6deg)}85%{transform:rotate(.4deg)}}
-.plaque{background:linear-gradient(180deg,rgba(110,70,35,.32),rgba(65,35,18,.24));border:1px solid rgba(200,155,60,.05);border-radius:2px 2px 3px 3px;padding:10px 12px;width:115px;text-align:center;font-size:11px;line-height:1.7;font-family:serif;letter-spacing:.5px;cursor:default;transition:transform .5s,box-shadow .5s,opacity 1.2s,filter 1.2s;box-shadow:inset 0 1px 0 rgba(255,220,160,.03),0 2px 8px rgba(0,0,0,.45);position:relative}
-.plaque:hover{transform:translateY(-4px) rotate(0deg)!important;box-shadow:inset 0 1px 0 rgba(255,220,160,.12),0 0 24px rgba(200,155,60,.1),0 6px 18px rgba(0,0,0,.55);cursor:pointer}
-.plaque.reading{transform:scale(1.08) rotate(0deg)!important;box-shadow:inset 0 1px 0 rgba(255,220,160,.18),0 0 40px rgba(200,155,60,.18),0 8px 24px rgba(0,0,0,.6);z-index:20;filter:none!important;opacity:1!important}
-.plaque .rope{position:absolute;top:-28px;left:50%;width:1.5px;height:28px;background:rgba(255,220,180,.08);transform:translateX(-50%)}
+/* 碎片 */
+.fragment{position:absolute;cursor:default;transition:transform .6s ease-out,opacity .8s,filter 1.5s;font-family:serif;letter-spacing:.5px;line-height:1.7;text-align:center;pointer-events:auto}
+/* 默认只显示模糊行 */
+.fragment .inner{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:all .5s}
+.fragment:hover .inner{white-space:normal;overflow:visible}
+.fragment:hover{z-index:30!important;transform:scale(1.05)}
 
-/* 时间层次 */
-.plaque.fading{opacity:.35;filter:blur(1.5px) grayscale(.4)}
-.plaque.dying{opacity:0;filter:blur(6px);transform:translateY(24px) rotate(0deg)!important;transition:opacity 3s ease-in,filter 3s ease-in,transform 3s ease-in}
+/* 深度层 */
+.frag-near{font-size:14px;color:rgba(255,240,220,.72);filter:blur(0px);z-index:5}
+.frag-mid{font-size:11px;color:rgba(255,230,200,.38);filter:blur(.5px);z-index:3}
+.frag-far{font-size:9px;color:rgba(255,220,180,.15);filter:blur(1.5px);z-index:1}
+.frag-near:hover{color:rgba(255,245,230,.95);filter:blur(0);text-shadow:0 0 20px rgba(200,155,60,.3)}
+.frag-mid:hover{color:rgba(255,240,220,.75);filter:blur(0);text-shadow:0 0 14px rgba(200,155,60,.15)}
+.frag-far:hover{color:rgba(255,230,200,.4);filter:blur(.5px);text-shadow:0 0 8px rgba(200,155,60,.06)}
 
-/* 深度层：非最新木牌缩小、变暗、微模糊 */
-.plaque.depth-1{transform:scale(.92);opacity:.65;filter:blur(.6px)}
-.plaque.depth-2{transform:scale(.85);opacity:.45;filter:blur(1.2px)}
+/* 漂浮动画 */
+.frag-drift{animation:drift 20s ease-in-out infinite}
+.frag-drift:nth-child(odd){animation-duration:24s;animation-delay:0s}
+.frag-drift:nth-child(even){animation-duration:18s;animation-delay:6s}
+.frag-drift:nth-child(3n){animation-duration:22s;animation-delay:3s}
+@keyframes drift{0%,100%{transform:translate(0,0)}25%{transform:translate(12px,-8px)}50%{transform:translate(-6px,10px)}75%{transform:translate(-10px,-4px)}}
 
-/* 最新木牌——最亮、最暖、最清晰 */
-.plaque.fresh{box-shadow:inset 0 1px 0 rgba(255,220,160,.08),0 0 16px rgba(200,155,60,.08),0 3px 12px rgba(0,0,0,.4)}
-.plaque.fresh .rope{background:rgba(255,220,180,.18)}
+/* 消失态 */
+.fragment.fading{opacity:.25;filter:blur(3px)}
+.fragment.dying{opacity:0;filter:blur(8px);transition:opacity 4s ease-in,filter 4s ease-in;pointer-events:none}
 
-/* 新留言浮现 */
-.plaque.emerging{animation:plaque-emerge 1.6s ease-out}
-@keyframes plaque-emerge{0%{opacity:0;transform:translateY(-10px);box-shadow:inset 0 1px 0 rgba(255,220,160,0),0 0 0 rgba(200,155,60,0)}40%{opacity:.6;box-shadow:inset 0 1px 0 rgba(255,220,160,.2),0 0 30px rgba(200,155,60,.25)}100%{opacity:1;transform:translateY(0)}}
+/* 写入口 */
+.write-entry{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);z-index:10;cursor:pointer;font-size:13px;color:rgba(255,255,255,.2);letter-spacing:4px;font-family:serif;transition:color .5s;animation:entry-pulse 4s ease-in-out infinite}
+.write-entry:hover{color:rgba(255,255,255,.45)}
+@keyframes entry-pulse{0%,100%{opacity:.6}50%{opacity:1}}
 
-/* ====== 第二层：仪式区（空木牌 = 用户行为入口） ====== */
-.ritual-area{position:relative;width:100%;display:flex;justify-content:center;margin-top:-12px;z-index:2}
-.plaque.empty{width:150px;background:linear-gradient(180deg,rgba(200,155,60,.12),rgba(120,80,40,.06));border:1px solid rgba(200,155,60,.22);color:rgba(255,255,255,.25);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;min-height:52px;letter-spacing:3px;border-radius:2px 2px 3px 3px;animation:empty-pulse 3s ease-in-out infinite}
-.plaque.empty:hover{color:rgba(255,255,255,.5);border-color:rgba(200,155,60,.4);box-shadow:inset 0 1px 0 rgba(255,220,160,.15),0 0 28px rgba(200,155,60,.18),0 4px 14px rgba(0,0,0,.55)}
-@keyframes empty-pulse{0%,100%{box-shadow:inset 0 1px 0 rgba(255,220,160,.03),0 0 10px rgba(200,155,60,.04)}50%{box-shadow:inset 0 1px 0 rgba(255,220,160,.1),0 0 18px rgba(200,155,60,.12)}}
-
-/* ====== 第三层：旁白（页面角落的低语） ====== */
-.whisper{position:absolute;bottom:28px;right:20px;color:rgba(255,255,255,.08);font-size:10px;line-height:1.8;text-align:right;letter-spacing:2px;font-family:serif;pointer-events:none}
+/* 角落 */
+.corner-whisper{position:absolute;bottom:32px;right:24px;z-index:10;color:rgba(255,255,255,.06);font-size:10px;text-align:right;line-height:1.8;letter-spacing:2px;font-family:serif;pointer-events:none}
 
 /* 书写面板 */
-.write-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(8,3,1,.78);backdrop-filter:blur(10px);flex-direction:column;align-items:center;justify-content:center}
+.write-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(6,3,1,.82);backdrop-filter:blur(12px);flex-direction:column;align-items:center;justify-content:center}
 .write-overlay.show{display:flex}
 .write-plaque{background:linear-gradient(180deg,rgba(140,95,45,.45),rgba(85,50,28,.3));border:1px solid rgba(200,155,60,.22);border-radius:8px;padding:28px 22px;width:280px;text-align:center;box-shadow:0 0 50px rgba(200,155,60,.1),0 10px 40px rgba(0,0,0,.65);animation:plaque-glow .6s ease-out}
 @keyframes plaque-glow{0%{opacity:.2;transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
@@ -70,29 +71,16 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 </head>
 <body>
 <div class="page">
-  <a href="../index.html" class="back-link">← 灯札</a>
-  <div class="title">挂 念</div>
-  <div class="subtitle">留下 · 挂上 · 沉入夜色</div>
-
-  <!-- 第一层：沉浸区 -->
-  <div class="branch-area" id="branchArea">
-    <svg class="branch-svg" viewBox="0 0 340 340" fill="none">
-      <path d="M0 60 Q80 38 170 52 Q240 65 340 50" stroke="rgba(180,140,90,.48)" stroke-width="2" stroke-linecap="round"/>
-      <path d="M170 52 Q180 145 155 240" stroke="rgba(180,140,90,.28)" stroke-width="1.5" stroke-linecap="round"/>
-      <path d="M160 155 Q115 195 40 220" stroke="rgba(180,140,90,.18)" stroke-width="1.3" stroke-linecap="round"/>
-      <path d="M165 125 Q210 160 270 185" stroke="rgba(180,140,90,.15)" stroke-width="1.1" stroke-linecap="round"/>
-      <path d="M70 56 Q90 90 80 135" stroke="rgba(180,140,90,.12)" stroke-width=".9" stroke-linecap="round"/>
-    </svg>
-    <div id="plaquesContainer"></div>
+  <div class="top-bar">
+    <a href="../index.html" class="back-link">← 灯札</a>
+    <div class="top-title">
+      <div class="name">挂 念</div>
+      <div class="hint">留下 · 漂浮 · 沉入夜色</div>
+    </div>
   </div>
-
-  <!-- 第二层：仪式区 -->
-  <div class="ritual-area">
-    <div class="plaque empty" id="emptyPlaque">留下些什么？</div>
-  </div>
-
-  <!-- 第三层：旁白 -->
-  <div class="whisper">有些话，<br>适合留给夜晚。</div>
+  <div class="float-space" id="floatSpace"></div>
+  <div class="write-entry" id="writeEntry">留下些什么？</div>
+  <div class="corner-whisper">有些话，<br>适合留给夜晚。</div>
 </div>
 
 <div class="write-overlay" id="writePanel">
@@ -103,7 +91,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
   </div>
   <div class="write-actions">
     <button class="theme-btn-ghost" id="writeCancel">再想想</button>
-    <button class="theme-btn" id="writeSubmit">挂上枝头</button>
+    <button class="theme-btn" id="writeSubmit">挂念</button>
   </div>
 </div>
 
@@ -115,16 +103,16 @@ var supabase = window.supabase.createClient(
   'sb_publishable_qB7PKRmlPsJdb-PFzpxY7A_QVF9BNcG'
 );
 
-var messages = [];
-var plaquesContainer = document.getElementById('plaquesContainer');
-// 5个位置：中心最新，越往外越深
-var positions = [
-  {x:112,y:100}, // 0: center — newest, brightest
-  {x:20,y:60},   // 1: upper-left
-  {x:200,y:50},  // 2: upper-right
-  {x:45,y:175},  // 3: lower-left
-  {x:195,y:170}, // 4: lower-right
-];
+var floatSpace = document.getElementById('floatSpace');
+var DEATH_THRESHOLD = 30;
+
+// 漂浮位置池（vw/vh 百分比，保证适配不同屏幕）
+function randomPos() {
+  return {
+    x: 5 + Math.random() * 80,   // 5~85vw
+    y: 8 + Math.random() * 70    // 8~78vh
+  };
+}
 
 function escapeHtml(text) {
   var d = document.createElement('div');
@@ -132,55 +120,102 @@ function escapeHtml(text) {
   return d.innerHTML;
 }
 
+// 加载 + 渲染
 function loadMessages() {
-  supabase.from('messages').select('*').order('created_at',{ascending:false}).limit(30).then(function(res){
+  supabase.from('messages').select('*').order('created_at',{ascending:false}).limit(50).then(function(res){
     if (res.error){console.error(res.error);return;}
-    messages = res.data || [];
-    renderPlaques();
+    var messages = res.data || [];
+    renderFragments(messages);
   });
 }
 
-function renderPlaques() {
+function renderFragments(messages) {
   var now = Date.now();
+  var total = messages.length;
   var html = '';
-  var active = messages.slice(0,5);
-  active.forEach(function(msg,i){
+
+  messages.forEach(function(msg,i){
     var age = now - new Date(msg.created_at).getTime();
     var hoursLeft = Math.max(0, 24 - age/3600000);
-    var rot = (Math.random() - .5) * 4;
-    var fadeClass = hoursLeft < 6 ? ' fading' : '';
-    var warmth = Math.max(.3, 1 - age / 86400000);
-    // 深度层：i=0 最新最亮；i>=3 更深更暗
-    var depthClass = i === 0 ? ' fresh' : (i >= 3 ? ' depth-2' : ' depth-1');
-    var pos = positions[i];
-    html += '<div class="plaque-container" style="left:'+pos.x+'px;top:'+pos.y+'px;transform:rotate('+rot.toFixed(1)+'deg)">'+
-      '<div class="plaque'+fadeClass+depthClass+'" data-id="'+msg.id+'" data-created="'+msg.created_at+'" style="color:rgba(255,'+(220+Math.floor(warmth*35))+','+(180+Math.floor(warmth*60))+','+(.45+warmth*.25).toFixed(2)+');background:linear-gradient(180deg,rgba('+(100+Math.floor(warmth*30))+','+(60+Math.floor(warmth*25))+','+(30+Math.floor(warmth*15))+','+(.28+warmth*.1).toFixed(2)+'),rgba('+(55+Math.floor(warmth*20))+','+(30+Math.floor(warmth*15))+','+(15+Math.floor(warmth*10))+','+(.2+warmth*.08).toFixed(2)+'))">'+
-      '<div class="rope"></div>'+escapeHtml(msg.content)+
-      '</div></div>';
+    var fadeClass = '';
+    // 冷启动: 总数不足阈值时不清除
+    if (total > DEATH_THRESHOLD) {
+      if (hoursLeft < 3) fadeClass = ' fading';
+      if (hoursLeft < 0.5) fadeClass = ' dying';
+    }
+    // 深度层: 前 8 条近景, 8-20 中景, 其余远景
+    var depth, maxW;
+    if (i < 8) { depth = 'frag-near'; maxW = 220; }
+    else if (i < 20) { depth = 'frag-mid'; maxW = 160; }
+    else { depth = 'frag-far'; maxW = 120; }
+
+    var pos = randomPos();
+    var text = msg.content;
+    // 显示策略: 近景完整显示, 中景截断, 远景只露首句
+    var displayText = text;
+    if (depth === 'frag-far') {
+      displayText = text.length > 8 ? text.substring(0,8)+'…' : text;
+    }
+
+    html += '<div class="fragment frag-drift '+depth+fadeClass+'" style="left:'+pos.x+'vw;top:'+pos.y+'vh;max-width:'+maxW+'px" data-id="'+msg.id+'" data-created="'+msg.created_at+'">'+
+      '<div class="inner">'+escapeHtml(displayText)+'</div>'+
+      '</div>';
+    // hover 时显示完整文字
+    var fullText = escapeHtml(text);
+    if (depth !== 'frag-near') {
+      // 中远景 hover 展开完整文字
+    }
   });
-  plaquesContainer.innerHTML = html;
-  // 点击阅读
-  plaquesContainer.querySelectorAll('.plaque:not(.empty)').forEach(function(p){
-    p.addEventListener('click',function(e){
-      e.stopPropagation();
-      var wasReading = p.classList.contains('reading');
-      plaquesContainer.querySelectorAll('.plaque.reading').forEach(function(r){ r.classList.remove('reading'); });
-      if (!wasReading) p.classList.add('reading');
+
+  floatSpace.innerHTML = html;
+
+  // hover 完整显示
+  floatSpace.querySelectorAll('.fragment').forEach(function(frag){
+    var id = frag.dataset.id;
+    var msg = messages.find(function(m){ return m.id === parseInt(id); });
+    if (!msg) return;
+    frag.addEventListener('mouseenter',function(){
+      frag.querySelector('.inner').textContent = msg.content;
+    });
+    frag.addEventListener('mouseleave',function(){
+      var d = frag.classList.contains('frag-far') ?
+        (msg.content.length > 8 ? msg.content.substring(0,8)+'…' : msg.content) :
+        msg.content;
+      frag.querySelector('.inner').textContent = d;
     });
   });
 }
-// 点击空白取消阅读
-document.addEventListener('click',function(){
-  plaquesContainer.querySelectorAll('.plaque.reading').forEach(function(r){ r.classList.remove('reading'); });
-});
 
-// 空木牌
-document.getElementById('emptyPlaque').addEventListener('click',function(){
+// 时间衰减
+setInterval(function(){
+  var total = floatSpace.querySelectorAll('.fragment').length;
+  if (total <= DEATH_THRESHOLD) return;
+  var fragments = floatSpace.querySelectorAll('.fragment:not(.dying)');
+  var now = Date.now();
+  fragments.forEach(function(f){
+    var created = f.dataset.created;
+    if (!created) return;
+    var age = now - new Date(created).getTime();
+    var hoursLeft = Math.max(0, 24 - age/3600000);
+    if (hoursLeft < 3) f.classList.add('fading');
+    if (hoursLeft < 0.5 && !f.dataset.marked){
+      f.dataset.marked = '1';
+      var to = hoursLeft * 3600000;
+      if (to < 0) to = 100;
+      setTimeout(function(){
+        f.classList.add('dying');
+        setTimeout(function(){ if(f.parentElement) f.remove(); }, 4500);
+      }, to);
+    }
+  });
+}, 30000);
+
+// 写入口
+document.getElementById('writeEntry').addEventListener('click',function(){
   document.getElementById('writePanel').classList.add('show');
   document.getElementById('writeInput').focus();
 });
 
-// 书写面板
 var writeInput = document.getElementById('writeInput');
 var charCount = document.getElementById('charCount');
 writeInput.addEventListener('input',function(){
@@ -204,41 +239,9 @@ document.getElementById('writeSubmit').addEventListener('click',function(){
     isSubmitting = false;
     if (res.error){alert('挂失败了，再试一次');return;}
     closeWrite();
-    // 浮现——挂上空木牌的位置
-    var emerging = document.createElement('div');
-    emerging.className = 'plaque-container emerging-temp';
-    emerging.style.cssText = 'position:relative';
-    emerging.innerHTML = '<div class="plaque emerging"><div class="rope"></div>'+escapeHtml(text)+'</div>';
-    var ritual = document.querySelector('.ritual-area');
-    ritual.appendChild(emerging);
-    setTimeout(function(){
-      if (emerging.parentElement) emerging.remove();
-      loadMessages();
-    }, 1800);
+    loadMessages();
   });
 });
-
-// 时间衰减
-setInterval(function(){
-  var plaques = document.querySelectorAll('.plaque:not(.empty):not(.dying)');
-  var now = Date.now();
-  plaques.forEach(function(p){
-    var created = p.dataset.created;
-    if (!created) return;
-    var age = now - new Date(created).getTime();
-    var hoursLeft = Math.max(0, 24 - age/3600000);
-    if (hoursLeft < 6) p.classList.add('fading');
-    if (hoursLeft < 2 && !p.classList.contains('mark-dying')){
-      p.classList.add('mark-dying');
-      setTimeout(function(){
-        p.classList.add('dying');
-        setTimeout(function(){
-          if (p.parentElement) p.parentElement.remove();
-        },3500);
-      }, hoursLeft * 3600000);
-    }
-  });
-}, 30000);
 
 loadMessages();
 </script>
