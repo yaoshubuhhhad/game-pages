@@ -50,6 +50,15 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .frag-drift:nth-child(5n){animation-duration:25s;animation-delay:8s}
 @keyframes drift{0%,100%{transform:translate(0,0) rotate(0deg)}20%{transform:translate(8px,-5px) rotate(.6deg)}40%{transform:translate(-4px,3px) rotate(-.4deg)}60%{transform:translate(-7px,-2px) rotate(.3deg)}80%{transform:translate(3px,6px) rotate(-.5deg)}}
 
+/* 自己的留言 —— hover 显示吹灭暗示 */
+.fragment.own{cursor:pointer}
+.fragment.own::after{content:'吹灭';position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:9px;color:rgba(255,255,255,0);letter-spacing:2px;transition:color .8s;pointer-events:none}
+.fragment.own:hover::after{color:rgba(255,255,255,.15)}
+
+/* 吹灭动画 */
+.fragment.blow-out{animation:blow-out 1.2s ease-in forwards;pointer-events:none}
+@keyframes blow-out{0%{opacity:1;filter:blur(0)}40%{opacity:.3;filter:blur(2px);transform:scale(.95) translateY(4px)}100%{opacity:0;filter:blur(8px);transform:scale(.8) translateY(24px)}}
+
 /* 衰退 + 死亡 */
 .fragment.fading{opacity:.2;filter:blur(2.5px) grayscale(.5)}
 .fragment.dying{opacity:0;filter:blur(8px);transform:translateY(20px) scale(.7)!important;transition:opacity 4s ease-in,filter 4s ease-in,transform 4s ease-in;pointer-events:none}
@@ -71,6 +80,8 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .viewer-card{max-width:320px;padding:32px 28px;background:linear-gradient(180deg,rgba(150,100,50,.35),rgba(80,50,30,.2));border:1px solid rgba(200,155,60,.15);border-radius:6px;text-align:center;box-shadow:0 0 60px rgba(200,155,60,.12),0 12px 40px rgba(0,0,0,.6);animation:plaque-glow .5s ease-out}
 .viewer-text{font-size:16px;color:rgba(255,245,230,.88);line-height:2;font-family:serif;letter-spacing:1px}
 .viewer-hint{font-size:10px;color:rgba(255,255,255,.1);margin-top:16px;letter-spacing:3px}
+.viewer-blow{display:none;font-size:10px;color:rgba(255,255,255,.1);margin-top:20px;letter-spacing:3px;cursor:pointer;transition:color .8s}
+.viewer-blow:hover{color:rgba(255,180,120,.35)}
 </style>
 </head>
 <body>
@@ -98,6 +109,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
   <div class="viewer-card">
     <div class="viewer-text" id="viewerText"></div>
     <div class="viewer-hint">点击空白处关闭</div>
+    <div class="viewer-blow" id="viewerBlow">吹灭</div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -111,6 +123,10 @@ var supabase = window.supabase.createClient(
 var space = document.getElementById('space');
 var fragsLayer = document.getElementById('fragmentsLayer');
 var DEATH = 30;
+
+// 设备 ID —— 匿名身份，不涉及个人信息
+var DEVICE_ID = localStorage.getItem('lx_device_id');
+if (!DEVICE_ID) { DEVICE_ID = crypto.randomUUID(); localStorage.setItem('lx_device_id', DEVICE_ID); }
 
 // 预计算位置——避免重叠的伪随机网格
 function spreadPositions(count) {
@@ -178,7 +194,8 @@ function renderMessages(messages) {
       displayText = msg.content.substring(0, trunc) + '…';
     }
 
-    html += '<div class="fragment frag-drift '+depth+fadeClass+'" style="left:'+pos.x+'vw;top:'+pos.y+'vh;max-width:'+maxW+'px;transform:rotate('+pos.rot.toFixed(1)+'deg)" data-id="'+msg.id+'" data-depth="'+depth+'" data-created="'+msg.created_at+'" data-full="'+escapeHtml(msg.content)+'">'+
+    var isMine = msg.device_id && msg.device_id === DEVICE_ID;
+    html += '<div class="fragment frag-drift '+depth+fadeClass+(isMine?' own':'')+'" style="left:'+pos.x+'vw;top:'+pos.y+'vh;max-width:'+maxW+'px;transform:rotate('+pos.rot.toFixed(1)+'deg)" data-id="'+msg.id+'" data-depth="'+depth+'" data-created="'+msg.created_at+'" data-full="'+escapeHtml(msg.content)+'" data-mine="'+isMine+'">'+
       escapeHtml(displayText)+
     '</div>';
   });
@@ -191,19 +208,38 @@ function renderMessages(messages) {
     var short = frag.textContent;
     frag.addEventListener('mouseenter',function(){ frag.textContent = full; });
     frag.addEventListener('mouseleave',function(){ frag.textContent = short; });
-    frag.addEventListener('click',function(e){ e.stopPropagation(); showViewer(full); });
+    var mine = frag.dataset.mine === 'true';
+    frag.addEventListener('click',function(e){ e.stopPropagation(); showViewer(full, mine, frag); });
   });
 
 }
 
 // ====== 放大查看器 ======
-function showViewer(text){
+var currentViewerFrag = null;
+function showViewer(text, isMine, frag){
   var v = document.getElementById('viewer');
   document.getElementById('viewerText').textContent = text;
+  document.getElementById('viewerBlow').style.display = isMine ? 'block' : 'none';
   v.classList.add('show');
+  currentViewerFrag = frag;
+}
+function blowOut(){
+  var frag = currentViewerFrag;
+  if (!frag) return;
+  document.getElementById('viewer').classList.remove('show');
+  frag.classList.add('blow-out');
+  var id = parseInt(frag.dataset.id);
+  setTimeout(function(){
+    supabase.from('messages').delete().eq('id',id).then(function(){
+      if (frag.parentElement) frag.remove(); currentViewerFrag = null;
+    });
+  }, 1300);
 }
 document.getElementById('viewer').addEventListener('click',function(e){
   if (e.target === this) this.classList.remove('show');
+});
+document.getElementById('viewerBlow').addEventListener('click',function(e){
+  e.stopPropagation(); blowOut();
 });
 
 // 时间衰减
@@ -243,7 +279,7 @@ document.getElementById('writeSubmit').addEventListener('click',function(){
   var text = writeInput.value.trim();
   if (!text || isSubmitting || text.length > 140) return;
   isSubmitting = true;
-  supabase.from('messages').insert({content:text}).select().single().then(function(res){
+  supabase.from('messages').insert({content:text,device_id:DEVICE_ID}).select().single().then(function(res){
     isSubmitting = false;
     if (res.error){alert('挂失败了，再试一次');return;}
     closeWrite();
