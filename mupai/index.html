@@ -10,6 +10,7 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
 .page{max-width:420px;margin:0 auto;padding:50px 20px 40px;position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.page::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 35%,rgba(30,18,10,.3) 0%,rgba(8,4,1,.7) 55%,rgba(3,1,0,.9) 100%)}
 .back-link{position:absolute;top:20px;left:16px;color:var(--text-faint);font-size:12px;text-decoration:none;z-index:10}
 .back-link:hover{color:var(--gold)}
 .title{font-size:20px;font-weight:700;color:rgba(255,255,255,.78);letter-spacing:8px;font-family:serif;text-align:center;margin-bottom:4px}
@@ -17,21 +18,22 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 
 /* 树枝区域 */
 .branch-area{position:relative;width:100%;height:340px;overflow:hidden}
-.branch-svg{position:absolute;top:0;left:50%;transform:translateX(-50%);width:300px;height:300px;opacity:.22;animation:branch-sway 10s ease-in-out infinite}
-@keyframes branch-sway{0%,100%{transform:translateX(-50%) rotate(0deg)}30%{transform:translateX(-50%) rotate(.25deg)}70%{transform:translateX(-50%) rotate(-.2deg)}}
+.branch-svg{position:absolute;top:0;left:50%;transform:translateX(-50%);width:340px;height:320px;opacity:.28;animation:branch-sway 12s ease-in-out infinite}
+@keyframes branch-sway{0%,100%{transform:translateX(-50%) rotate(0deg)}30%{transform:translateX(-50%) rotate(.3deg)}70%{transform:translateX(-50%) rotate(-.25deg)}}
 
 /* 木牌 */
-.plaque-container{position:absolute;animation:plaque-float 6s ease-in-out infinite}
+.plaque-container{position:absolute;animation:plaque-sway 7s ease-in-out infinite}
 .plaque-container:nth-child(odd){animation-delay:0s}
-.plaque-container:nth-child(even){animation-delay:3s}
-@keyframes plaque-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
-.plaque{background:linear-gradient(180deg,rgba(120,80,40,.3),rgba(70,40,20,.22));border:1px solid rgba(200,155,60,.08);border-radius:3px 3px 5px 5px;padding:10px 12px;width:120px;text-align:center;color:rgba(255,240,220,.62);font-size:11px;line-height:1.7;font-family:serif;letter-spacing:.5px;cursor:default;transition:transform .5s,box-shadow .5s,opacity 1.2s,filter 1.2s;backdrop-filter:blur(3px);box-shadow:inset 0 1px 0 rgba(255,220,160,.04),0 2px 8px rgba(0,0,0,.4);position:relative}
-.plaque:hover{transform:translateY(-4px);box-shadow:inset 0 1px 0 rgba(255,220,160,.12),0 0 24px rgba(200,155,60,.1),0 6px 18px rgba(0,0,0,.55);color:rgba(255,245,230,.88)}
+.plaque-container:nth-child(even){animation-delay:3.5s}
+.plaque-container:nth-child(3n){animation-delay:1.5s}
+@keyframes plaque-sway{0%,100%{transform:rotate(0deg)}30%{transform:rotate(1.2deg)}60%{transform:rotate(-.8deg)}85%{transform:rotate(.5deg)}}
+.plaque{background:linear-gradient(180deg,rgba(110,70,35,.32),rgba(65,35,18,.24));border:1px solid rgba(200,155,60,.06);border-radius:2px 2px 3px 3px;padding:10px 12px;width:115px;text-align:center;color:rgba(255,240,220,.55);font-size:11px;line-height:1.7;font-family:serif;letter-spacing:.5px;cursor:default;transition:transform .5s,box-shadow .5s,opacity 1.2s,filter 1.2s;backdrop-filter:blur(3px);box-shadow:inset 0 1px 0 rgba(255,220,160,.03),0 2px 8px rgba(0,0,0,.45);position:relative}
+.plaque:hover{transform:translateY(-4px) rotate(0deg);box-shadow:inset 0 1px 0 rgba(255,220,160,.12),0 0 24px rgba(200,155,60,.1),0 6px 18px rgba(0,0,0,.55);color:rgba(255,245,230,.88)}
 .plaque .rope{position:absolute;top:-30px;left:50%;width:1.5px;height:30px;background:rgba(255,220,180,.1);transform:translateX(-50%)}
 
 /* 时间层次 */
-.plaque.fading{opacity:.42;filter:blur(1.5px)}
-.plaque.dying{opacity:0;filter:blur(6px);transform:translateY(30px);transition:opacity 3s ease-in,filter 3s ease-in,transform 3s ease-in}
+.plaque.fading{opacity:.38;filter:blur(1.5px) saturate(.5)}
+.plaque.dying{opacity:0;filter:blur(6px);transform:translateY(30px) rotate(0deg);transition:opacity 3s ease-in,filter 3s ease-in,transform 3s ease-in}
 
 /* 空木牌（写留言入口） */
 .plaque.empty{width:150px;background:linear-gradient(180deg,rgba(200,155,60,.15),rgba(120,80,40,.08));border-color:rgba(200,155,60,.25);color:rgba(255,255,255,.28);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;min-height:56px;letter-spacing:3px;animation:empty-pulse 3s ease-in-out infinite}
@@ -58,18 +60,19 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 <div class="page">
   <a href="../index.html" class="back-link">← 灯札</a>
   <div class="title">挂 念</div>
-  <div class="subtitle">写下 · 挂上 · 慢慢消失</div>
+  <div class="subtitle">留下 · 挂上 · 沉入夜色</div>
   <div class="branch-area" id="branchArea">
-    <svg class="branch-svg" viewBox="0 0 300 280" fill="none">
-      <path d="M20 50 Q90 35 150 55 Q200 70 260 60" stroke="rgba(180,140,90,.45)" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M150 55 Q155 130 135 210" stroke="rgba(180,140,90,.3)" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M140 140 Q100 170 55 190" stroke="rgba(180,140,90,.25)" stroke-width="1.5" stroke-linecap="round"/>
-      <path d="M155 110 Q195 140 245 160" stroke="rgba(180,140,90,.2)" stroke-width="1.2" stroke-linecap="round"/>
+    <svg class="branch-svg" viewBox="0 0 340 320" fill="none">
+      <path d="M0 60 Q80 38 160 55 Q230 68 300 55" stroke="rgba(180,140,90,.5)" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M160 55 Q170 140 145 230" stroke="rgba(180,140,90,.32)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M150 150 Q110 185 45 210" stroke="rgba(180,140,90,.22)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M155 120 Q195 155 255 175" stroke="rgba(180,140,90,.18)" stroke-width="1.1" stroke-linecap="round"/>
+      <path d="M60 55 Q80 80 70 125" stroke="rgba(180,140,90,.15)" stroke-width="1" stroke-linecap="round"/>
     </svg>
     <div id="plaquesContainer"></div>
   </div>
-  <div class="write-hint">↑ 点击发光的空木牌，留下你的话</div>
-  <div class="footer-hint">留言在 24 小时后沉入黑暗</div>
+  <div class="write-hint">有些话，适合留给夜晚</div>
+  <div class="footer-hint">留下的话，会慢慢沉进夜色</div>
 </div>
 
 <div class="write-overlay" id="writePanel">
@@ -125,10 +128,12 @@ function renderPlaques() {
   active.forEach(function(msg,i){
     var age = now - new Date(msg.created_at).getTime();
     var hoursLeft = Math.max(0, 24 - age/3600000);
+    var rot = (Math.random() - .5) * 5;
     var fadeClass = hoursLeft < 6 ? ' fading' : '';
+    var warmth = Math.max(.3, 1 - age / 86400000);
     var pos = positions[i];
-    html += '<div class="plaque-container" style="left:'+pos.x+'px;top:'+pos.y+'px">'+
-      '<div class="plaque'+fadeClass+'" data-id="'+msg.id+'" data-created="'+msg.created_at+'">'+
+    html += '<div class="plaque-container" style="left:'+pos.x+'px;top:'+pos.y+'px;transform:rotate('+rot.toFixed(1)+'deg)">'+
+      '<div class="plaque'+fadeClass+'" data-id="'+msg.id+'" data-created="'+msg.created_at+'" style="color:rgba(255,'+(220+Math.floor(warmth*35))+','+(180+Math.floor(warmth*60))+','+(.45+warmth*.25).toFixed(2)+');background:linear-gradient(180deg,rgba('+(100+Math.floor(warmth*30))+','+(60+Math.floor(warmth*25))+','+(30+Math.floor(warmth*15))+','+(.28+warmth*.1).toFixed(2)+'),rgba('+(55+Math.floor(warmth*20))+','+(30+Math.floor(warmth*15))+','+(15+Math.floor(warmth*10))+','+(.2+warmth*.08).toFixed(2)+'))">'+
       '<div class="rope"></div>'+escapeHtml(msg.content)+
       '</div></div>';
   });
