@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>挂念</title>
+<link rel="stylesheet" href="../theme/theme.css">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow-x:hidden}
+.page{max-width:420px;margin:0 auto;padding:50px 20px 40px;position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.back-link{position:absolute;top:20px;left:16px;color:var(--text-faint);font-size:12px;text-decoration:none;z-index:10}
+.back-link:hover{color:var(--gold)}
+.title{font-size:20px;font-weight:700;color:rgba(255,255,255,.78);letter-spacing:8px;font-family:serif;text-align:center;margin-bottom:4px}
+.subtitle{font-size:10px;color:var(--text-faint);letter-spacing:4px;text-align:center;margin-bottom:36px}
+
+/* 树枝区域 */
+.branch-area{position:relative;width:100%;height:340px;overflow:hidden}
+.branch-svg{position:absolute;top:0;left:50%;transform:translateX(-50%);width:300px;height:300px;opacity:.22;animation:branch-sway 10s ease-in-out infinite}
+@keyframes branch-sway{0%,100%{transform:translateX(-50%) rotate(0deg)}30%{transform:translateX(-50%) rotate(.25deg)}70%{transform:translateX(-50%) rotate(-.2deg)}}
+
+/* 木牌 */
+.plaque-container{position:absolute;animation:plaque-float 6s ease-in-out infinite}
+.plaque-container:nth-child(odd){animation-delay:0s}
+.plaque-container:nth-child(even){animation-delay:3s}
+@keyframes plaque-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+.plaque{background:linear-gradient(180deg,rgba(120,80,40,.3),rgba(70,40,20,.22));border:1px solid rgba(200,155,60,.08);border-radius:3px 3px 5px 5px;padding:10px 12px;width:120px;text-align:center;color:rgba(255,240,220,.62);font-size:11px;line-height:1.7;font-family:serif;letter-spacing:.5px;cursor:default;transition:transform .5s,box-shadow .5s,opacity 1.2s,filter 1.2s;backdrop-filter:blur(3px);box-shadow:inset 0 1px 0 rgba(255,220,160,.04),0 2px 8px rgba(0,0,0,.4);position:relative}
+.plaque:hover{transform:translateY(-4px);box-shadow:inset 0 1px 0 rgba(255,220,160,.12),0 0 24px rgba(200,155,60,.1),0 6px 18px rgba(0,0,0,.55);color:rgba(255,245,230,.88)}
+.plaque .rope{position:absolute;top:-30px;left:50%;width:1.5px;height:30px;background:rgba(255,220,180,.1);transform:translateX(-50%)}
+
+/* 时间层次 */
+.plaque.fading{opacity:.42;filter:blur(1.5px)}
+.plaque.dying{opacity:0;filter:blur(6px);transform:translateY(30px);transition:opacity 3s ease-in,filter 3s ease-in,transform 3s ease-in}
+
+/* 空木牌（写留言入口） */
+.plaque.empty{background:linear-gradient(180deg,rgba(200,155,60,.1),rgba(120,80,40,.06));border-color:rgba(200,155,60,.18);color:rgba(255,255,255,.18);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;min-height:50px;letter-spacing:2px}
+.plaque.empty:hover{color:rgba(255,255,255,.4);border-color:rgba(200,155,60,.35);box-shadow:inset 0 1px 0 rgba(255,220,160,.1),0 0 28px rgba(200,155,60,.15),0 4px 14px rgba(0,0,0,.55)}
+
+/* 书写面板 */
+.write-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(8,3,1,.78);backdrop-filter:blur(10px);flex-direction:column;align-items:center;justify-content:center}
+.write-overlay.show{display:flex}
+.write-plaque{background:linear-gradient(180deg,rgba(140,95,45,.45),rgba(85,50,28,.3));border:1px solid rgba(200,155,60,.22);border-radius:8px;padding:28px 22px;width:280px;text-align:center;box-shadow:0 0 50px rgba(200,155,60,.1),0 10px 40px rgba(0,0,0,.65);animation:plaque-glow .6s ease-out}
+@keyframes plaque-glow{0%{opacity:.2;transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+.write-plaque textarea{width:100%;height:100px;background:transparent;border:none;outline:none;resize:none;color:rgba(255,240,220,.78);font-size:13px;line-height:2;font-family:serif;letter-spacing:1px;text-align:center}
+.write-plaque textarea::placeholder{color:rgba(255,255,255,.12)}
+.write-plaque .char-count{font-size:10px;color:rgba(255,255,255,.13);text-align:right;margin-top:6px}
+.write-actions{margin-top:18px;display:flex;gap:12px}
+.write-close{position:absolute;top:24px;right:24px;color:rgba(255,255,255,.18);font-size:22px;cursor:pointer;background:none;border:none;line-height:1}
+
+/* 底部 */
+.footer-hint{text-align:center;color:var(--text-faint);font-size:10px;margin-top:36px;letter-spacing:2px}
+</style>
+</head>
+<body>
+<div class="page">
+  <a href="../index.html" class="back-link">← 灯札</a>
+  <div class="title">挂 念</div>
+  <div class="subtitle">写下 · 挂上 · 慢慢消失</div>
+  <div class="branch-area" id="branchArea">
+    <svg class="branch-svg" viewBox="0 0 300 280" fill="none">
+      <path d="M20 50 Q90 35 150 55 Q200 70 260 60" stroke="rgba(180,140,90,.45)" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M150 55 Q155 130 135 210" stroke="rgba(180,140,90,.3)" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M140 140 Q100 170 55 190" stroke="rgba(180,140,90,.25)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M155 110 Q195 140 245 160" stroke="rgba(180,140,90,.2)" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+    <div id="plaquesContainer"></div>
+  </div>
+  <div class="footer-hint">留言在 24 小时后沉入黑暗</div>
+</div>
+
+<div class="write-overlay" id="writePanel">
+  <button class="write-close" id="writeClose">✕</button>
+  <div class="write-plaque">
+    <textarea id="writeInput" placeholder="留下些什么？" maxlength="140"></textarea>
+    <div class="char-count"><span id="charCount">0</span>/140</div>
+  </div>
+  <div class="write-actions">
+    <button class="theme-btn-ghost" id="writeCancel">再想想</button>
+    <button class="theme-btn" id="writeSubmit">挂上枝头</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../theme/particles.js"></script>
+<script>
+// ====== Supabase ======
+var supabase = window.supabase.createClient(
+  'https://kzcmavjvsowcmglcutds.supabase.co',
+  'sb_publishable_qB7PKRmlPsJdb-PFzpxY7A_QVF9BNcG'
+);
+
+// ====== 数据 ======
+var messages = [];
+var plaquesContainer = document.getElementById('plaquesContainer');
+var positions = [
+  {x:20,y:75}, {x:155,y:20}, {x:80,y:155},
+  {x:210,y:115}, {x:45,y:50}, {x:230,y:85},
+  {x:120,y:130}, {x:175,y:185}
+];
+
+function escapeHtml(text) {
+  var d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+// ====== 加载消息 ======
+function loadMessages() {
+  supabase.from('messages').select('*').order('created_at',{ascending:false}).limit(30).then(function(res){
+    if (res.error){console.error(res.error);return;}
+    messages = res.data || [];
+    renderPlaques();
+  });
+}
+
+// ====== 渲染木牌 ======
+function renderPlaques() {
+  var now = Date.now();
+  var html = '';
+  var active = messages.slice(0,7);
+  active.forEach(function(msg,i){
+    var age = now - new Date(msg.created_at).getTime();
+    var hoursLeft = Math.max(0, 24 - age/3600000);
+    var fadeClass = hoursLeft < 6 ? ' fading' : '';
+    var pos = positions[i];
+    html += '<div class="plaque-container" style="left:'+pos.x+'px;top:'+pos.y+'px">'+
+      '<div class="plaque'+fadeClass+'" data-id="'+msg.id+'" data-created="'+msg.created_at+'">'+
+      '<div class="rope"></div>'+escapeHtml(msg.content)+
+      '</div></div>';
+  });
+  // 空木牌
+  var ep = positions[7];
+  html += '<div class="plaque-container" style="left:'+ep.x+'px;top:'+ep.y+'px">'+
+    '<div class="plaque empty" id="emptyPlaque"><div class="rope"></div>留下些什么？</div></div>';
+  plaquesContainer.innerHTML = html;
+  bindEmptyPlaque();
+}
+
+// ====== 空木牌点击 ======
+function bindEmptyPlaque(){
+  var el = document.getElementById('emptyPlaque');
+  if (!el) return;
+  el.addEventListener('click', function(){
+    document.getElementById('writePanel').classList.add('show');
+    document.getElementById('writeInput').focus();
+  });
+}
+
+// ====== 书写面板 ======
+var writeInput = document.getElementById('writeInput');
+var charCount = document.getElementById('charCount');
+writeInput.addEventListener('input',function(){
+  charCount.textContent = writeInput.value.length;
+});
+
+document.getElementById('writeClose').addEventListener('click',closeWrite);
+document.getElementById('writeCancel').addEventListener('click',closeWrite);
+function closeWrite(){
+  document.getElementById('writePanel').classList.remove('show');
+  writeInput.value = '';
+  charCount.textContent = '0';
+}
+
+var isSubmitting = false;
+document.getElementById('writeSubmit').addEventListener('click',function(){
+  var text = writeInput.value.trim();
+  if (!text || isSubmitting || text.length > 140) return;
+  isSubmitting = true;
+  supabase.from('messages').insert({content:text}).select().single().then(function(res){
+    isSubmitting = false;
+    if (res.error){alert('挂失败了，再试一次');return;}
+    closeWrite();
+    loadMessages();
+  });
+});
+
+// ====== 时间衰减 ======
+setInterval(function(){
+  var plaques = document.querySelectorAll('.plaque:not(.empty):not(.dying)');
+  var now = Date.now();
+  plaques.forEach(function(p){
+    var created = p.dataset.created;
+    if (!created) return;
+    var age = now - new Date(created).getTime();
+    var hoursLeft = Math.max(0, 24 - age/3600000);
+    if (hoursLeft < 6) p.classList.add('fading');
+    if (hoursLeft < 2 && !p.classList.contains('mark-dying')){
+      p.classList.add('mark-dying');
+      setTimeout(function(){
+        p.classList.add('dying');
+        setTimeout(function(){
+          if (p.parentElement) p.parentElement.remove();
+        },3500);
+      }, hoursLeft * 3600000);
+    }
+  });
+}, 30000);
+
+// ====== 启动 ======
+loadMessages();
+</script>
+</body>
+</html>
