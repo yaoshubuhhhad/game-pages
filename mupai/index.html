@@ -306,9 +306,7 @@ document.getElementById('writeSubmit').addEventListener('click',function(){
     isSubmitting = false;
     if (res.error){alert('挂失败了，再试一次');return;}
     closeWrite();
-    // 清理旧 DOM 重新渲染
-    fragsLayer.innerHTML = '';
-    loadMessages();
+    loadMessages(); // 不先清空，旧碎片保持可见
   });
 });
 
