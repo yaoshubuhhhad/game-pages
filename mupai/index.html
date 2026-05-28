@@ -180,6 +180,7 @@ function renderMessages(messages) {
   var html = '';
 
   messages.forEach(function(msg,i){
+    var depth, maxW, trunc, fadeClass = '';
     // 已吹灭——残影层
     if (msg.extinguished) {
       depth = 'frag-far'; maxW = 90; trunc = 5;
