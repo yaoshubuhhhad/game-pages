@@ -42,6 +42,7 @@ tool-station/
   theme/             — 共享主题（所有页面引入）
     theme.css          色彩变量、按钮、卡片、vignette、呼吸光晕
     particles.js       canvas 香灰粒子系统
+  mupai/             — 挂念（匿名木牌留言，联机）
   qiugian/           — 求签（主题参考实现——最完整的主题集成范例）
   yaoshaizi/         — 摇骰子
   xuansha/           — 选啥
@@ -54,6 +55,7 @@ tool-station/
 
 | 工具 | 路径 | 状态 |
 |------|------|------|
+| 挂念 | tool-station/mupai/ | **新加入**——匿名木牌留言，24h沉入黑暗 |
 | 求签 | tool-station/qiugian/ | **主题参考实现**——最完整的集成范例 |
 | 摇骰子 | tool-station/yaoshaizi/ | 已接入主题 |
 | 选啥 | tool-station/xuansha/ | 已接入主题 |
@@ -117,7 +119,7 @@ theme-btn（主按钮）/ theme-btn-ghost（次要按钮）/ theme-card / theme-
 
 - 禁止彩色 emoji 作为功能图标
 - 统一使用暖金单色 inline SVG：stroke `rgba(200,155,60,.35~.55)`，极简线条
-- 目前三个图标：同心圆（选啥）、骰面方点（摇骰）、竖线签条（求签）
+- 目前四个图标：同心圆（选啥）、骰面方点（摇骰）、竖线签条（求签）、木牌（挂念）
 - 新工具图标遵循同样规范：单色、线性、克制
 
 ## 文字亮度层级（勿整体提亮）
