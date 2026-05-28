@@ -62,6 +62,13 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .write-plaque .char-count{font-size:10px;color:rgba(255,255,255,.13);text-align:right;margin-top:6px}
 .write-actions{margin-top:18px;display:flex;gap:12px}
 .write-close{position:absolute;top:24px;right:24px;color:rgba(255,255,255,.18);font-size:22px;cursor:pointer;background:none;border:none;line-height:1}
+
+/* 放大查看器 */
+.viewer{display:none;position:fixed;inset:0;z-index:90;background:rgba(5,3,1,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+.viewer.show{display:flex}
+.viewer-card{max-width:320px;padding:32px 28px;background:linear-gradient(180deg,rgba(150,100,50,.35),rgba(80,50,30,.2));border:1px solid rgba(200,155,60,.15);border-radius:6px;text-align:center;box-shadow:0 0 60px rgba(200,155,60,.12),0 12px 40px rgba(0,0,0,.6);animation:plaque-glow .5s ease-out}
+.viewer-text{font-size:16px;color:rgba(255,245,230,.88);line-height:2;font-family:serif;letter-spacing:1px}
+.viewer-hint{font-size:10px;color:rgba(255,255,255,.1);margin-top:16px;letter-spacing:3px}
 </style>
 </head>
 <body>
@@ -170,19 +177,29 @@ function renderMessages(messages) {
 
   fragsLayer.innerHTML = html;
 
-  // 绑定 hover 完整显示
+  // hover + 点击放大
   fragsLayer.querySelectorAll('.fragment').forEach(function(frag){
     var full = frag.dataset.full;
-    var original = frag.textContent;
-    frag.addEventListener('mouseenter',function(){
-      frag.textContent = full;
-    });
-    frag.addEventListener('mouseleave',function(){
-      frag.textContent = original;
-    });
+    var short = frag.textContent;
+    frag.addEventListener('mouseenter',function(){ frag.textContent = full; });
+    frag.addEventListener('mouseleave',function(){ frag.textContent = short; });
+    frag.addEventListener('click',function(e){ e.stopPropagation(); showViewer(full); });
   });
 
 }
+
+// ====== 放大查看器 ======
+function showViewer(text){
+  var v = document.getElementById('viewer');
+  document.getElementById('viewerText').textContent = text;
+  v.classList.add('show');
+}
+document.getElementById('viewerClose').addEventListener('click',function(){
+  document.getElementById('viewer').classList.remove('show');
+});
+document.getElementById('viewer').addEventListener('click',function(e){
+  if (e.target === this) this.classList.remove('show');
+});
 
 // 时间衰减
 setInterval(function(){
@@ -239,5 +256,11 @@ document.getElementById('writeEntry').addEventListener('click',function(){
 
 loadMessages();
 </script>
+<div class="viewer" id="viewer">
+  <div class="viewer-card">
+    <div class="viewer-text" id="viewerText"></div>
+    <div class="viewer-hint">点击空白处关闭</div>
+  </div>
+</div>
 </body>
 </html>
