@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>余烬</title>
+<link rel="stylesheet" href="../theme/theme.css">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow:hidden;background:#030101}
+.space{position:relative;width:100vw;height:100vh;overflow:hidden}
+.space::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 48%,rgba(30,18,8,.2) 0%,rgba(6,3,1,.85) 50%,rgba(2,1,0,.98) 100%)}
+.back-link{position:absolute;top:20px;left:20px;z-index:10;color:rgba(255,255,255,.12);font-size:11px;text-decoration:none;letter-spacing:2px}
+.back-link:hover{color:var(--gold)}
+.page-title{position:absolute;top:20px;right:24px;z-index:10;text-align:right;color:rgba(255,255,255,.15);font-size:13px;font-family:serif;letter-spacing:6px}
+.empty-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;color:rgba(255,255,255,.06);font-size:13px;letter-spacing:4px;font-family:serif}
+
+.fragments-layer{position:absolute;inset:0;z-index:1}
+.fragment{position:absolute;font-family:serif;letter-spacing:.5px;line-height:1.65;text-align:center}
+.frag-active{font-size:15px;color:rgba(255,240,220,.65);filter:blur(0);z-index:5;transform:scale(1.01)}
+.frag-fading{font-size:12px;color:rgba(255,220,180,.3);filter:blur(.5px);z-index:3;transform:scale(.94)}
+.frag-extinguished{font-size:10px;color:rgba(200,170,140,.1);filter:blur(2.5px) grayscale(.6);z-index:1;transform:scale(.85);pointer-events:none}
+</style>
+</head>
+<body>
+<div class="space">
+  <a href="index.html" class="back-link">← 挂念</a>
+  <div class="page-title">余 烬</div>
+  <div class="fragments-layer" id="fragsLayer"></div>
+  <div class="empty-state" id="emptyState">你还没有点亮过任何东西</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+var supabase = window.supabase.createClient(
+  'https://kzcmavjvsowcmglcutds.supabase.co',
+  'sb_publishable_qB7PKRmlPsJdb-PFzpxY7A_QVF9BNcG'
+);
+var DEVICE_ID = localStorage.getItem('lx_device_id');
+var fragsLayer = document.getElementById('fragsLayer');
+var emptyState = document.getElementById('emptyState');
+
+if (!DEVICE_ID) { emptyState.textContent = '还没有任何痕迹'; } else {
+  supabase.from('messages').select('*').eq('device_id',DEVICE_ID).order('created_at',{ascending:false}).limit(50).then(function(res){
+    if (res.error || !res.data || !res.data.length) return;
+    emptyState.style.display = 'none';
+    var msgs = res.data;
+    var html = '';
+    msgs.forEach(function(msg,i){
+      var state, maxW, text;
+      if (msg.extinguished) {
+        state = 'frag-extinguished'; maxW = 90;
+        text = msg.content.length > 5 ? msg.content.substring(0,5)+'…' : msg.content;
+      } else {
+        var age = Date.now() - new Date(msg.created_at).getTime();
+        var hoursLeft = Math.max(0, 24 - age/3600000);
+        if (hoursLeft < 3) { state = 'frag-fading'; maxW = 140; }
+        else { state = 'frag-active'; maxW = 200; }
+        text = msg.content;
+      }
+      var x = 8 + Math.random() * 76, y = 10 + Math.random() * 70;
+      var rot = (Math.random() - .5) * 4;
+      html += '<div class="fragment '+state+'" style="left:'+x+'vw;top:'+y+'vh;max-width:'+maxW+'px;transform:rotate('+rot.toFixed(1)+'deg)">'+
+        text.replace(/</g,'&lt;').replace(/>/g,'&gt;')+
+      '</div>';
+    });
+    fragsLayer.innerHTML = html;
+  });
+}
+</script>
+</body>
+</html>

@@ -16,6 +16,8 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .top-left{position:absolute;top:20px;left:20px;z-index:10;color:rgba(255,255,255,.15);font-size:11px;text-decoration:none;letter-spacing:2px}
 .top-left:hover{color:var(--gold)}
 .top-right{position:absolute;top:20px;right:24px;z-index:10;text-align:right;color:rgba(255,255,255,.22);font-size:14px;font-family:serif;letter-spacing:6px}
+.em-link{display:block;font-size:9px;color:rgba(255,255,255,.08);text-decoration:none;letter-spacing:3px;margin-top:4px;transition:color .8s;text-align:right}
+.em-link:hover{color:rgba(255,255,255,.25)}
 
 /* 角落旁白 — 几乎消失 */
 .whisper{position:absolute;bottom:28px;right:22px;z-index:10;color:rgba(255,255,255,.05);font-size:9px;text-align:right;line-height:1.8;letter-spacing:2px;font-family:serif;pointer-events:none}
@@ -59,6 +61,9 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 .fragment.blow-out{animation:blow-out 1.2s ease-in forwards;pointer-events:none}
 @keyframes blow-out{0%{opacity:1;filter:blur(0)}40%{opacity:.3;filter:blur(2px);transform:scale(.95) translateY(4px)}100%{opacity:0;filter:blur(8px);transform:scale(.8) translateY(24px)}}
 
+/* 残影——已吹灭，像幽魂漂浮 */
+.fragment.extinguished{opacity:.15!important;filter:blur(2.5px) grayscale(.7)!important;pointer-events:none!important}
+
 /* 衰退 + 死亡 */
 .fragment.fading{opacity:.2;filter:blur(2.5px) grayscale(.5)}
 .fragment.dying{opacity:0;filter:blur(8px);transform:translateY(20px) scale(.7)!important;transition:opacity 4s ease-in,filter 4s ease-in,transform 4s ease-in;pointer-events:none}
@@ -87,7 +92,7 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
 <body>
 <div class="space" id="space">
   <a href="../index.html" class="top-left">← 灯札</a>
-  <div class="top-right">挂 念</div>
+  <div class="top-right">挂 念<a class="em-link" href="yujin.html">余烬</a></div>
   <div class="fragments-layer" id="fragmentsLayer"></div>
   <div class="write-entry" id="writeEntry">写些什么</div>
   <div class="whisper">有些话<br>适合留给<br>夜晚</div>
@@ -175,18 +180,22 @@ function renderMessages(messages) {
   var html = '';
 
   messages.forEach(function(msg,i){
-    var age = now - new Date(msg.created_at).getTime();
-    var hoursLeft = Math.max(0, 24 - age/3600000);
-    var fadeClass = '';
-    if (total > DEATH) {
-      if (hoursLeft < 3) fadeClass = ' fading';
-      if (hoursLeft < 0.5) fadeClass = ' dying';
+    // 已吹灭——残影层
+    if (msg.extinguished) {
+      depth = 'frag-far'; maxW = 90; trunc = 5;
+      fadeClass = ' extinguished';
+    } else {
+      var age = now - new Date(msg.created_at).getTime();
+      var hoursLeft = Math.max(0, 24 - age/3600000);
+      if (total > DEATH) {
+        if (hoursLeft < 3) fadeClass = ' fading';
+        if (hoursLeft < 0.5) fadeClass = ' dying';
+      }
+      // 深度分层
+      if (i < 7) { depth = 'frag-near'; maxW = 200; trunc = 0; }
+      else if (i < 18) { depth = 'frag-mid'; maxW = 150; trunc = 10; }
+      else { depth = 'frag-far'; maxW = 110; trunc = 6; }
     }
-    // 深度分层
-    var depth, maxW, trunc;
-    if (i < 7) { depth = 'frag-near'; maxW = 200; trunc = 0; }
-    else if (i < 18) { depth = 'frag-mid'; maxW = 150; trunc = 10; }
-    else { depth = 'frag-far'; maxW = 110; trunc = 6; }
 
     var pos = positions[i];
     var displayText = msg.content;
@@ -230,8 +239,9 @@ function blowOut(){
   frag.classList.add('blow-out');
   var id = parseInt(frag.dataset.id);
   setTimeout(function(){
-    supabase.from('messages').delete().eq('id',id).then(function(){
-      if (frag.parentElement) frag.remove(); currentViewerFrag = null;
+    supabase.from('messages').update({extinguished:true}).eq('id',id).then(function(){
+      currentViewerFrag = null;
+      loadMessages(); // 刷新——吹灭的碎片会变成残影
     });
   }, 1300);
 }
