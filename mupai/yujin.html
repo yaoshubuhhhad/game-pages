@@ -11,16 +11,27 @@
 body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;overflow:hidden;background:#030101}
 .space{position:relative;width:100vw;height:100vh;overflow:hidden}
 .space::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse at 50% 48%,rgba(30,18,8,.2) 0%,rgba(6,3,1,.85) 50%,rgba(2,1,0,.98) 100%)}
-.back-link{position:absolute;top:20px;left:20px;z-index:10;color:rgba(255,255,255,.12);font-size:11px;text-decoration:none;letter-spacing:2px}
+.back-link{position:absolute;top:20px;left:20px;z-index:10;color:rgba(255,255,255,.18);font-size:11px;text-decoration:none;letter-spacing:2px}
 .back-link:hover{color:var(--gold)}
-.page-title{position:absolute;top:20px;right:24px;z-index:10;text-align:right;color:rgba(255,255,255,.15);font-size:13px;font-family:serif;letter-spacing:6px}
-.empty-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;color:rgba(255,255,255,.06);font-size:13px;letter-spacing:4px;font-family:serif}
+.page-title{position:absolute;top:20px;right:24px;z-index:10;text-align:right;color:rgba(255,255,255,.22);font-size:13px;font-family:serif;letter-spacing:6px}
+.empty-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:5;color:rgba(255,255,255,.08);font-size:13px;letter-spacing:4px;font-family:serif}
 
 .fragments-layer{position:absolute;inset:0;z-index:1}
-.fragment{position:absolute;font-family:serif;letter-spacing:.5px;line-height:1.65;text-align:center}
+.fragment{position:absolute;font-family:serif;letter-spacing:.5px;line-height:1.65;text-align:center;cursor:pointer}
 .frag-active{font-size:15px;color:rgba(255,240,220,.65);filter:blur(0);z-index:5;transform:scale(1.01)}
 .frag-fading{font-size:12px;color:rgba(255,220,180,.3);filter:blur(.5px);z-index:3;transform:scale(.94)}
 .frag-extinguished{font-size:10px;color:rgba(200,170,140,.1);filter:blur(2.5px) grayscale(.6);z-index:1;transform:scale(.85);pointer-events:none}
+.fragment.blow-out{animation:blow-out 1.2s ease-in forwards;pointer-events:none}
+@keyframes blow-out{0%{opacity:1;filter:blur(0)}40%{opacity:.3;filter:blur(2px);transform:scale(.95) translateY(4px)}100%{opacity:0;filter:blur(8px);transform:scale(.8) translateY(24px)}}
+
+.viewer{display:none;position:fixed;inset:0;z-index:90;background:rgba(5,3,1,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center}
+.viewer.show{display:flex}
+.viewer-card{max-width:320px;padding:32px 28px;background:linear-gradient(180deg,rgba(150,100,50,.35),rgba(80,50,30,.2));border:1px solid rgba(200,155,60,.15);border-radius:6px;text-align:center;box-shadow:0 0 60px rgba(200,155,60,.12),0 12px 40px rgba(0,0,0,.6);animation:plaque-glow .5s ease-out}
+@keyframes plaque-glow{0%{opacity:.2;transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+.viewer-text{font-size:16px;color:rgba(255,245,230,.88);line-height:2;font-family:serif;letter-spacing:1px}
+.viewer-blow{font-size:10px;color:rgba(255,255,255,.12);margin-top:20px;letter-spacing:3px;cursor:pointer;transition:color .8s}
+.viewer-blow:hover{color:rgba(255,180,120,.4)}
+.viewer-hint{font-size:10px;color:rgba(255,255,255,.08);margin-top:12px;letter-spacing:3px}
 </style>
 </head>
 <body>
@@ -29,6 +40,14 @@ body{min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Ro
   <div class="page-title">余 烬</div>
   <div class="fragments-layer" id="fragsLayer"></div>
   <div class="empty-state" id="emptyState">你还没有点亮过任何东西</div>
+</div>
+
+<div class="viewer" id="viewer">
+  <div class="viewer-card">
+    <div class="viewer-text" id="viewerText"></div>
+    <div class="viewer-blow" id="viewerBlow">吹灭</div>
+    <div class="viewer-hint">点击空白处关闭</div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -40,8 +59,10 @@ var supabase = window.supabase.createClient(
 var DEVICE_ID = localStorage.getItem('lx_device_id');
 var fragsLayer = document.getElementById('fragsLayer');
 var emptyState = document.getElementById('emptyState');
+var currentFrag = null, currentMsg = null;
 
-if (!DEVICE_ID) { emptyState.textContent = '还没有任何痕迹'; } else {
+function loadYujin(){
+  if (!DEVICE_ID){ emptyState.textContent = '还没有任何痕迹'; return; }
   supabase.from('messages').select('*').eq('device_id',DEVICE_ID).order('created_at',{ascending:false}).limit(50).then(function(res){
     if (res.error || !res.data || !res.data.length) return;
     emptyState.style.display = 'none';
@@ -61,13 +82,45 @@ if (!DEVICE_ID) { emptyState.textContent = '还没有任何痕迹'; } else {
       }
       var x = 8 + Math.random() * 76, y = 10 + Math.random() * 70;
       var rot = (Math.random() - .5) * 4;
-      html += '<div class="fragment '+state+'" style="left:'+x+'vw;top:'+y+'vh;max-width:'+maxW+'px;transform:rotate('+rot.toFixed(1)+'deg)">'+
+      html += '<div class="fragment '+state+'" style="left:'+x+'vw;top:'+y+'vh;max-width:'+maxW+'px;transform:rotate('+rot.toFixed(1)+'deg)" data-id="'+msg.id+'" data-ext="'+!!msg.extinguished+'">'+
         text.replace(/</g,'&lt;').replace(/>/g,'&gt;')+
       '</div>';
     });
     fragsLayer.innerHTML = html;
+
+    // 点击打开 viewer
+    fragsLayer.querySelectorAll('.fragment:not(.frag-extinguished)').forEach(function(frag){
+      frag.addEventListener('click',function(e){ e.stopPropagation();
+        var id = parseInt(frag.dataset.id);
+        currentMsg = msgs.find(function(m){ return m.id === id; });
+        currentFrag = frag;
+        document.getElementById('viewerText').textContent = currentMsg.content;
+        document.getElementById('viewer').classList.add('show');
+      });
+    });
   });
 }
+
+// viewer 关闭
+document.getElementById('viewer').addEventListener('click',function(e){
+  if (e.target === this) this.classList.remove('show');
+});
+
+// 吹灭
+document.getElementById('viewerBlow').addEventListener('click',function(){
+  var frag = currentFrag;
+  if (!frag || !currentMsg) return;
+  document.getElementById('viewer').classList.remove('show');
+  frag.classList.add('blow-out');
+  var id = currentMsg.id;
+  setTimeout(function(){
+    supabase.from('messages').update({extinguished:true}).eq('id',id).then(function(){
+      loadYujin();
+    });
+  }, 1300);
+});
+
+loadYujin();
 </script>
 </body>
 </html>
