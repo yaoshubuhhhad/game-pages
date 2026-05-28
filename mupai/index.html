@@ -316,8 +316,11 @@ document.getElementById('writeEntry').addEventListener('click',function(){
   document.getElementById('writeInput').focus();
 });
 
-// file:// 下跨页面共享 device_id
-document.getElementById('emLink').href = 'yujin.html?did=' + DEVICE_ID;
+// 跨页面共享 device_id —— file:// 下 localStorage 不互通, 用 cookie
+document.cookie = 'lx_did=' + DEVICE_ID + ';path=/;SameSite=Lax';
+document.getElementById('emLink').addEventListener('click',function(){
+  document.cookie = 'lx_did=' + DEVICE_ID + ';path=/;SameSite=Lax';
+});
 
 loadMessages();
 </script>

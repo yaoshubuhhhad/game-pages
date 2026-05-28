@@ -69,17 +69,17 @@ var supabase = window.supabase.createClient(
   'https://kzcmavjvsowcmglcutds.supabase.co',
   'sb_publishable_qB7PKRmlPsJdb-PFzpxY7A_QVF9BNcG'
 );
-var DEVICE_ID = localStorage.getItem('lx_device_id') || new URLSearchParams(location.search).get('did');
+// 从 cookie 读取（file:// 下 localStorage 不互通）
+function getCookie(name){ var m = document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)'); return m ? m.pop() : null; }
+var DEVICE_ID = getCookie('lx_did') || localStorage.getItem('lx_device_id');
 var fragsLayer = document.getElementById('fragsLayer');
 var emptyState = document.getElementById('emptyState');
 var currentFrag = null, currentMsg = null;
 
 function loadYujin(){
-  if (!DEVICE_ID){ emptyState.textContent = '无法识别身份'; return; }
-  emptyState.textContent = '…';
+  if (!DEVICE_ID){ emptyState.textContent = '你还没有点亮任何东西'; return; }
   supabase.from('messages').select('*').eq('device_id',DEVICE_ID).order('created_at',{ascending:false}).limit(50).then(function(res){
-    if (res.error){ emptyState.textContent = '加载出错'; return; }
-    if (!res.data || !res.data.length){ emptyState.textContent = '没有数据 (ID: '+DEVICE_ID.substring(0,8)+'…)'; return; }
+    if (res.error || !res.data || !res.data.length){ emptyState.textContent = '你还没有点亮任何东西'; return; }
     emptyState.style.display = 'none';
     var msgs = res.data;
     var html = '';
